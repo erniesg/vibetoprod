@@ -139,7 +139,7 @@ function App() {
         {/* Control Panel */}
         <section className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} py-12`}>
           <div className="px-8">
-            <ControlPanel onGenerate={handleGenerate} loading={loading} onPersonaChange={handlePersonaChange} isDarkMode={isDarkMode} />
+            <ControlPanel onGenerate={handleGenerate} loading={loading} onPersonaChange={handlePersonaChange} isDarkMode={isDarkMode} currentPersona={currentPersona} />
           </div>
         </section>
 

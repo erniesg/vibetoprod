@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { PersonaSelector } from './PersonaSelector';
 import { CompetitorSelector } from './CompetitorSelector';
@@ -13,9 +13,10 @@ interface ControlPanelProps {
   loading: boolean;
   onPersonaChange: (persona: UserInput['persona']) => void;
   isDarkMode: boolean;
+  currentPersona: UserInput['persona'];
 }
 
-export const ControlPanel: React.FC<ControlPanelProps> = ({ onGenerate, loading, onPersonaChange, isDarkMode }) => {
+export const ControlPanel: React.FC<ControlPanelProps> = ({ onGenerate, loading, onPersonaChange, isDarkMode, currentPersona }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [formData, setFormData] = useState<UserInput>({
     persona: 'Vibe Coder',
@@ -24,8 +25,13 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onGenerate, loading,
     competitors: ['AWS'],
     scale: 'Startup',
     constraints: [],
-    maxConstraints: 2
+    maxConstraints: 3
   });
+
+  // Sync internal persona state with auto-cycling
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, persona: currentPersona }));
+  }, [currentPersona]);
 
   const regionOptions = [
     { value: 'Singapore', label: '🇸🇬 Singapore' },
