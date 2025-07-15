@@ -452,13 +452,146 @@ function App() {
         {/* Market Section */}
         <section className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} py-16 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
           <div className="px-8 max-w-7xl mx-auto">
-            <div className="text-center mb-12">
+            <div className="text-center mb-16">
               <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Market: The Targeted APAC Playbook
+                Market: The APAC Go-to-Market Strategy
               </h2>
-              <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-3xl mx-auto`}>
-                This strategic advantage is not theoretical; it's a practical solution for the fastest-growing digital economies in the world. APAC is not a monolith. Our go-to-market strategy must be precise.
+              <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-4xl mx-auto`}>
+                Our barrier isn't technology—it's awareness. The world knows us as the security and CDN leader. 
+                They don't yet know us as the best platform to build on. Here's how we change that in APAC.
               </p>
+            </div>
+
+            {/* GTM Strategy: From Bouncer to Backbone */}
+            <div className="mb-16">
+              <div className="text-center mb-12">
+                <h3 className={`text-3xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  From Bouncer to Backbone: The AI-First Strategy
+                </h3>
+                <p className={`text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-3xl mx-auto`}>
+                  Use AI demand to gain mindshare across both existing enterprises and greenfield startups
+                </p>
+              </div>
+
+              {/* Three Phase Visual Strategy */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                {/* Phase 1 */}
+                <div className={`relative p-8 rounded-xl shadow-lg ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
+                  <div className="absolute -top-4 left-8">
+                    <div className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-full text-sm font-bold">
+                      Phase 1
+                    </div>
+                  </div>
+                  <div className="pt-4">
+                    <div className="flex items-center mb-6">
+                      <div className="p-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl mr-4">
+                        <Shield className="w-6 h-6 text-white" />
+                      </div>
+                      <h4 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        The AI Bouncer
+                      </h4>
+                    </div>
+                    <p className={`text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mb-4`}>
+                      <strong>Target:</strong> All companies with AI workloads
+                    </p>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} leading-relaxed`}>
+                      Position AI Gateway as the indispensable "bouncer" for their AI APIs. No rip-and-replace. 
+                      Immediate value: caching, rate limiting, observability. Low-friction entry leveraging our security trust.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Phase 2 */}
+                <div className={`relative p-8 rounded-xl shadow-lg ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
+                  <div className="absolute -top-4 left-8">
+                    <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold">
+                      Phase 2
+                    </div>
+                  </div>
+                  <div className="pt-4">
+                    <div className="flex items-center mb-6">
+                      <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl mr-4">
+                        <Database className="w-6 h-6 text-white" />
+                      </div>
+                      <h4 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        Straddle & Siphon
+                      </h4>
+                    </div>
+                    <p className={`text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mb-4`}>
+                      <strong>Target:</strong> Companies with stateful AI needs
+                    </p>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} leading-relaxed`}>
+                      Once trusted, we "straddle" their architecture. Prove value with stateful features like chatbot history 
+                      on Durable Objects—10x performance gain on critical workloads.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Phase 3 */}
+                <div className={`relative p-8 rounded-xl shadow-lg border-2 ${isDarkMode ? 'bg-orange-900/20 border-orange-800' : 'bg-orange-50 border-orange-200'}`}>
+                  <div className="absolute -top-4 left-8">
+                    <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full text-sm font-bold">
+                      Phase 3
+                    </div>
+                  </div>
+                  <div className="pt-4">
+                    <div className="flex items-center mb-6">
+                      <div className="p-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl mr-4">
+                        <Cloud className="w-6 h-6 text-white" />
+                      </div>
+                      <h4 className={`text-xl font-bold ${isDarkMode ? 'text-orange-400' : 'text-orange-800'}`}>
+                        Default Choice
+                      </h4>
+                    </div>
+                    <p className={`text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-4`}>
+                      <strong>Target:</strong> All net-new AI applications
+                    </p>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} leading-relaxed`}>
+                      Developers who came for security stay for performance. For their next project, 
+                      Cloudflare isn't just the bouncer—we're the foundation.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Strategy Flow Diagram */}
+              <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                <div className="flex items-center justify-between">
+                  <div className="text-center flex-1">
+                    <div className={`text-lg font-bold mb-2 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                      Existing Companies
+                    </div>
+                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Bolt-on AI Gateway
+                    </div>
+                  </div>
+                  <ArrowRight className={`w-8 h-8 mx-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                  <div className="text-center flex-1">
+                    <div className={`text-lg font-bold mb-2 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>
+                      Prove Value
+                    </div>
+                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Stateful workloads
+                    </div>
+                  </div>
+                  <ArrowRight className={`w-8 h-8 mx-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                  <div className="text-center flex-1">
+                    <div className={`text-lg font-bold mb-2 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>
+                      New Projects
+                    </div>
+                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Full platform adoption
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Regional Implementation */}
+            <div className="mb-12">
+              <h3 className={`text-2xl font-bold mb-8 text-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                Regional Implementation: Market-Specific Execution
+              </h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
