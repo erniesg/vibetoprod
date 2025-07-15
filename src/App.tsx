@@ -930,39 +930,98 @@ function App() {
         </section>
 
 
-        {/* Why Me, Why Now Section */}
+        {/* The Agentic Age Section */}
         <section className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} py-16 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          <div className="px-8 max-w-4xl mx-auto text-center">
-            <h2 className={`text-4xl font-bold mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              Why Me, Why Now
-            </h2>
+          <div className="px-8 max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                The Agentic Age: Why Stateful Serverless is the New Full-Stack
+              </h2>
+              <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                Why Now? The Great Re-Platforming.
+              </p>
+            </div>
             
-            <div className={`p-8 rounded-xl shadow-lg ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'} text-left`}>
-              <p className={`text-lg leading-relaxed mb-6 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                The Asia-Pacific region is not a monolith; it's a dynamic collection of the world's fastest-growing digital economies. 
-                Winning here requires more than just great technology; it demands a hyper-specific, developer-first strategy that respects 
-                the unique challenges and opportunities of each market.
-              </p>
-              
-              <p className={`text-lg leading-relaxed mb-6 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                The old cloud model—centralized, complex, and punitive—is fundamentally broken for a mobile-first, latency-sensitive APAC user base. 
-                The opportunity is to provide a new paradigm built on speed, simplicity, and global scale from the start.
-              </p>
-              
-              <p className={`text-lg leading-relaxed mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                This entire presentation—from the live, interactive demo to the targeted strategic analysis—is a demonstration of how I will operate 
-                as your Regional Lead. I have shown a consultative mindset that starts with the customer's pain points, deep technical expertise in 
-                designing the AI-native architectures that are our future, and a clear go-to-market strategy for turning developer mindshare into enterprise revenue.
-              </p>
-              
-              <div className="text-center">
-                <p className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  I am ready to be a trusted advisor to our clients, a strategic partner to our sales teams, and a powerful voice for the APAC region within Cloudflare.
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+              <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-900 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                <h3 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  The Architectural Shift
+                </h3>
+                <p className={`text-base leading-relaxed mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  We are at the dawn of the Agentic Age—transitioning from static applications to persistent, conversational AI systems. 
+                  The old cloud model, built on stateless request-response cycles, is fundamentally broken for this new reality.
                 </p>
-                <p className={`text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent`}>
-                  The time to win the edge is now. Let's build it together, from right here in Asia.
+                <p className={`text-base leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Forcing an AI to retrieve its "memory" from a centralized database across an ocean on every interaction creates 
+                  the <span className="font-semibold text-orange-500">crippling latency tax</span> we identified in our compute awareness gap analysis.
                 </p>
               </div>
+
+              <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-900 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                <h3 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  The Cloudflare Solution
+                </h3>
+                <p className={`text-base leading-relaxed mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <span className="font-semibold text-orange-500">Stateful Serverless is the new full-stack.</span> A Durable Object 
+                  isn't merely a database record—it's the native data structure for an AI agent's memory, fused directly with compute logic.
+                </p>
+                <p className={`text-base leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  This eliminates the distance penalty that plagues centralized architectures, delivering the 
+                  <span className="font-semibold text-orange-500">zero-distance advantage</span> our flywheel strategy requires.
+                </p>
+              </div>
+            </div>
+
+            <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-900 border border-gray-700' : 'bg-white border border-gray-200'} mb-8`}>
+              <h3 className={`text-2xl font-bold mb-6 text-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                The Unfair Advantage: We Started with the Edge
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Zap className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className={`font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Performance Gap</h4>
+                  <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    AI running milliseconds from data vs. distant data center isn't incremental—it's a categorical leap in user experience.
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Globe className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className={`font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Global by Default</h4>
+                  <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    A single git push gives developers in Singapore the same low-latency reach as tech giants—no regional compromise.
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Shield className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className={`font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Economic Fairness</h4>
+                  <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    R2's zero-egress policy removes the punitive tax on success, enabling true global scaling from day one.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className={`text-center p-8 rounded-xl ${isDarkMode ? 'bg-gradient-to-r from-gray-800 to-gray-900' : 'bg-gradient-to-r from-gray-50 to-gray-100'}`}>
+              <h3 className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                Building a More Intelligent Internet
+              </h3>
+              <p className={`text-lg leading-relaxed mb-6 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                This architecture powers our mission evolution: from a faster, safer internet to a 
+                <span className="font-semibold text-orange-500">more intelligent internet</span>. 
+                The agentic economy requires infrastructure that thinks at the speed of conversation.
+              </p>
+              <p className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                The future won't be centralized. It will be built by everyone, for everyone, at the edge.
+              </p>
+              <p className={`text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent`}>
+                Cloudflare provides the foundation. APAC leads the execution.
+              </p>
             </div>
           </div>
         </section>
