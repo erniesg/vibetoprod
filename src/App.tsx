@@ -13,8 +13,25 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<ArchitectureResponse | null>(null);
   const [currentPersona, setCurrentPersona] = useState<UserInput['persona']>('Vibe Coder');
+  const [isAutoCycling, setIsAutoCycling] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentInput, setCurrentInput] = useState<UserInput | null>(null);
+
+  // Auto-cycle through personas
+  useEffect(() => {
+    if (!isAutoCycling) return;
+    
+    const personas: UserInput['persona'][] = ['Vibe Coder', 'FDE', 'CIO/CTO'];
+    const interval = setInterval(() => {
+      setCurrentPersona(prev => {
+        const currentIndex = personas.indexOf(prev);
+        const nextIndex = (currentIndex + 1) % personas.length;
+        return personas[nextIndex];
+      });
+    }, 4000); // Change every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [isAutoCycling]);
 
   const handleGenerate = async (input: UserInput) => {
     setLoading(true);
@@ -33,6 +50,7 @@ function App() {
 
   const handlePersonaChange = (persona: UserInput['persona']) => {
     setCurrentPersona(persona);
+    setIsAutoCycling(false); // Stop auto-cycling when user manually selects
   };
 
   const getPersonaTheme = (persona: UserInput['persona']) => {
