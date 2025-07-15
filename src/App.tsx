@@ -462,10 +462,17 @@ function App() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="perspective-1000 h-80">
-                <div className={`relative w-full h-full transition-transform duration-700 transform-style-preserve-3d group-hover:rotate-y-180`}>
+              {/* Singapore Card */}
+              <div className="h-80 group cursor-pointer" style={{ perspective: '1000px' }}>
+                <div 
+                  className="relative w-full h-full transition-transform duration-700 ease-in-out group-hover:[transform:rotateY(180deg)]"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
                   {/* Front of card */}
-                  <div className={`group absolute inset-0 w-full h-full backface-hidden rounded-xl shadow-lg p-8 cursor-pointer ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
+                  <div 
+                    className={`absolute inset-0 w-full h-full rounded-xl shadow-lg p-8 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}
+                    style={{ backfaceVisibility: 'hidden' }}
+                  >
                     <div className="flex items-center mb-6">
                       <span className="text-3xl mr-4">🇸🇬</span>
                       <div>
@@ -493,7 +500,10 @@ function App() {
                   </div>
                   
                   {/* Back of card */}
-                  <div className={`absolute inset-0 w-full h-full backface-hidden rotate-y-180 rounded-xl shadow-lg p-8 ${isDarkMode ? 'bg-orange-900/20 border border-orange-800' : 'bg-orange-50 border-orange-200'}`}>
+                  <div 
+                    className={`absolute inset-0 w-full h-full rounded-xl shadow-lg p-8 ${isDarkMode ? 'bg-orange-900/20 border border-orange-800' : 'bg-orange-50 border-orange-200'}`}
+                    style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+                  >
                     <div className="flex items-center mb-4">
                       <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-orange-800' : 'bg-orange-200'} mr-3`}>
                         <span className="text-lg">⚡</span>
@@ -509,10 +519,16 @@ function App() {
                 </div>
               </div>
 
-              <div className="perspective-1000 h-80">
-                <div className={`relative w-full h-full transition-transform duration-700 transform-style-preserve-3d group-hover:rotate-y-180`}>
+              <div className="h-80 group cursor-pointer" style={{ perspective: '1000px' }}>
+                <div 
+                  className="relative w-full h-full transition-transform duration-700 ease-in-out group-hover:[transform:rotateY(180deg)]"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
                   {/* Front of card */}
-                  <div className={`group absolute inset-0 w-full h-full backface-hidden rounded-xl shadow-lg p-8 cursor-pointer ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
+                  <div 
+                    className={`absolute inset-0 w-full h-full rounded-xl shadow-lg p-8 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}
+                    style={{ backfaceVisibility: 'hidden' }}
+                  >
                     <div className="flex items-center mb-6">
                       <span className="text-3xl mr-4">🇮🇩</span>
                       <div>
@@ -540,7 +556,10 @@ function App() {
                   </div>
                   
                   {/* Back of card */}
-                  <div className={`absolute inset-0 w-full h-full backface-hidden rotate-y-180 rounded-xl shadow-lg p-8 ${isDarkMode ? 'bg-orange-900/20 border border-orange-800' : 'bg-orange-50 border-orange-200'}`}>
+                  <div 
+                    className={`absolute inset-0 w-full h-full rounded-xl shadow-lg p-8 ${isDarkMode ? 'bg-orange-900/20 border border-orange-800' : 'bg-orange-50 border-orange-200'}`}
+                    style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+                  >
                     <div className="flex items-center mb-4">
                       <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-orange-800' : 'bg-orange-200'} mr-3`}>
                         <span className="text-lg">🛒</span>
@@ -556,10 +575,16 @@ function App() {
                 </div>
               </div>
 
-              <div className="perspective-1000 h-80">
-                <div className={`relative w-full h-full transition-transform duration-700 transform-style-preserve-3d group-hover:rotate-y-180`}>
+              <div className="h-80 group cursor-pointer" style={{ perspective: '1000px' }}>
+                <div 
+                  className="relative w-full h-full transition-transform duration-700 ease-in-out group-hover:[transform:rotateY(180deg)]"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
                   {/* Front of card */}
-                  <div className={`group absolute inset-0 w-full h-full backface-hidden rounded-xl shadow-lg p-8 cursor-pointer ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
+                  <div 
+                    className={`absolute inset-0 w-full h-full rounded-xl shadow-lg p-8 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}
+                    style={{ backfaceVisibility: 'hidden' }}
+                  >
                     <div className="flex items-center mb-6">
                       <span className="text-3xl mr-4">🇰🇷🇯🇵</span>
                       <div>
@@ -587,7 +612,10 @@ function App() {
                   </div>
                   
                   {/* Back of card */}
-                  <div className={`absolute inset-0 w-full h-full backface-hidden rotate-y-180 rounded-xl shadow-lg p-8 ${isDarkMode ? 'bg-orange-900/20 border border-orange-800' : 'bg-orange-50 border-orange-200'}`}>
+                  <div 
+                    className={`absolute inset-0 w-full h-full rounded-xl shadow-lg p-8 ${isDarkMode ? 'bg-orange-900/20 border border-orange-800' : 'bg-orange-50 border-orange-200'}`}
+                    style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+                  >
                     <div className="flex items-center mb-4">
                       <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-orange-800' : 'bg-orange-200'} mr-3`}>
                         <span className="text-lg">🎮</span>
@@ -603,10 +631,16 @@ function App() {
                 </div>
               </div>
 
-              <div className="perspective-1000 h-80">
-                <div className={`relative w-full h-full transition-transform duration-700 transform-style-preserve-3d group-hover:rotate-y-180`}>
+              <div className="h-80 group cursor-pointer" style={{ perspective: '1000px' }}>
+                <div 
+                  className="relative w-full h-full transition-transform duration-700 ease-in-out group-hover:[transform:rotateY(180deg)]"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
                   {/* Front of card */}
-                  <div className={`group absolute inset-0 w-full h-full backface-hidden rounded-xl shadow-lg p-8 cursor-pointer ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
+                  <div 
+                    className={`absolute inset-0 w-full h-full rounded-xl shadow-lg p-8 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}
+                    style={{ backfaceVisibility: 'hidden' }}
+                  >
                     <div className="flex items-center mb-6">
                       <span className="text-3xl mr-4">🇦🇺</span>
                       <div>
@@ -634,7 +668,10 @@ function App() {
                   </div>
                   
                   {/* Back of card */}
-                  <div className={`absolute inset-0 w-full h-full backface-hidden rotate-y-180 rounded-xl shadow-lg p-8 ${isDarkMode ? 'bg-orange-900/20 border border-orange-800' : 'bg-orange-50 border-orange-200'}`}>
+                  <div 
+                    className={`absolute inset-0 w-full h-full rounded-xl shadow-lg p-8 ${isDarkMode ? 'bg-orange-900/20 border border-orange-800' : 'bg-orange-50 border-orange-200'}`}
+                    style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+                  >
                     <div className="flex items-center mb-4">
                       <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-orange-800' : 'bg-orange-200'} mr-3`}>
                         <span className="text-lg">💰</span>
