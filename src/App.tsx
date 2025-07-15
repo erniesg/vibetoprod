@@ -454,32 +454,142 @@ function App() {
           <div className="px-8 max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Market: The APAC Go-to-Market Strategy
+                The Challenge: Cloudflare's Compute Blind Spot
               </h2>
-              <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-4xl mx-auto`}>
-                Our barrier isn't technology—it's awareness. The world knows us as the security and CDN leader. 
-                They don't yet know us as the best platform to build on. Here's how we change that in APAC.
+              <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-4xl mx-auto mb-8`}>
+                Our barrier isn't technology—it's awareness. We're absent from Gartner's 2024 Magic Quadrant for Strategic Cloud Platform Services. 
+                APAC's developer-driven markets are our biggest opportunity to change that.
               </p>
+              
+              {/* The Imperative */}
+              <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-blue-900/20 border border-blue-800' : 'bg-blue-50 border border-blue-200'} max-w-4xl mx-auto`}>
+                <h3 className={`text-lg font-bold mb-3 ${isDarkMode ? 'text-blue-400' : 'text-blue-800'}`}>
+                  The APAC Imperative: Developer Education → Enterprise Revenue
+                </h3>
+                <p className={`text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  APAC's mobile-first, latency-sensitive markets are perfect for developer-first adoption. 
+                  When we win developer mindshare through education, we unlock enterprise revenue streams.
+                </p>
+              </div>
             </div>
 
-            {/* GTM Strategy: From Bouncer to Backbone */}
+            {/* The Engine: Developer Love Flywheel */}
             <div className="mb-16">
               <div className="text-center mb-12">
-                <h3 className={`text-3xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  From Bouncer to Backbone: The AI-First Strategy
-                </h3>
-                <p className={`text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-3xl mx-auto`}>
-                  Use AI demand to gain mindshare across both existing enterprises and greenfield startups
+                <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  The Engine: Dev ❤️ Flywheel
+                </h2>
+                <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-3xl mx-auto`}>
+                  Our bottom-up go-to-market motion is foundational to winning in APAC. We turn developer love into enterprise revenue.
                 </p>
               </div>
 
-              {/* Three Phase Visual Strategy */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-                {/* Phase 1 */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span className="text-2xl font-bold text-white">1</span>
+                  </div>
+                  <h3 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Win the Developer</h3>
+                  <p className={`text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Superior DX, undeniable performance, and radical generosity in our free tiers. They become our internal champions.
+                  </p>
+                </div>
+
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span className="text-2xl font-bold text-white">2</span>
+                  </div>
+                  <h3 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Empower the Champion</h3>
+                  <p className={`text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    We equip developers to make the business case to their CTO with performance numbers and cost savings.
+                  </p>
+                </div>
+
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span className="text-2xl font-bold text-white">3</span>
+                  </div>
+                  <h3 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Capture the Organization</h3>
+                  <p className={`text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    CTO approves adoption based on proven use case, leading to broader platform usage and enterprise agreements.
+                  </p>
+                </div>
+              </div>
+
+              <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50'}`}>
+                <h3 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Community Engagement Strategy</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className={`font-semibold mb-3 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>🇸🇬 Singapore</h4>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Partner with Geekcamp, JuniorDev.sg, and FinTech-specific developer meetups.
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className={`font-semibold mb-3 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>🇮🇩 Jakarta</h4>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Engage with Creator Economy communities and Super App developer groups.
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className={`font-semibold mb-3 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>🇰🇷 Seoul</h4>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Run hands-on workshops at if(kakao) and gaming dev conferences.
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className={`font-semibold mb-3 ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>🇦🇺 Sydney</h4>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Sponsor local SaaS and JavaScript meetups, providing Cloudflare experts as mentors.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* The Execution: Flywheel-Powered Dual Attack */}
+            <div className="mb-16">
+              <div className="text-center mb-12">
+                <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  The Execution: Flywheel-Powered Dual Attack
+                </h2>
+                <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-3xl mx-auto`}>
+                  Same flywheel, different entry points. Use developer love to win both new workloads and infiltrate existing infrastructure.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                {/* Track 1: Win New AI Workloads */}
+                <div className={`relative p-8 rounded-xl shadow-lg border-2 ${isDarkMode ? 'bg-orange-900/20 border-orange-800' : 'bg-orange-50 border-orange-200'}`}>
+                  <div className="absolute -top-4 left-8">
+                    <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full text-sm font-bold">
+                      Track 1: Priority
+                    </div>
+                  </div>
+                  <div className="pt-4">
+                    <div className="flex items-center mb-6">
+                      <div className="p-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl mr-4">
+                        <Zap className="w-6 h-6 text-white" />
+                      </div>
+                      <h4 className={`text-xl font-bold ${isDarkMode ? 'text-orange-400' : 'text-orange-800'}`}>
+                        Win New AI Workloads
+                      </h4>
+                    </div>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} leading-relaxed mb-4`}>
+                      <strong>Flywheel Entry:</strong> Developer education → organic adoption → front-of-mind for "vibe coders" 
+                      building AI-native applications from scratch.
+                    </p>
+                    <div className={`text-xs ${isDarkMode ? 'text-orange-300' : 'text-orange-700'} font-semibold`}>
+                      🎯 Eat Vercel/Netlify for breakfast with superior edge + AI capabilities
+                    </div>
+                  </div>
+                </div>
+
+                {/* Track 2: Infiltrate Existing Infrastructure */}
                 <div className={`relative p-8 rounded-xl shadow-lg ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
                   <div className="absolute -top-4 left-8">
                     <div className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-full text-sm font-bold">
-                      Phase 1
+                      Track 2: Expand
                     </div>
                   </div>
                   <div className="pt-4">
@@ -488,110 +598,106 @@ function App() {
                         <Shield className="w-6 h-6 text-white" />
                       </div>
                       <h4 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        The AI Bouncer
+                        Infiltrate Existing Infrastructure
                       </h4>
                     </div>
-                    <p className={`text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mb-4`}>
-                      <strong>Target:</strong> All companies with AI workloads
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} leading-relaxed mb-4`}>
+                      <strong>Flywheel Entry:</strong> AI Gateway as "bouncer" → developer champions → 
+                      prove value with stateful workloads → entire platform migration.
                     </p>
-                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} leading-relaxed`}>
-                      Position AI Gateway as the indispensable "bouncer" for their AI APIs. No rip-and-replace. 
-                      Immediate value: caching, rate limiting, observability. Low-friction entry leveraging our security trust.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Phase 2 */}
-                <div className={`relative p-8 rounded-xl shadow-lg ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
-                  <div className="absolute -top-4 left-8">
-                    <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold">
-                      Phase 2
-                    </div>
-                  </div>
-                  <div className="pt-4">
-                    <div className="flex items-center mb-6">
-                      <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl mr-4">
-                        <Database className="w-6 h-6 text-white" />
-                      </div>
-                      <h4 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        Straddle & Siphon
-                      </h4>
-                    </div>
-                    <p className={`text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mb-4`}>
-                      <strong>Target:</strong> Companies with stateful AI needs
-                    </p>
-                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} leading-relaxed`}>
-                      Once trusted, we "straddle" their architecture. Prove value with stateful features like chatbot history 
-                      on Durable Objects—10x performance gain on critical workloads.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Phase 3 */}
-                <div className={`relative p-8 rounded-xl shadow-lg border-2 ${isDarkMode ? 'bg-orange-900/20 border-orange-800' : 'bg-orange-50 border-orange-200'}`}>
-                  <div className="absolute -top-4 left-8">
-                    <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full text-sm font-bold">
-                      Phase 3
-                    </div>
-                  </div>
-                  <div className="pt-4">
-                    <div className="flex items-center mb-6">
-                      <div className="p-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl mr-4">
-                        <Cloud className="w-6 h-6 text-white" />
-                      </div>
-                      <h4 className={`text-xl font-bold ${isDarkMode ? 'text-orange-400' : 'text-orange-800'}`}>
-                        Default Choice
-                      </h4>
-                    </div>
-                    <p className={`text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-4`}>
-                      <strong>Target:</strong> All net-new AI applications
-                    </p>
-                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} leading-relaxed`}>
-                      Developers who came for security stay for performance. For their next project, 
-                      Cloudflare isn't just the bouncer—we're the foundation.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Strategy Flow Diagram */}
-              <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                <div className="flex items-center justify-between">
-                  <div className="text-center flex-1">
-                    <div className={`text-lg font-bold mb-2 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                      Existing Companies
-                    </div>
-                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Bolt-on AI Gateway
-                    </div>
-                  </div>
-                  <ArrowRight className={`w-8 h-8 mx-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                  <div className="text-center flex-1">
-                    <div className={`text-lg font-bold mb-2 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>
-                      Prove Value
-                    </div>
-                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Stateful workloads
-                    </div>
-                  </div>
-                  <ArrowRight className={`w-8 h-8 mx-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                  <div className="text-center flex-1">
-                    <div className={`text-lg font-bold mb-2 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>
-                      New Projects
-                    </div>
-                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Full platform adoption
+                    <div className={`text-xs ${isDarkMode ? 'text-blue-300' : 'text-blue-700'} font-semibold`}>
+                      🎯 From bouncer to backbone: leverage security trust for compute wins
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* The Enablers: Product Strategy for Track 1 Dominance */}
+            <div className="mb-16">
+              <div className="text-center mb-12">
+                <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  The Enablers: Product Strategy for Track 1 Dominance
+                </h2>
+                <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-3xl mx-auto`}>
+                  To accelerate developer flywheel and win new AI workloads, we need dramatic DX/AX improvements.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* DX Improvements */}
+                <div className={`p-8 rounded-xl shadow-lg ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
+                  <div className="flex items-center mb-6">
+                    <div className="p-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl mr-4">
+                      <Zap className="w-6 h-6 text-white" />
+                    </div>
+                    <h4 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      Enhance Developer Experience
+                    </h4>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <h5 className={`font-semibold mb-2 ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>1. One-Click AI App Templates</h5>
+                      <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Pre-built ChatGPT clones, RAG apps, AI agents with Workers AI, Vectorize, D1 pre-configured.</p>
+                    </div>
+                    <div>
+                      <h5 className={`font-semibold mb-2 ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>2. Visual Deployment Pipeline</h5>
+                      <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Git-to-global deployment with real-time edge rollout visualization.</p>
+                    </div>
+                    <div>
+                      <h5 className={`font-semibold mb-2 ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>3. AI-Powered CLI Assistant</h5>
+                      <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>"Deploy my React app with AI chat" → auto-configured stack.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* AX Preparation */}
+                <div className={`p-8 rounded-xl shadow-lg ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
+                  <div className="flex items-center mb-6">
+                    <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl mr-4">
+                      <Sparkles className="w-6 h-6 text-white" />
+                    </div>
+                    <h4 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      Prepare for Agent Experience
+                    </h4>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <h5 className={`font-semibold mb-2 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>1. Agent-Native APIs</h5>
+                      <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Tool-calling APIs for AI agents to auto-provision infrastructure.</p>
+                    </div>
+                    <div>
+                      <h5 className={`font-semibold mb-2 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>2. Conversational Infrastructure</h5>
+                      <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>"Scale my app for 10M users" → AI auto-configures everything.</p>
+                    </div>
+                    <div>
+                      <h5 className={`font-semibold mb-2 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>3. Predictive Edge Optimization</h5>
+                      <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>AI learns patterns and auto-optimizes edge placement.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Competitive Advantage */}
+              <div className={`mt-8 p-6 rounded-xl ${isDarkMode ? 'bg-orange-900/20 border border-orange-800' : 'bg-orange-50 border border-orange-200'}`}>
+                <h4 className={`text-lg font-bold mb-3 ${isDarkMode ? 'text-orange-400' : 'text-orange-800'}`}>
+                  The Vercel/Netlify Killer Advantage
+                </h4>
+                <p className={`text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  While Vercel/Netlify excel at frontend deployment, they hit walls with backend complexity and global scale. 
+                  Our edge-first architecture + these DX improvements = superior platform for AI-native applications.
+                </p>
+              </div>
+            </div>
+
             {/* Regional Implementation */}
             <div className="mb-12">
-              <h3 className={`text-2xl font-bold mb-8 text-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Regional Implementation: Market-Specific Execution
-              </h3>
+              <h2 className={`text-4xl font-bold mb-4 text-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                The Regional Playbook: Market-Specific Execution
+              </h2>
+              <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-center max-w-3xl mx-auto mb-8`}>
+                APAC is not one market. Here's how we execute both tracks simultaneously in specific hubs where talent, industry, and technical need intersect.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -823,81 +929,6 @@ function App() {
           </div>
         </section>
 
-        {/* Dev Flywheel Section */}
-        <section className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} py-16 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          <div className="px-8 max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Dev ❤️ Flywheel: From Community to Customer
-              </h2>
-              <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-3xl mx-auto`}>
-                Our bottom-up go-to-market motion is foundational to winning in APAC. We turn developer love into enterprise revenue.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-              <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-2xl font-bold text-white">1</span>
-                </div>
-                <h3 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Win the Developer</h3>
-                <p className={`text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  Superior DX, undeniable performance, and radical generosity in our free tiers. They become our internal champions.
-                </p>
-              </div>
-
-              <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-2xl font-bold text-white">2</span>
-                </div>
-                <h3 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Empower the Champion</h3>
-                <p className={`text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  We equip developers to make the business case to their CTO with performance numbers and cost savings.
-                </p>
-              </div>
-
-              <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-2xl font-bold text-white">3</span>
-                </div>
-                <h3 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Capture the Organization</h3>
-                <p className={`text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  CTO approves adoption based on proven use case, leading to broader platform usage and enterprise agreements.
-                </p>
-              </div>
-            </div>
-
-            <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50'}`}>
-              <h3 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Community Engagement Strategy</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className={`font-semibold mb-3 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>🇸🇬 Singapore</h4>
-                  <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                    Partner with Geekcamp, JuniorDev.sg, and FinTech-specific developer meetups.
-                  </p>
-                </div>
-                <div>
-                  <h4 className={`font-semibold mb-3 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>🇮🇩 Jakarta</h4>
-                  <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                    Engage with Creator Economy communities and Super App developer groups.
-                  </p>
-                </div>
-                <div>
-                  <h4 className={`font-semibold mb-3 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>🇰🇷 Seoul</h4>
-                  <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                    Run hands-on workshops at if(kakao) and gaming dev conferences.
-                  </p>
-                </div>
-                <div>
-                  <h4 className={`font-semibold mb-3 ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>🇦🇺 Sydney</h4>
-                  <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                    Sponsor local SaaS and JavaScript meetups, providing Cloudflare experts as mentors.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Why Me, Why Now Section */}
         <section className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} py-16 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
