@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useCallback } from 'react';
 import {
   ReactFlow,
   Node,
@@ -185,69 +185,86 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
   isDarkMode,
   competitorName
 }) => {
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  // Don't use internal state, pass data directly to ReactFlow
+  const onNodesChange = useCallback(() => {}, []);
+  const onEdgesChange = useCallback(() => {}, []);
 
   // Convert node data to React Flow format
   const reactFlowNodes = useMemo(() => {
-    return nodeData.map((node, index) => {
+    const nodes = nodeData.map((node, index) => {
       const NodeComponent = getNodeComponent(node.type);
       return {
         id: node.id,
-        type: node.type, // Use specific type for proper node selection
+        type: 'default', // Use default type to test if custom types are the issue
         position: node.position,
         data: {
           ...node,
           variant: variant, // Add variant for styling
+          label: (
+            <div className="text-center">
+              <div className="font-semibold text-sm">{node.name}</div>
+              {node.subtitle && (
+                <div className="text-xs text-gray-600 mt-1">{node.subtitle}</div>
+              )}
+            </div>
+          ),
         },
         style: {
           animationDelay: `${index * 200}ms`,
+          background: node.color,
+          color: 'white',
+          border: 'none',
+          borderRadius: '8px',
+          padding: '10px',
+          fontSize: '12px',
+          minWidth: '120px',
+          minHeight: '60px',
         },
       };
     });
+    console.log('🔧 Created ReactFlow nodes:', nodes.map(n => n.id));
+    return nodes;
   }, [nodeData, variant]);
 
   // Convert edge data to React Flow format
   const reactFlowEdges = useMemo(() => {
-    return edgeData.map((edge, index) => ({
-      id: edge.id,
-      source: edge.from,
-      target: edge.to,
-      label: edge.label,
-      type: 'smoothstep',
-      animated: variant === 'cloudflare',
-      style: {
-        stroke: edge.color,
-        strokeWidth: 2,
-        strokeDasharray: edge.style === 'dashed' ? '5,5' : undefined,
-        animationDelay: `${(nodeData.length + index) * 200}ms`,
-      },
-      markerEnd: {
-        type: MarkerType.ArrowClosed,
-        color: edge.color,
-        width: 20,
-        height: 20,
-      },
-      labelStyle: {
-        fontSize: '12px',
-        fontWeight: 600,
-        color: isDarkMode ? '#ffffff' : '#374151',
-        backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
-        padding: '2px 6px',
-        borderRadius: '4px',
-        border: `1px solid ${edge.color}`,
-      },
-    }));
+    console.log('🔍 Converting edge data:', edgeData);
+    console.log('🔍 Available node IDs:', nodeData.map(n => n.id));
+    return edgeData.map((edge, index) => {
+      console.log('🔍 Edge mapping:', edge.from, '->', edge.to);
+      return {
+        id: edge.id,
+        source: edge.from,
+        target: edge.to,
+        label: edge.label,
+        type: 'smoothstep',
+        animated: variant === 'cloudflare',
+        style: {
+          stroke: edge.color,
+          strokeWidth: 2,
+          strokeDasharray: edge.style === 'dashed' ? '5,5' : undefined,
+          animationDelay: `${(nodeData.length + index) * 200}ms`,
+        },
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          color: edge.color,
+          width: 20,
+          height: 20,
+        },
+        labelStyle: {
+          fontSize: '12px',
+          fontWeight: 600,
+          color: isDarkMode ? '#ffffff' : '#374151',
+          backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
+          padding: '2px 6px',
+          borderRadius: '4px',
+          border: `1px solid ${edge.color}`,
+        },
+      };
+    });
   }, [edgeData, variant, nodeData.length, isDarkMode]);
 
-  // Update React Flow nodes and edges when data changes
-  useEffect(() => {
-    setNodes(reactFlowNodes);
-  }, [reactFlowNodes, setNodes]);
-
-  useEffect(() => {
-    setEdges(reactFlowEdges);
-  }, [reactFlowEdges, setEdges]);
+  // No need to manage state separately, React Flow will handle it
 
   // Fit view when nodes or edges change during streaming
   // We'll handle this through the ReactFlow component's fitView prop and fitViewOptions
@@ -321,12 +338,20 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
           </div>
         ) : (
           <ReactFlow
-            nodes={nodes}
-            edges={edges}
+            nodes={reactFlowNodes}
+            edges={reactFlowEdges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             nodeTypes={nodeTypes}
             connectionMode={ConnectionMode.Loose}
+            onInit={() => {
+              console.log('🚀 ReactFlow initialized with nodes:', reactFlowNodes.length, 'edges:', reactFlowEdges.length);
+              console.log('🚀 ReactFlow nodes:', reactFlowNodes);
+              console.log('🚀 ReactFlow edges:', reactFlowEdges);
+              if (reactFlowEdges.length > 0) {
+                console.log('🔍 First edge details:', JSON.stringify(reactFlowEdges[0], null, 2));
+              }
+            }}
             fitView={nodeData.length >= 2 || (nodeData.length >= 1 && edgeData.length >= 1)}
             fitViewOptions={{
               padding: 0.15,
@@ -353,7 +378,7 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
               <div className={`text-xs px-2 py-1 rounded ${
                 isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
               }`}>
-                {nodes.length} nodes, {edges.length} edges
+                {reactFlowNodes.length} nodes, {reactFlowEdges.length} edges
               </div>
             </Panel>
           </ReactFlow>
