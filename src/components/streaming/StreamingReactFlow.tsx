@@ -1,13 +1,9 @@
-import React, { useMemo, useEffect, useCallback, useRef } from 'react';
+import React, { useMemo, useCallback, useEffect, useRef } from 'react';
 import {
   ReactFlow,
-  Node,
-  Edge,
   Background,
   Controls,
   Panel,
-  useNodesState,
-  useEdgesState,
   ConnectionMode,
   MarkerType,
   Handle,
@@ -31,30 +27,9 @@ import {
   Lock,
   BarChart3,
   Webhook,
-  GitBranch,
-  AlertTriangle,
-  DollarSign,
-  Clock,
-  TrendingUp,
 } from 'lucide-react';
+import { DiagramShape, DiagramArrow } from '../../types';
 
-interface NodeData {
-  id: string;
-  type: string;
-  name: string;
-  subtitle?: string;
-  position: { x: number; y: number };
-  color: string;
-}
-
-interface EdgeData {
-  id: string;
-  from: string;
-  to: string;
-  label?: string;
-  color: string;
-  style: 'solid' | 'dashed';
-}
 
 interface StreamingReactFlowProps {
   title: string;
@@ -67,7 +42,7 @@ interface StreamingReactFlowProps {
 }
 
 // Actor/User Node (Circle) - matches DiagramCanvas.tsx
-const ActorNode = ({ data }: { data: any }) => {
+const ActorNode = ({ data }: { data: { label: string; variant: string; subtitle?: string } }) => {
   const isCloudflare = data.variant === 'cloudflare';
   
   return (
@@ -89,7 +64,7 @@ const ActorNode = ({ data }: { data: any }) => {
 };
 
 // Process/Service Node (Rectangle) - matches DiagramCanvas.tsx  
-const ProcessNode = ({ data }: { data: any }) => {
+const ProcessNode = ({ data }: { data: { label: string; type: string; variant: string; subtitle?: string } }) => {
   const getIcon = (type: string) => {
     const iconMap = {
       'cdn': Globe,
@@ -148,7 +123,7 @@ const ProcessNode = ({ data }: { data: any }) => {
 };
 
 // Database Node (Cylinder shape) - matches DiagramCanvas.tsx
-const DatabaseNode = ({ data }: { data: any }) => {
+const DatabaseNode = ({ data }: { data: { label: string; variant: string; subtitle?: string } }) => {
   const isCloudflare = data.variant === 'cloudflare';
   
   return (
@@ -183,7 +158,7 @@ const DatabaseNode = ({ data }: { data: any }) => {
 };
 
 // Decision Node (Diamond shape)
-const DecisionNode = ({ data }: { data: any }) => {
+const DecisionNode = ({ data }: { data: { label: string; variant: string } }) => {
   const isCloudflare = data.variant === 'cloudflare';
   
   return (
@@ -207,7 +182,7 @@ const DecisionNode = ({ data }: { data: any }) => {
 };
 
 // Storage Node (Hexagon-like shape)
-const StorageNode = ({ data }: { data: any }) => {
+const StorageNode = ({ data }: { data: { label: string; variant: string; subtitle?: string } }) => {
   const isCloudflare = data.variant === 'cloudflare';
   
   return (
@@ -241,13 +216,15 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
   isDarkMode,
   competitorName
 }) => {
-  // Don't use internal state, pass data directly to ReactFlow
+  console.log('🎯 StreamingReactFlow render:', title, 'nodes:', nodeData.length, 'edges:', edgeData.length);
+  const reactFlowInstanceRef = useRef<ReactFlowInstance | null>(null);
   const onNodesChange = useCallback(() => {}, []);
   const onEdgesChange = useCallback(() => {}, []);
 
   // Convert node data to React Flow format - SAME LOGIC AS NON-STREAMING
   const reactFlowNodes = useMemo(() => {
-    const nodes = nodeData.map((node, index) => {
+    console.log('🔄 Converting', nodeData.length, 'nodes to ReactFlow format');
+    const nodes = nodeData.map((node) => {
       // Map node types to ReactFlow node types (same as DiagramCanvas.tsx)
       let nodeType = 'process'; // default
       
@@ -263,7 +240,7 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
         nodeType = 'process'; // services, workers, functions, etc.
       }
 
-      return {
+      const reactFlowNode = {
         id: node.id,
         type: nodeType,
         position: node.position,
@@ -275,6 +252,8 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
         },
         draggable: false,
       };
+      console.log('📍 Created ReactFlow node:', reactFlowNode.id, reactFlowNode.type);
+      return reactFlowNode;
     });
     return nodes;
   }, [nodeData, variant]);
@@ -315,11 +294,27 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
         },
       };
     });
-  }, [edgeData, variant, nodeData.length, isDarkMode]);
+  }, [edgeData, variant, nodeData.length, isDarkMode, nodeData]);
 
-  // No need to manage state separately, React Flow will handle it
-
-  // Remove manual fitView management - let ReactFlow handle it via props
+  // Dynamic viewport fitting for streaming using ref
+  useEffect(() => {
+    console.log('🔍 useEffect triggered - nodes:', reactFlowNodes.length, 'instance:', !!reactFlowInstanceRef.current);
+    if (reactFlowNodes.length > 0 && reactFlowInstanceRef.current) {
+      const timer = setTimeout(() => {
+        try {
+          console.log('📐 Calling fitView with', reactFlowNodes.length, 'nodes');
+          reactFlowInstanceRef.current?.fitView({ 
+            padding: 0.2, 
+            duration: 300 
+          });
+          console.log('✅ fitView called successfully');
+        } catch (error) {
+          console.warn('❌ fitView failed:', error);
+        }
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [nodeData.length]);
 
   const nodeTypes = useMemo(() => ({
     actor: ActorNode,
@@ -381,8 +376,12 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
             onEdgesChange={onEdgesChange}
             nodeTypes={nodeTypes}
             connectionMode={ConnectionMode.Loose}
-            fitView
-            fitViewOptions={{ padding: 0.15, duration: 400, minZoom: 0.3, maxZoom: 1.2 }}
+            onInit={(instance) => {
+              reactFlowInstanceRef.current = instance;
+              console.log('🚀 ReactFlow initialized with', reactFlowNodes.length, 'nodes');
+              // Initial fit
+              instance.fitView({ padding: 0.2 });
+            }}
             minZoom={0.5}
             maxZoom={2}
             defaultViewport={{ x: 0, y: 0, zoom: 1 }}
@@ -429,4 +428,5 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
     </div>
   );
 };
+
 
