@@ -1,0 +1,21 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "vibetoprod"
+compatibility_date = "2024-07-29"
+pages_build_output_dir = "dist"
+
+[env.production.vars]
+ENVIRONMENT = "production"
+
+[env.development.vars]
+ENVIRONMENT = "development"
+
+[[env.production.kv_namespaces]]
+binding = "KV"
+id = "your-kv-namespace-id"
+
+[[env.development.kv_namespaces]]
+binding = "KV"
+id = "your-dev-kv-namespace-id"
+
+# For local development, you can use:
+# wrangler pages dev dist --compatibility-date=2024-07-29

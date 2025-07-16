@@ -4,6 +4,7 @@ import { ControlPanel } from './components/ControlPanel';
 import { DiagramCanvas } from './components/DiagramCanvas';
 import { AdvantagesPanel } from './components/AdvantagesPanel';
 import { CompetitiveLandscape } from './components/CompetitiveLandscape';
+import { StreamingArchitectureDemo } from './components/streaming/StreamingArchitectureDemo';
 import { generateArchitecture } from './services/architectureService';
 import { UserInput, ArchitectureResponse } from './types';
 
@@ -78,6 +79,9 @@ function App() {
 
   const theme = getPersonaTheme(currentPersona);
 
+  // Feature flag for streaming
+  const useStreaming = window.location.search.includes('streaming=true');
+
   return (
     <div className={`min-h-screen ${theme.pageBackground}`}>
       {/* Header */}
@@ -136,69 +140,79 @@ function App() {
 
       {/* Main Content */}
       <main className="space-y-0">
-        {/* Control Panel */}
-        <section className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} py-12`}>
-          <div className="px-8">
-            <ControlPanel onGenerate={handleGenerate} loading={loading} onPersonaChange={handlePersonaChange} isDarkMode={isDarkMode} currentPersona={currentPersona} />
-          </div>
-        </section>
-
-        {/* Results Section */}
-        {(response || loading) && (
-          <section className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} py-12 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-            <div className="px-8 space-y-8">
-              {/* Section Header */}
-              <div className="text-center">
-                <h2 className={`text-2xl font-bold mb-2 ${
-                  isDarkMode ? 'text-white' : 'text-gray-900'
-                }`}>
-                  Architecture Comparison
-                </h2>
-                <p className={`text-base ${
-                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                }`}>
-                  See how Cloudflare stacks up against traditional solutions
-                </p>
+        {useStreaming ? (
+          <StreamingArchitectureDemo
+            isDarkMode={isDarkMode}
+            currentPersona={currentPersona}
+            onPersonaChange={handlePersonaChange}
+          />
+        ) : (
+          <>
+            {/* Control Panel */}
+            <section className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} py-12`}>
+              <div className="px-8">
+                <ControlPanel onGenerate={handleGenerate} loading={loading} onPersonaChange={handlePersonaChange} isDarkMode={isDarkMode} currentPersona={currentPersona} />
               </div>
+            </section>
 
-              {/* Diagrams Side by Side */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <DiagramCanvas
-                  title="Cloudflare Architecture"
-                  data={response?.cloudflare || null}
-                  loading={loading}
-                  variant="cloudflare"
-                  isDarkMode={isDarkMode}
-                />
-                <DiagramCanvas
-                  title="Traditional Architecture"
-                  data={response?.competitor || null}
-                  loading={loading}
-                  variant="competitor"
-                  isDarkMode={isDarkMode}
-                />
-              </div>
+            {/* Results Section */}
+            {(response || loading) && (
+              <section className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} py-12 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                <div className="px-8 space-y-8">
+                  {/* Section Header */}
+                  <div className="text-center">
+                    <h2 className={`text-2xl font-bold mb-2 ${
+                      isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}>
+                      Architecture Comparison
+                    </h2>
+                    <p className={`text-base ${
+                      isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                    }`}>
+                      See how Cloudflare stacks up against traditional solutions
+                    </p>
+                  </div>
 
-              {/* Why Cloudflare Section */}
-            </div>
-          </section>
-        )}
+                  {/* Diagrams Side by Side */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <DiagramCanvas
+                      title="Cloudflare Architecture"
+                      data={response?.cloudflare || null}
+                      loading={loading}
+                      variant="cloudflare"
+                      isDarkMode={isDarkMode}
+                    />
+                    <DiagramCanvas
+                      title="Traditional Architecture"
+                      data={response?.competitor || null}
+                      loading={loading}
+                      variant="competitor"
+                      isDarkMode={isDarkMode}
+                    />
+                  </div>
 
-        {/* Why Cloudflare Section */}
-        {(response || loading) && (
-          <section className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} py-12 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-            <div className="px-8">
-              <AdvantagesPanel 
-                advantages={response?.advantages || []} 
-                loading={loading} 
-                persona={currentPersona}
-                isDarkMode={isDarkMode}
-                constraints={currentInput?.constraints || []}
-                appDescription={currentInput?.appDescription || ""}
-                competitor={currentInput?.competitors[0] || "AWS"}
-              />
-            </div>
-          </section>
+                  {/* Why Cloudflare Section */}
+                </div>
+              </section>
+            )}
+
+            {/* Why Cloudflare Section */}
+            {(response || loading) && (
+              <section className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} py-12 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                <div className="px-8">
+                  <AdvantagesPanel 
+                    advantages={response?.advantages || []} 
+                    loading={loading} 
+                    persona={currentPersona}
+                    isDarkMode={isDarkMode}
+                    constraints={currentInput?.constraints || []}
+                    appDescription={currentInput?.appDescription || ""}
+                    competitor={currentInput?.competitors[0] || "AWS"}
+                  />
+                </div>
+              </section>
+            )}
+          </>
         )}
       </main>
 
