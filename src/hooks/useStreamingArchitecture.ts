@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { UserInput } from '../types';
+import { UserInput, DiagramNode, DiagramEdge } from '../types';
 // Removed mock API import - using real Hono backend
 
 interface StreamingChunk {
@@ -9,23 +9,9 @@ interface StreamingChunk {
   timestamp: number;
 }
 
-interface NodeData {
-  id: string;
-  type: string;
-  name: string;
-  subtitle?: string;
-  position: { x: number; y: number };
-  color: string;
-}
-
-interface EdgeData {
-  id: string;
-  from: string;
-  to: string;
-  label?: string;
-  color: string;
-  style: 'solid' | 'dashed';
-}
+// Use existing types from the main application
+type NodeData = DiagramNode;
+type EdgeData = DiagramEdge;
 
 interface StreamingState {
   cloudflareNodes: NodeData[];
