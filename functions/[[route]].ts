@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import { handle } from 'hono/cloudflare-pages';
 
 // Mock architecture data with both Cloudflare and competitor structures
 const mockArchitectureData = {
@@ -299,6 +298,24 @@ app.get('/api/health', (c) => {
     timestamp: new Date().toISOString(),
     service: 'hono-streaming-api'
   });
+});
+
+// Fallback to index.html for client-side routing (static assets handled by wrangler.toml)
+app.get('*', (c) => {
+  return c.html(`<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vibe to Prod: The APAC Edge Blueprint</title>
+    <script type="module" crossorigin src="/assets/index-BTOYLb-T.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DM-siCN2.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>`);
 });
 
 export default app;
