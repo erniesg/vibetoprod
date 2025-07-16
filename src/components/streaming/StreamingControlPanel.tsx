@@ -56,137 +56,129 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
     });
   };
 
+  const handleCompetitorSelect = (competitor: UserInput['competitors'][0]) => {
+    setFormData(prev => ({
+      ...prev,
+      competitors: [competitor]
+    }));
+  };
+
+  const toggleConstraint = (constraint: string) => {
+    setFormData(prev => ({
+      ...prev,
+      constraints: prev.constraints.includes(constraint)
+        ? prev.constraints.filter(c => c !== constraint)
+        : [...prev.constraints, constraint]
+    }));
+  };
+
+  const handlePersonaSelect = (persona: UserInput['persona']) => {
+    setFormData(prev => ({ ...prev, persona }));
+    onPersonaChange(persona);
+  };
+
   return (
-    <div className={`rounded-2xl shadow-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-      <div className="p-8">
-        <div className="text-center mb-8">
-          <h2 className={`text-3xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            Build Your Architecture
-          </h2>
-          <p className={`text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            Watch your architecture stream in real-time as AI generates the optimal Cloudflare solution
-          </p>
+    <div className="space-y-8 w-full">
+      <div className="text-center">
+        <h2 className={`text-3xl font-bold mb-2 ${
+          isDarkMode ? 'text-white' : 'text-gray-900'
+        }`}>
+          Build Your Architecture
+        </h2>
+        <p className={`text-base ${
+          isDarkMode ? 'text-gray-200' : 'text-gray-700'
+        }`}>
+          Tell us about your project and we'll design the perfect Cloudflare solution
+        </p>
+      </div>
+
+      <PersonaSelector
+        selected={formData.persona}
+        onSelect={handlePersonaSelect}
+        isDarkMode={isDarkMode}
+      />
+
+      <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Select
+            label="Target Region"
+            options={regionOptions}
+            value={formData.region}
+            onChange={(value) => setFormData(prev => ({ ...prev, region: value }))}
+            isDarkMode={isDarkMode}
+          />
+
+          <CompetitorSelector
+            label="Compare Against"
+            selected={formData.competitors}
+            onSelect={handleCompetitorSelect}
+            isDarkMode={isDarkMode}
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Persona Selector */}
-          <div>
-            <label className={`block text-sm font-semibold mb-3 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-              Who are you building for?
-            </label>
-            <PersonaSelector
-              selected={formData.persona}
-              onChange={(persona) => {
-                setFormData(prev => ({ ...prev, persona }));
-                onPersonaChange(persona);
-              }}
+        <div>
+          <label className={`block text-lg font-semibold mb-3 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+            Describe your application
+          </label>
+          <textarea
+            data-testid="app-description"
+            value={formData.appDescription}
+            onChange={(e) => setFormData(prev => ({ ...prev, appDescription: e.target.value }))}
+            placeholder="e.g., A real-time chat application with AI-powered responses and file sharing capabilities"
+            className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 ${
+              isDarkMode 
+                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-orange-500 focus:bg-gray-600' 
+                : 'bg-white border-gray-200 text-gray-900 placeholder-gray-500 focus:border-orange-500 focus:bg-gray-50'
+            }`}
+            rows={4}
+            required
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className={`flex items-center justify-between w-full px-4 py-3 rounded-xl border transition-all duration-200 ${
+            isDarkMode 
+              ? 'bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600' 
+              : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          <span className="font-medium">Advanced Options</span>
+          {showAdvanced ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+        </button>
+
+        {showAdvanced && (
+          <div className="space-y-6 pt-2">
+            <ScaleSelector
+              label="Expected Scale"
+              selected={formData.scale}
+              onChange={(scale) => setFormData(prev => ({ ...prev, scale }))}
+              isDarkMode={isDarkMode}
+            />
+
+            <ConstraintsSelector
+              label="Key Constraints"
+              maxSelections={formData.maxConstraints}
+              selected={formData.constraints}
+              onToggle={toggleConstraint}
               isDarkMode={isDarkMode}
             />
           </div>
+        )}
 
-          {/* Region and App Description Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className={`block text-sm font-semibold mb-3 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                Primary region
-              </label>
-              <Select
-                value={formData.region}
-                onChange={(region) => setFormData(prev => ({ ...prev, region }))}
-                options={regionOptions}
-                placeholder="Select region"
-                isDarkMode={isDarkMode}
-              />
-            </div>
-
-            <div>
-              <label className={`block text-sm font-semibold mb-3 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                Scale
-              </label>
-              <ScaleSelector
-                selected={formData.scale}
-                onChange={(scale) => setFormData(prev => ({ ...prev, scale }))}
-                isDarkMode={isDarkMode}
-              />
-            </div>
-          </div>
-
-          {/* App Description */}
-          <div>
-            <label className={`block text-sm font-semibold mb-3 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-              Describe your application
-            </label>
-            <textarea
-              data-testid="app-description"
-              value={formData.appDescription}
-              onChange={(e) => setFormData(prev => ({ ...prev, appDescription: e.target.value }))}
-              placeholder="e.g., A real-time chat application for remote teams with file sharing and AI-powered message summaries"
-              className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 ${
-                isDarkMode 
-                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-orange-500 focus:bg-gray-600' 
-                  : 'bg-white border-gray-200 text-gray-900 placeholder-gray-500 focus:border-orange-500 focus:bg-gray-50'
-              }`}
-              rows={3}
-              required
-            />
-          </div>
-
-          {/* Advanced Options Toggle */}
-          <button
-            type="button"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className={`flex items-center justify-between w-full px-4 py-3 rounded-xl border transition-all duration-200 ${
-              isDarkMode 
-                ? 'bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600' 
-                : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
-            }`}
+        <div className="pt-4">
+          <Button
+            type="submit"
+            disabled={!formData.appDescription.trim() || loading}
+            loading={loading}
+            className="w-full"
+            data-testid="generate"
           >
-            <span className="font-medium">Advanced Options</span>
-            {showAdvanced ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-          </button>
-
-          {/* Advanced Options */}
-          {showAdvanced && (
-            <div className="space-y-6 pt-2">
-              <div>
-                <label className={`block text-sm font-semibold mb-3 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                  Compare against
-                </label>
-                <CompetitorSelector
-                  selected={formData.competitors}
-                  onChange={(competitors) => setFormData(prev => ({ ...prev, competitors }))}
-                  isDarkMode={isDarkMode}
-                />
-              </div>
-
-              <div>
-                <label className={`block text-sm font-semibold mb-3 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                  Technical constraints (choose up to 3)
-                </label>
-                <ConstraintsSelector
-                  selected={formData.constraints}
-                  onChange={(constraints) => setFormData(prev => ({ ...prev, constraints }))}
-                  maxSelections={formData.maxConstraints}
-                  isDarkMode={isDarkMode}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Generate Button */}
-          <div className="pt-4">
-            <Button
-              type="submit"
-              disabled={!formData.appDescription.trim() || loading}
-              loading={loading}
-              className="w-full"
-              data-testid="generate"
-            >
-              {loading ? 'Streaming Architecture...' : 'Generate Architecture'}
-            </Button>
-          </div>
-        </form>
-      </div>
+            {loading ? 'Generating...' : 'Architect My App'}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };

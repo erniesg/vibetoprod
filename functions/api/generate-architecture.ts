@@ -1,6 +1,4 @@
-import { Hono } from 'hono';
-import { stream } from 'hono/streaming';
-import { cors } from 'hono/cors';
+// Cloudflare Pages Function for streaming architecture generation
 import OpenAI from 'openai';
 
 interface Env {
@@ -15,22 +13,6 @@ interface UserInput {
   scale: 'Startup' | 'Growth' | 'Enterprise' | 'Global';
   constraints: string[];
 }
-
-interface StreamingChunk {
-  type: 'node' | 'edge' | 'advantage' | 'value_prop' | 'complete';
-  platform: 'cloudflare' | 'competitor';
-  data: any;
-  timestamp: number;
-}
-
-const app = new Hono<{ Bindings: Env }>();
-
-// CORS middleware
-app.use('*', cors({
-  origin: '*',
-  allowMethods: ['GET', 'POST', 'OPTIONS'],
-  allowHeaders: ['Content-Type'],
-}));
 
 // Language detection based on region
 function getLanguage(region: string): string {
@@ -95,12 +77,32 @@ Generate responses in ${language} where appropriate for descriptions.
 Start streaming the architecture now:`;
 }
 
-app.post('/generate-architecture', async (c) => {
+export async function onRequestPost(context: { request: Request; env: Env }): Promise<Response> {
+  const { request, env } = context;
+
+  // Handle CORS
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
+
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   try {
-    const userInput: UserInput = await c.req.json();
+    const userInput: UserInput = await request.json();
     
+    if (!env.OPENAI_API_KEY) {
+      return new Response(JSON.stringify({ error: 'OpenAI API key not configured' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders }
+      });
+    }
+
     const openai = new OpenAI({
-      apiKey: c.env.OPENAI_API_KEY,
+      apiKey: env.OPENAI_API_KEY,
     });
 
     const prompt = generateArchitecturePrompt(userInput);
@@ -112,63 +114,84 @@ app.post('/generate-architecture', async (c) => {
       temperature: 0.7,
     });
 
-    return stream(c, async (stream) => {
-      try {
-        let buffer = '';
-        
-        for await (const chunk of chatStream) {
-          const content = chunk.choices[0]?.delta?.content || '';
-          buffer += content;
+    // Create streaming response
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          let buffer = '';
           
-          // Look for complete JSON lines
-          const lines = buffer.split('\n');
-          buffer = lines.pop() || ''; // Keep incomplete line
-          
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
-              try {
-                // Validate JSON
-                JSON.parse(trimmed);
-                await stream.write(`data: ${trimmed}\n\n`);
-              } catch (e) {
-                // Skip invalid JSON
-                console.warn('Invalid JSON chunk:', trimmed);
+          for await (const chunk of chatStream) {
+            const content = chunk.choices[0]?.delta?.content || '';
+            buffer += content;
+            
+            // Look for complete JSON lines
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || ''; // Keep incomplete line
+            
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+                try {
+                  // Validate JSON
+                  JSON.parse(trimmed);
+                  controller.enqueue(encoder.encode(`data: ${trimmed}\n\n`));
+                } catch (e) {
+                  // Skip invalid JSON
+                  console.warn('Invalid JSON chunk:', trimmed);
+                }
               }
             }
           }
+          
+          // Ensure completion marker
+          const completionChunk = {
+            type: 'complete',
+            platform: 'cloudflare',
+            data: 'Architecture generation complete',
+            timestamp: Date.now()
+          };
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(completionChunk)}\n\n`));
+          controller.close();
+          
+        } catch (error) {
+          console.error('Streaming error:', error);
+          const errorChunk = {
+            type: 'error',
+            platform: 'cloudflare',
+            data: 'Error generating architecture',
+            timestamp: Date.now()
+          };
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(errorChunk)}\n\n`));
+          controller.close();
         }
-        
-        // Ensure completion marker
-        const completionChunk = {
-          type: 'complete',
-          platform: 'cloudflare',
-          data: 'Architecture generation complete',
-          timestamp: Date.now()
-        };
-        await stream.write(`data: ${JSON.stringify(completionChunk)}\n\n`);
-        
-      } catch (error) {
-        console.error('Streaming error:', error);
-        const errorChunk = {
-          type: 'error',
-          platform: 'cloudflare',
-          data: 'Error generating architecture',
-          timestamp: Date.now()
-        };
-        await stream.write(`data: ${JSON.stringify(errorChunk)}\n\n`);
-      }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        ...corsHeaders,
+      },
     });
 
   } catch (error) {
     console.error('API error:', error);
-    return c.json({ error: 'Failed to generate architecture' }, 500);
+    return new Response(JSON.stringify({ error: 'Failed to generate architecture' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
   }
-});
+}
 
 // Health check endpoint
-app.get('/health', (c) => {
-  return c.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
-export default app;
+export async function onRequestGet(): Promise<Response> {
+  return new Response(JSON.stringify({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString() 
+  }), {
+    headers: { 'Content-Type': 'application/json' }
+  });
+}

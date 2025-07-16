@@ -59,66 +59,121 @@ interface StreamingReactFlowProps {
   competitorName?: string;
 }
 
-// Custom node component with animations
-const CustomNode = ({ data, selected }: any) => {
-  const iconMap: Record<string, any> = {
-    users: Users,
-    mobile: Smartphone,
-    web: Monitor,
-    pages: Globe,
-    workers: Cpu,
-    'd1': Database,
-    'kv': HardDrive,
-    'r2': HardDrive,
-    'durable-objects': Network,
-    analytics: BarChart3,
-    stream: Zap,
-    images: GitBranch,
-    webhooks: Webhook,
-    clients: Users,
-    cdn: Cloud,
-    service: Server,
-    database: Database,
-    function: Zap,
+// Actor/User Node (Circle) - matches DiagramCanvas.tsx
+const ActorNode = ({ data }: { data: any }) => {
+  const isCloudflare = data.variant === 'cloudflare';
+  
+  return (
+    <div className={`relative w-24 h-24 rounded-full border-2 flex flex-col items-center justify-center shadow-lg animate-fade-in-scale ${
+      isCloudflare 
+        ? 'bg-blue-500 border-blue-400 text-white' 
+        : 'bg-gray-500 border-gray-400 text-white'
+    }`} data-testid="diagram-node">
+      <Users className="w-6 h-6 mb-1" />
+      <div className="text-xs font-semibold text-center leading-tight">{data.name}</div>
+      {data.subtitle && <div className="text-xs opacity-80">{data.subtitle}</div>}
+    </div>
+  );
+};
+
+// Process/Service Node (Rectangle) - matches DiagramCanvas.tsx  
+const ProcessNode = ({ data }: { data: any }) => {
+  const getIcon = (type: string) => {
+    const iconMap = {
+      'cdn': Globe,
+      'workers': Zap,
+      'pages': Monitor,
+      'r2': HardDrive,
+      'd1': Database,
+      'analytics': BarChart3,
+      'security': Shield,
+      'kv': Database,
+      'durable-objects': Cpu,
+      'stream': Smartphone,
+      'images': Monitor,
+      'turnstile': Lock,
+      'webhooks': Webhook,
+      'load-balancer': Network,
+      'api': Server,
+      'cache': Database,
+      'storage': HardDrive,
+      'compute': Server,
+      'function': Zap,
+      'service': Server,
+      'lambda': Zap,
+      'ec2': Server,
+      'ecs': Server,
+      'cloudfront': Globe,
+      'alb': Network,
+      'mobile': Smartphone,
+      'web': Monitor,
+      'clients': Users,
+    };
+    return iconMap[type as keyof typeof iconMap] || Server;
   };
 
-  const IconComponent = iconMap[data.type] || Server;
+  const Icon = getIcon(data.type);
+  const isCloudflare = data.variant === 'cloudflare';
 
   return (
-    <div
-      className={`
-        px-4 py-3 shadow-lg rounded-xl border-2 transition-all duration-500 ease-out
-        transform hover:scale-105 cursor-pointer
-        animate-fade-in-scale
-        ${selected ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}
-      `}
-      style={{
-        backgroundColor: data.color + '20',
-        borderColor: data.color,
-        minWidth: '120px',
-      }}
-      data-testid="diagram-node"
-    >
-      <div className="flex items-center space-x-3">
-        <div
-          className="p-2 rounded-lg"
-          style={{ backgroundColor: data.color }}
-        >
-          <IconComponent className="w-4 h-4 text-white" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-semibold text-sm text-gray-900 truncate">
-            {data.name}
-          </div>
-          {data.subtitle && (
-            <div className="text-xs text-gray-600 truncate">
-              {data.subtitle}
-            </div>
-          )}
+    <div className={`relative px-4 py-3 border-2 shadow-lg min-w-[140px] animate-fade-in-scale ${
+      isCloudflare 
+        ? 'bg-gradient-to-r from-orange-500 to-red-500 border-orange-400 text-white' 
+        : 'bg-gradient-to-r from-gray-500 to-gray-600 border-gray-400 text-white'
+    }`} data-testid="diagram-node">
+      <div className="flex flex-col items-center space-y-2">
+        <Icon className="w-6 h-6" />
+        <div className="text-sm font-semibold text-center leading-tight">{data.name}</div>
+        {data.subtitle && <div className="text-xs opacity-90 text-center">{data.subtitle}</div>}
+      </div>
+    </div>
+  );
+};
+
+// Database Node (Cylinder shape) - matches DiagramCanvas.tsx
+const DatabaseNode = ({ data }: { data: any }) => {
+  const isCloudflare = data.variant === 'cloudflare';
+  
+  return (
+    <div className="relative animate-fade-in-scale" data-testid="diagram-node">
+      <div className={`relative w-32 h-20 border-2 shadow-lg ${
+        isCloudflare 
+          ? 'bg-gradient-to-r from-green-500 to-emerald-500 border-green-400 text-white' 
+          : 'bg-gradient-to-r from-gray-600 to-gray-700 border-gray-500 text-white'
+      }`} style={{
+        borderRadius: '50px 50px 10px 10px',
+      }}>
+        {/* Top ellipse */}
+        <div className={`absolute -top-2 left-0 right-0 h-4 border-2 ${
+          isCloudflare ? 'bg-green-400 border-green-400' : 'bg-gray-500 border-gray-500'
+        }`} style={{
+          borderRadius: '50px',
+        }}></div>
+        
+        <div className="flex flex-col items-center justify-center h-full pt-2">
+          <Database className="w-5 h-5 mb-1" />
+          <div className="text-xs font-semibold text-center leading-tight">{data.name}</div>
+          {data.subtitle && <div className="text-xs opacity-90 text-center">{data.subtitle}</div>}
         </div>
       </div>
     </div>
   );
+};
+
+// Function to determine node type
+const getNodeComponent = (nodeType: string) => {
+  switch (nodeType) {
+    case 'users':
+    case 'clients':
+    case 'mobile':
+    case 'web':
+      return ActorNode;
+    case 'd1':
+    case 'database':
+      return DatabaseNode;
+    default:
+      return ProcessNode;
+  }
 };
 
 export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
@@ -135,16 +190,22 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
 
   // Convert node data to React Flow format
   const reactFlowNodes = useMemo(() => {
-    return nodeData.map((node, index) => ({
-      id: node.id,
-      type: 'custom',
-      position: node.position,
-      data: node,
-      style: {
-        animationDelay: `${index * 200}ms`,
-      },
-    }));
-  }, [nodeData]);
+    return nodeData.map((node, index) => {
+      const NodeComponent = getNodeComponent(node.type);
+      return {
+        id: node.id,
+        type: node.type, // Use specific type for proper node selection
+        position: node.position,
+        data: {
+          ...node,
+          variant: variant, // Add variant for styling
+        },
+        style: {
+          animationDelay: `${index * 200}ms`,
+        },
+      };
+    });
+  }, [nodeData, variant]);
 
   // Convert edge data to React Flow format
   const reactFlowEdges = useMemo(() => {
@@ -189,7 +250,26 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
   }, [reactFlowEdges, setEdges]);
 
   const nodeTypes = useMemo(() => ({
-    custom: CustomNode,
+    users: ActorNode,
+    clients: ActorNode,
+    mobile: ActorNode,
+    web: ActorNode,
+    'd1': DatabaseNode,
+    database: DatabaseNode,
+    default: ProcessNode,
+    // All other types use ProcessNode
+    pages: ProcessNode,
+    workers: ProcessNode,
+    cdn: ProcessNode,
+    r2: ProcessNode,
+    kv: ProcessNode,
+    'durable-objects': ProcessNode,
+    analytics: ProcessNode,
+    stream: ProcessNode,
+    images: ProcessNode,
+    webhooks: ProcessNode,
+    service: ProcessNode,
+    function: ProcessNode,
   }), []);
 
   const displayTitle = variant === 'competitor' && competitorName 
