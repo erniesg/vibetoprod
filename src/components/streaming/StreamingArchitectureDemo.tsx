@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { UserInput } from '../../types';
 import { StreamingControlPanel } from './StreamingControlPanel';
 import { StreamingReactFlow } from './StreamingReactFlow';
-import { StreamingAdvantages } from './StreamingAdvantages';
+import { AdvantagesPanel } from '../AdvantagesPanel';
 import { useStreamingArchitecture } from '../../hooks/useStreamingArchitecture';
 
 interface StreamingArchitectureDemoProps {
@@ -24,7 +24,7 @@ export const StreamingArchitectureDemo: React.FC<StreamingArchitectureDemoProps>
     cloudflareEdges,
     competitorEdges,
     advantages,
-    valueProps,
+    constraintValueProps,
     isStreaming,
     isComplete,
     error,
@@ -129,16 +129,17 @@ export const StreamingArchitectureDemo: React.FC<StreamingArchitectureDemoProps>
       {/* Advantages Section */}
       {(hasData || isStreaming) && (
         <section className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} py-12 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          <div className="px-8">
-            <StreamingAdvantages
+          <div className="px-8 max-w-5xl mx-auto">
+            <AdvantagesPanel
               advantages={advantages}
-              valueProps={valueProps}
-              isStreaming={isStreaming}
-              isDarkMode={isDarkMode}
+              loading={isStreaming && constraintValueProps.length === 0}
               persona={currentPersona}
+              isDarkMode={isDarkMode}
               constraints={currentInput?.constraints || []}
               appDescription={currentInput?.appDescription || ""}
               competitor={currentInput?.competitors[0] || "AWS"}
+              streamingMode={true}
+              constraintValueProps={constraintValueProps}
             />
           </div>
         </section>

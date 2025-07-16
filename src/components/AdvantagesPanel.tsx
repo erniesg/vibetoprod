@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, ArrowRight, DollarSign, Clock, Zap, Shield, Globe, Users, TrendingUp, Cpu } from 'lucide-react';
+import { CheckCircle, ArrowRight, DollarSign, Shield, Globe, Users, TrendingUp } from 'lucide-react';
 
 interface AdvantagesPanelProps {
   advantages: string[];
@@ -9,6 +9,13 @@ interface AdvantagesPanelProps {
   constraints: string[];
   appDescription: string;
   competitor: string;
+  streamingMode?: boolean;
+  constraintValueProps?: Array<{
+    icon: string;
+    emoji: string;
+    title: string;
+    description: string;
+  }>;
 }
 
 // Constraint icon mapping (consistent with ConstraintsSelector)
@@ -21,20 +28,20 @@ const constraintIcons = {
 };
 
 export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({ 
-  advantages, 
   loading, 
-  persona, 
   isDarkMode, 
   constraints,
   appDescription,
-  competitor
+  competitor,
+  streamingMode = false,
+  constraintValueProps = []
 }) => {
   
   // Generate dynamic value propositions based on constraints
   const generateConstraintValueProps = () => {
     const appType = detectAppType(appDescription);
     
-    return constraints.map((constraint, index) => {
+    return constraints.map((constraint) => {
       const iconData = constraintIcons[constraint as keyof typeof constraintIcons];
       const Icon = iconData?.icon || CheckCircle;
       
@@ -128,9 +135,13 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
     return 'webapp';
   };
 
-  const constraintValueProps = generateConstraintValueProps();
+  // In streaming mode, use the props passed in; otherwise generate them
+  const generatedValueProps = streamingMode ? constraintValueProps : generateConstraintValueProps();
+  
   // Always show advantages if we have constraints, otherwise show default message
-  const displayAdvantages = constraints.length > 0 ? constraintValueProps : [];
+  const displayAdvantages = streamingMode 
+    ? constraintValueProps 
+    : (constraints.length > 0 ? generatedValueProps : []);
 
   const getAdvantageColors = (index: number) => {
     const colorSets = [
@@ -221,11 +232,14 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
               const Icon = advantage.icon;
               
               return (
-                <div key={index} className={`flex items-start space-x-4 p-5 rounded-xl border transition-all shadow-sm ${
-                  isDarkMode 
-                    ? 'bg-gray-700 border-gray-600 hover:bg-gray-650' 
-                    : 'bg-white border-gray-200 hover:bg-gray-50'
-                }`}>
+                <div 
+                  key={index} 
+                  className={`flex items-start space-x-4 p-5 rounded-xl border transition-all shadow-sm ${
+                    isDarkMode 
+                      ? 'bg-gray-700 border-gray-600 hover:bg-gray-650' 
+                      : 'bg-white border-gray-200 hover:bg-gray-50'
+                  } ${streamingMode ? 'animate-slide-in' : ''}`}
+                  style={streamingMode ? { animationDelay: `${index * 200}ms` } : {}}>
                   <div className={`p-3 rounded-xl ${colors.iconBg} flex-shrink-0`}>
                     <div className={colors.text}>
                       <Icon className="w-8 h-8" />
@@ -267,6 +281,26 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
           </div>
         )}
       </div>
+      
+      {/* Custom CSS for streaming animations */}
+      {streamingMode && (
+        <style jsx>{`
+          @keyframes slide-in {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-slide-in {
+            animation: slide-in 0.6s ease-out forwards;
+            opacity: 0;
+          }
+        `}</style>
+      )}
     </div>
   );
 };

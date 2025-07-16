@@ -171,6 +171,113 @@ app.use('*', async (c, next) => {
 // Handle OPTIONS requests
 app.options('*', (c) => c.text('', 200));
 
+// Constraint icon mapping (consistent with ConstraintsSelector)
+const constraintIcons = {
+  'Cost Optimization': { icon: 'DollarSign', emoji: '💰' },
+  'Global Performance': { icon: 'Globe', emoji: '🌍' },
+  'Enterprise Security': { icon: 'Shield', emoji: '🔒' },
+  'Developer Velocity': { icon: 'Users', emoji: '👨‍💻' },
+  'Scalability': { icon: 'TrendingUp', emoji: '📈' }
+};
+
+// App type detection
+const detectAppType = (description: string): string => {
+  const desc = description.toLowerCase();
+  
+  if (desc.includes('game') || desc.includes('multiplayer')) return 'gaming';
+  if (desc.includes('social') || desc.includes('chat') || desc.includes('feed')) return 'social';
+  if (desc.includes('e-commerce') || desc.includes('shop') || desc.includes('store')) return 'ecommerce';
+  if (desc.includes('api') || desc.includes('backend')) return 'api';
+  if (desc.includes('real-time') || desc.includes('collaborative')) return 'realtime';
+  if (desc.includes('analytics') || desc.includes('dashboard')) return 'analytics';
+  
+  return 'webapp';
+};
+
+// Generate constraint-based advantages
+const generateConstraintValueProps = (constraints: string[], appDescription: string, competitor: string) => {
+  const appType = detectAppType(appDescription);
+  
+  return constraints.map((constraint) => {
+    const iconData = constraintIcons[constraint as keyof typeof constraintIcons];
+    
+    switch (constraint) {
+      case 'Cost Optimization':
+        return {
+          icon: iconData?.icon || 'CheckCircle',
+          emoji: '💰',
+          title: 'Dramatic Cost Reduction',
+          description: `Cost advantage: Cloudflare's $0 egress fees vs ${competitor}'s $0.09/GB means ${
+            appType === 'gaming' ? 'your multiplayer game saves $90,000 per TB of player data' :
+            appType === 'social' ? 'your social platform saves thousands on video streaming costs' :
+            appType === 'ecommerce' ? 'your e-commerce site eliminates data transfer fees entirely' :
+            'your application cuts infrastructure costs by 60-80%'
+          }, plus no idle server costs with true pay-per-use pricing.`
+        };
+        
+      case 'Developer Velocity':
+        return {
+          icon: iconData?.icon || 'CheckCircle',
+          emoji: '👨‍💻',
+          title: 'Code, Not Config',
+          description: `Developer experience: Cloudflare's integrated platform vs ${competitor}'s service juggling means ${
+            appType === 'gaming' ? 'you can push game updates and hotfixes instantly to all players worldwide' :
+            appType === 'social' ? 'you build features, not deployment pipelines' :
+            appType === 'api' ? 'you write business logic, not scaling configurations' :
+            'your developers spend 80% more time building features'
+          }, with TypeScript everywhere and zero DevOps overhead.`
+        };
+        
+      case 'Global Performance':
+        return {
+          icon: iconData?.icon || 'CheckCircle',
+          emoji: '🌍',
+          title: 'Sub-50ms Globally',
+          description: `Performance advantage: Cloudflare's <50ms global latency vs ${competitor}'s 200ms+ regional delays means ${
+            appType === 'gaming' ? 'players in Singapore, São Paulo, and Stockholm all get identical ultra-low latency' :
+            appType === 'social' ? 'users see real-time updates instantly, boosting engagement by 40%' :
+            appType === 'ecommerce' ? 'customers worldwide experience local-speed shopping, increasing conversions' :
+            'users experience consistently fast performance regardless of location'
+          }, with 300+ edge locations vs their handful of regions.`
+        };
+        
+      case 'Enterprise Security':
+        return {
+          icon: iconData?.icon || 'CheckCircle',
+          emoji: '🔒',
+          title: 'Security by Default',
+          description: `Security advantage: Cloudflare's built-in DDoS protection and WAF vs ${competitor}'s additional security services means ${
+            appType === 'gaming' ? 'your game servers are protected from attacks without performance impact' :
+            appType === 'ecommerce' ? 'customer data and transactions are secured by default with PCI compliance' :
+            appType === 'api' ? 'your APIs are protected from abuse and attacks automatically' :
+            'your application gets enterprise-grade security'
+          }, with zero additional configuration or licensing costs.`
+        };
+        
+      case 'Scalability':
+        return {
+          icon: iconData?.icon || 'CheckCircle',
+          emoji: '📈',
+          title: 'Auto-Scale to Infinity',
+          description: `Scaling advantage: Cloudflare's automatic scaling vs ${competitor}'s manual configuration means ${
+            appType === 'gaming' ? 'your game handles viral growth from 100 to 100,000 players seamlessly' :
+            appType === 'social' ? 'your platform scales from startup to unicorn without infrastructure rewrites' :
+            appType === 'ecommerce' ? 'your store handles Black Friday traffic spikes without crashes' :
+            'your application scales effortlessly from 1 user to 1 billion users'
+          }, with zero capacity planning or server provisioning required.`
+        };
+        
+      default:
+        return {
+          icon: 'CheckCircle',
+          emoji: '✨',
+          title: 'Cloudflare Advantage',
+          description: 'Cloudflare delivers superior performance and developer experience compared to traditional cloud providers.'
+        };
+    }
+  });
+};
+
 // Streaming API endpoint
 app.post('/api/generate-architecture', async (c) => {
   const userInput = await c.req.json();
@@ -180,6 +287,11 @@ app.post('/api/generate-architecture', async (c) => {
   const personaData = mockArchitectureData[persona] || mockArchitectureData['Vibe Coder'];
   const cloudflareData = personaData.cloudflare;
   const competitorData = personaData.competitor;
+  
+  // Generate constraint-based advantages if constraints are provided
+  const constraintValueProps = userInput.constraints && userInput.constraints.length > 0 
+    ? generateConstraintValueProps(userInput.constraints, userInput.appDescription || '', userInput.competitors?.[0] || 'AWS')
+    : [];
 
   // Create streaming response
   const stream = new ReadableStream({
@@ -240,25 +352,25 @@ app.post('/api/generate-architecture', async (c) => {
           index++;
           setTimeout(sendNext, 400);
         }
-        // Phase 5: Send advantages
-        else if (index < cloudflareData.nodes.length + cloudflareData.edges.length + competitorData.nodes.length + competitorData.edges.length + cloudflareData.advantages.length) {
+        // Phase 5: Send constraint-based value props (if any)
+        else if (constraintValueProps.length > 0 && index < cloudflareData.nodes.length + cloudflareData.edges.length + competitorData.nodes.length + competitorData.edges.length + constraintValueProps.length) {
+          const valuePropIndex = index - cloudflareData.nodes.length - cloudflareData.edges.length - competitorData.nodes.length - competitorData.edges.length;
+          sendChunk({
+            type: 'constraint_value_prop',
+            platform: 'cloudflare',
+            data: constraintValueProps[valuePropIndex],
+            timestamp: Date.now()
+          });
+          index++;
+          setTimeout(sendNext, 1200);
+        }
+        // Phase 6: Send generic advantages (fallback if no constraints)
+        else if (constraintValueProps.length === 0 && index < cloudflareData.nodes.length + cloudflareData.edges.length + competitorData.nodes.length + competitorData.edges.length + cloudflareData.advantages.length) {
           const advantageIndex = index - cloudflareData.nodes.length - cloudflareData.edges.length - competitorData.nodes.length - competitorData.edges.length;
           sendChunk({
             type: 'advantage',
             platform: 'cloudflare',
             data: cloudflareData.advantages[advantageIndex],
-            timestamp: Date.now()
-          });
-          index++;
-          setTimeout(sendNext, 1000);
-        } 
-        // Phase 6: Send value props
-        else if (index < cloudflareData.nodes.length + cloudflareData.edges.length + competitorData.nodes.length + competitorData.edges.length + cloudflareData.advantages.length + cloudflareData.valueProps.length) {
-          const valuePropIndex = index - cloudflareData.nodes.length - cloudflareData.edges.length - competitorData.nodes.length - competitorData.edges.length - cloudflareData.advantages.length;
-          sendChunk({
-            type: 'value_prop',
-            platform: 'cloudflare',
-            data: cloudflareData.valueProps[valuePropIndex],
             timestamp: Date.now()
           });
           index++;

@@ -3,10 +3,17 @@ import { UserInput, DiagramShape, DiagramArrow } from '../types';
 // Removed mock API import - using real Hono backend
 
 interface StreamingChunk {
-  type: 'node' | 'edge' | 'advantage' | 'value_prop' | 'complete';
+  type: 'node' | 'edge' | 'advantage' | 'value_prop' | 'constraint_value_prop' | 'complete';
   platform: 'cloudflare' | 'competitor';
   data: any;
   timestamp: number;
+}
+
+interface ConstraintValueProp {
+  icon: string;
+  emoji: string;
+  title: string;
+  description: string;
 }
 
 // Use existing types from the main application
@@ -20,6 +27,7 @@ interface StreamingState {
   competitorEdges: EdgeData[];
   advantages: string[];
   valueProps: string[];
+  constraintValueProps: ConstraintValueProp[];
   isStreaming: boolean;
   isComplete: boolean;
   error: string | null;
@@ -33,6 +41,7 @@ export function useStreamingArchitecture() {
     competitorEdges: [],
     advantages: [],
     valueProps: [],
+    constraintValueProps: [],
     isStreaming: false,
     isComplete: false,
     error: null,
@@ -47,6 +56,7 @@ export function useStreamingArchitecture() {
       competitorEdges: [],
       advantages: [],
       valueProps: [],
+      constraintValueProps: [],
       isStreaming: true,
       isComplete: false,
       error: null,
@@ -122,6 +132,10 @@ export function useStreamingArchitecture() {
                     newState.valueProps = [...prev.valueProps, chunk.data];
                     break;
 
+                  case 'constraint_value_prop':
+                    newState.constraintValueProps = [...prev.constraintValueProps, chunk.data];
+                    break;
+
                   case 'complete':
                     newState.isStreaming = false;
                     newState.isComplete = true;
@@ -156,6 +170,7 @@ export function useStreamingArchitecture() {
       competitorEdges: [],
       advantages: [],
       valueProps: [],
+      constraintValueProps: [],
       isStreaming: false,
       isComplete: false,
       error: null,

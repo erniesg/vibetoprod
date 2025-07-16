@@ -104,80 +104,84 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
             label="Target Region"
             options={regionOptions}
             value={formData.region}
-            onChange={(value) => setFormData(prev => ({ ...prev, region: value }))}
+            onChange={(e) => setFormData({ ...formData, region: e.target.value })}
             isDarkMode={isDarkMode}
           />
 
           <CompetitorSelector
-            label="Compare Against"
-            selected={formData.competitors}
+            selected={formData.competitors[0] || null}
             onSelect={handleCompetitorSelect}
             isDarkMode={isDarkMode}
           />
         </div>
 
-        <div>
-          <label className={`block text-lg font-semibold mb-3 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+        <div className="space-y-2">
+          <label className={`block text-sm font-medium mb-2 ${
+            isDarkMode ? 'text-white' : 'text-gray-900'
+          }`}>
             Describe your application
           </label>
-          <textarea
-            data-testid="app-description"
-            value={formData.appDescription}
-            onChange={(e) => setFormData(prev => ({ ...prev, appDescription: e.target.value }))}
-            placeholder="e.g., A real-time chat application with AI-powered responses and file sharing capabilities"
-            className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 ${
+          <input
+            type="text"
+            placeholder="e.g., A high-traffic e-commerce platform with real-time inventory..."
+            className={`w-full px-4 py-3 text-sm rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 ${
               isDarkMode 
-                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-orange-500 focus:bg-gray-600' 
-                : 'bg-white border-gray-200 text-gray-900 placeholder-gray-500 focus:border-orange-500 focus:bg-gray-50'
+                ? 'bg-gray-800 border-gray-600 text-white hover:border-gray-500 placeholder-gray-400'
+                : 'bg-white border-gray-300 text-gray-900 hover:border-gray-400 placeholder-gray-500'
             }`}
-            rows={4}
+            value={formData.appDescription}
+            onChange={(e) => setFormData({ ...formData, appDescription: e.target.value })}
             required
           />
         </div>
 
-        <button
-          type="button"
-          onClick={() => setShowAdvanced(!showAdvanced)}
-          className={`flex items-center justify-between w-full px-4 py-3 rounded-xl border transition-all duration-200 ${
-            isDarkMode 
-              ? 'bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600' 
-              : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
-          }`}
-        >
-          <span className="font-medium">Advanced Options</span>
-          {showAdvanced ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-        </button>
-
-        {showAdvanced && (
-          <div className="space-y-6 pt-2">
-            <ScaleSelector
-              label="Expected Scale"
-              selected={formData.scale}
-              onChange={(scale) => setFormData(prev => ({ ...prev, scale }))}
-              isDarkMode={isDarkMode}
-            />
-
-            <ConstraintsSelector
-              label="Key Constraints"
-              maxSelections={formData.maxConstraints}
-              selected={formData.constraints}
-              onToggle={toggleConstraint}
-              isDarkMode={isDarkMode}
-            />
-          </div>
-        )}
-
-        <div className="pt-4">
-          <Button
-            type="submit"
-            disabled={!formData.appDescription.trim() || loading}
-            loading={loading}
-            className="w-full"
-            data-testid="generate"
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className={`flex items-center space-x-2 text-sm font-medium transition-colors duration-200 ${
+              isDarkMode 
+                ? 'text-gray-200 hover:text-white'
+                : 'text-gray-700 hover:text-gray-900'
+            }`}
           >
-            {loading ? 'Generating...' : 'Architect My App'}
-          </Button>
+            {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            <span>Advanced Options</span>
+          </button>
+
+          {showAdvanced && (
+            <div className={`mt-4 space-y-6 p-6 border rounded-lg ${
+              isDarkMode 
+                ? 'bg-gray-800 border-gray-700'
+                : 'bg-gray-50 border-gray-200'
+            }`}>
+              <ScaleSelector
+                selected={formData.scale}
+                onSelect={(scale) => setFormData({ ...formData, scale })}
+                isDarkMode={isDarkMode}
+              />
+
+              <ConstraintsSelector
+                selected={formData.constraints}
+                onToggle={toggleConstraint}
+                maxConstraints={formData.maxConstraints}
+                isDarkMode={isDarkMode}
+              />
+            </div>
+          )}
         </div>
+
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          loading={loading}
+          disabled={!formData.appDescription.trim() || formData.competitors.length === 0}
+          className="w-full"
+          isDarkMode={isDarkMode}
+        >
+          {loading ? 'Generating Architecture...' : 'Architect My App'}
+        </Button>
       </form>
     </div>
   );
