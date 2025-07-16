@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useCallback } from 'react';
+import React, { useMemo, useEffect, useCallback, useRef } from 'react';
 import {
   ReactFlow,
   Node,
@@ -12,6 +12,7 @@ import {
   MarkerType,
   Handle,
   Position,
+  ReactFlowInstance,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { 
@@ -240,6 +241,8 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
   isDarkMode,
   competitorName
 }) => {
+  const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
+  
   // Don't use internal state, pass data directly to ReactFlow
   const onNodesChange = useCallback(() => {}, []);
   const onEdgesChange = useCallback(() => {}, []);
@@ -319,8 +322,22 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
 
   // No need to manage state separately, React Flow will handle it
 
-  // Fit view when nodes or edges change during streaming
-  // We'll handle this through the ReactFlow component's fitView prop and fitViewOptions
+  // Constantly update viewport as nodes/edges stream in
+  useEffect(() => {
+    // Auto-fit whenever we have content - simple!
+    if (reactFlowInstance.current && reactFlowNodes.length > 0) {
+      const timeoutId = setTimeout(() => {
+        reactFlowInstance.current?.fitView({
+          padding: 0.15,
+          duration: 400,
+          minZoom: 0.3,
+          maxZoom: 1.2
+        });
+      }, 100); // Small debounce to prevent excessive updates
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [reactFlowNodes.length, reactFlowEdges.length]);
 
   const nodeTypes = useMemo(() => ({
     actor: ActorNode,
@@ -382,21 +399,9 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
             onEdgesChange={onEdgesChange}
             nodeTypes={nodeTypes}
             connectionMode={ConnectionMode.Loose}
-            onInit={() => {
+            onInit={(instance) => {
+              reactFlowInstance.current = instance;
               console.log('🚀 ReactFlow initialized with nodes:', reactFlowNodes.length, 'edges:', reactFlowEdges.length);
-              console.log('🚀 ReactFlow nodes:', reactFlowNodes);
-              console.log('🚀 ReactFlow edges:', reactFlowEdges);
-              if (reactFlowEdges.length > 0) {
-                console.log('🔍 First edge details:', JSON.stringify(reactFlowEdges[0], null, 2));
-              }
-            }}
-            fitView={nodeData.length >= 2 || (nodeData.length >= 1 && edgeData.length >= 1)}
-            fitViewOptions={{
-              padding: 0.15,
-              includeHiddenNodes: false,
-              duration: 600,
-              minZoom: 0.3,
-              maxZoom: 1.2
             }}
             minZoom={0.5}
             maxZoom={2}
