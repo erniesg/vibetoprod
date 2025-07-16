@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { UserInput } from '../types';
-import { generateStreamingArchitecture } from '../api/mock-streaming';
+// Removed mock API import - using real Hono backend
 
 interface StreamingChunk {
   type: 'node' | 'edge' | 'advantage' | 'value_prop' | 'complete';
@@ -67,9 +67,24 @@ export function useStreamingArchitecture() {
     });
 
     try {
-      // Use mock streaming for local development
-      const stream = await generateStreamingArchitecture(userInput);
-      const reader = stream.getReader();
+      // Make request to Hono backend
+      const response = await fetch('/api/generate-architecture', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userInput),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      if (!response.body) {
+        throw new Error('No response body');
+      }
+
+      const reader = response.body.getReader();
 
       const decoder = new TextDecoder();
       let buffer = '';

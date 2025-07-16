@@ -3,7 +3,7 @@ import { UserInput } from '../../types';
 import { StreamingControlPanel } from './StreamingControlPanel';
 import { StreamingReactFlow } from './StreamingReactFlow';
 import { StreamingAdvantages } from './StreamingAdvantages';
-import { useStreamingArchitecture } from './useStreamingArchitecture';
+import { useStreamingArchitecture } from '../../hooks/useStreamingArchitecture';
 
 interface StreamingArchitectureDemoProps {
   isDarkMode: boolean;
@@ -20,7 +20,9 @@ export const StreamingArchitectureDemo: React.FC<StreamingArchitectureDemoProps>
   
   const {
     cloudflareNodes,
+    competitorNodes,
     cloudflareEdges,
+    competitorEdges,
     advantages,
     valueProps,
     isStreaming,
@@ -112,9 +114,9 @@ export const StreamingArchitectureDemo: React.FC<StreamingArchitectureDemoProps>
               />
               <StreamingReactFlow
                 title="Traditional Architecture"
-                nodes={[]} // TODO: Add competitor nodes
-                edges={[]} // TODO: Add competitor edges
-                isStreaming={false}
+                nodes={competitorNodes}
+                edges={competitorEdges}
+                isStreaming={isStreaming}
                 variant="competitor"
                 isDarkMode={isDarkMode}
                 competitorName={currentInput?.competitors[0] || 'AWS'}

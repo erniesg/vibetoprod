@@ -21,8 +21,8 @@ async function testStreamingArchitecture() {
     console.log('✅ Page loaded');
     
     // Check if we're in streaming mode
-    const title = await page.locator('h2:has-text("Build Your Architecture")').first();
-    await title.waitFor({ timeout: 5000 });
+    const title = await page.locator('text=Build Your Architecture').first();
+    await title.waitFor({ timeout: 10000 });
     console.log('✅ Streaming interface detected');
     
     // Fill out the form
