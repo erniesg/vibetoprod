@@ -10,6 +10,8 @@ import {
   useEdgesState,
   ConnectionMode,
   MarkerType,
+  Handle,
+  Position,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { 
@@ -29,6 +31,10 @@ import {
   BarChart3,
   Webhook,
   GitBranch,
+  AlertTriangle,
+  DollarSign,
+  Clock,
+  TrendingUp,
 } from 'lucide-react';
 
 interface NodeData {
@@ -69,8 +75,13 @@ const ActorNode = ({ data }: { data: any }) => {
         ? 'bg-blue-500 border-blue-400 text-white' 
         : 'bg-gray-500 border-gray-400 text-white'
     }`} data-testid="diagram-node">
+      <Handle type="target" position={Position.Top} className="w-3 h-3" />
+      <Handle type="source" position={Position.Bottom} className="w-3 h-3" />
+      <Handle type="source" position={Position.Right} className="w-3 h-3" />
+      <Handle type="source" position={Position.Left} className="w-3 h-3" />
+      
       <Users className="w-6 h-6 mb-1" />
-      <div className="text-xs font-semibold text-center leading-tight">{data.name}</div>
+      <div className="text-xs font-semibold text-center leading-tight">{data.label}</div>
       {data.subtitle && <div className="text-xs opacity-80">{data.subtitle}</div>}
     </div>
   );
@@ -121,9 +132,14 @@ const ProcessNode = ({ data }: { data: any }) => {
         ? 'bg-gradient-to-r from-orange-500 to-red-500 border-orange-400 text-white' 
         : 'bg-gradient-to-r from-gray-500 to-gray-600 border-gray-400 text-white'
     }`} data-testid="diagram-node">
+      <Handle type="target" position={Position.Top} className="w-3 h-3" />
+      <Handle type="target" position={Position.Left} className="w-3 h-3" />
+      <Handle type="source" position={Position.Bottom} className="w-3 h-3" />
+      <Handle type="source" position={Position.Right} className="w-3 h-3" />
+      
       <div className="flex flex-col items-center space-y-2">
         <Icon className="w-6 h-6" />
-        <div className="text-sm font-semibold text-center leading-tight">{data.name}</div>
+        <div className="text-sm font-semibold text-center leading-tight">{data.label}</div>
         {data.subtitle && <div className="text-xs opacity-90 text-center">{data.subtitle}</div>}
       </div>
     </div>
@@ -136,6 +152,11 @@ const DatabaseNode = ({ data }: { data: any }) => {
   
   return (
     <div className="relative animate-fade-in-scale" data-testid="diagram-node">
+      <Handle type="target" position={Position.Top} className="w-3 h-3" />
+      <Handle type="target" position={Position.Left} className="w-3 h-3" />
+      <Handle type="source" position={Position.Bottom} className="w-3 h-3" />
+      <Handle type="source" position={Position.Right} className="w-3 h-3" />
+      
       <div className={`relative w-32 h-20 border-2 shadow-lg ${
         isCloudflare 
           ? 'bg-gradient-to-r from-green-500 to-emerald-500 border-green-400 text-white' 
@@ -152,7 +173,7 @@ const DatabaseNode = ({ data }: { data: any }) => {
         
         <div className="flex flex-col items-center justify-center h-full pt-2">
           <Database className="w-5 h-5 mb-1" />
-          <div className="text-xs font-semibold text-center leading-tight">{data.name}</div>
+          <div className="text-xs font-semibold text-center leading-tight">{data.label}</div>
           {data.subtitle && <div className="text-xs opacity-90 text-center">{data.subtitle}</div>}
         </div>
       </div>
@@ -160,20 +181,54 @@ const DatabaseNode = ({ data }: { data: any }) => {
   );
 };
 
-// Function to determine node type
-const getNodeComponent = (nodeType: string) => {
-  switch (nodeType) {
-    case 'users':
-    case 'clients':
-    case 'mobile':
-    case 'web':
-      return ActorNode;
-    case 'd1':
-    case 'database':
-      return DatabaseNode;
-    default:
-      return ProcessNode;
-  }
+// Decision Node (Diamond shape)
+const DecisionNode = ({ data }: { data: any }) => {
+  const isCloudflare = data.variant === 'cloudflare';
+  
+  return (
+    <div className="relative">
+      <Handle type="target" position={Position.Top} className="w-3 h-3" />
+      <Handle type="source" position={Position.Bottom} className="w-3 h-3" />
+      <Handle type="source" position={Position.Left} className="w-3 h-3" />
+      <Handle type="source" position={Position.Right} className="w-3 h-3" />
+      
+      <div className={`w-28 h-28 border-2 transform rotate-45 shadow-lg flex items-center justify-center ${
+        isCloudflare 
+          ? 'bg-yellow-500 border-yellow-400' 
+          : 'bg-gray-500 border-gray-400'
+      }`}>
+        <div className="text-xs font-semibold text-center text-white transform -rotate-45 max-w-20 leading-tight">
+          {data.label}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Storage Node (Hexagon-like shape)
+const StorageNode = ({ data }: { data: any }) => {
+  const isCloudflare = data.variant === 'cloudflare';
+  
+  return (
+    <div className="relative">
+      <Handle type="target" position={Position.Top} className="w-3 h-3" />
+      <Handle type="target" position={Position.Left} className="w-3 h-3" />
+      <Handle type="source" position={Position.Bottom} className="w-3 h-3" />
+      <Handle type="source" position={Position.Right} className="w-3 h-3" />
+      
+      <div className={`relative w-32 h-16 border-2 shadow-lg flex flex-col items-center justify-center ${
+        isCloudflare 
+          ? 'bg-gradient-to-r from-purple-500 to-indigo-500 border-purple-400 text-white' 
+          : 'bg-gradient-to-r from-gray-600 to-gray-700 border-gray-500 text-white'
+      }`} style={{
+        clipPath: 'polygon(20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%, 0% 50%)',
+      }}>
+        <HardDrive className="w-5 h-5 mb-1" />
+        <div className="text-xs font-semibold text-center leading-tight">{data.label}</div>
+        {data.subtitle && <div className="text-xs opacity-90 text-center">{data.subtitle}</div>}
+      </div>
+    </div>
+  );
 };
 
 export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
@@ -189,40 +244,38 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
   const onNodesChange = useCallback(() => {}, []);
   const onEdgesChange = useCallback(() => {}, []);
 
-  // Convert node data to React Flow format
+  // Convert node data to React Flow format - SAME LOGIC AS NON-STREAMING
   const reactFlowNodes = useMemo(() => {
     const nodes = nodeData.map((node, index) => {
-      const NodeComponent = getNodeComponent(node.type);
+      // Map node types to ReactFlow node types (same as DiagramCanvas.tsx)
+      let nodeType = 'process'; // default
+      
+      if (node.type === 'users' || node.type === 'mobile' || node.type === 'web' || node.type === 'clients') {
+        nodeType = 'actor';
+      } else if (node.type === 'database' || node.type === 'd1' || node.type === 'sql' || node.type === 'rds') {
+        nodeType = 'database';
+      } else if (node.type === 'storage' || node.type === 'r2' || node.type === 's3' || node.type === 'kv') {
+        nodeType = 'storage';
+      } else if (node.name.toLowerCase().includes('decision') || node.name.toLowerCase().includes('route') || node.name.toLowerCase().includes('gateway')) {
+        nodeType = 'decision';
+      } else {
+        nodeType = 'process'; // services, workers, functions, etc.
+      }
+
       return {
         id: node.id,
-        type: 'default', // Use default type to test if custom types are the issue
+        type: nodeType,
         position: node.position,
         data: {
-          ...node,
-          variant: variant, // Add variant for styling
-          label: (
-            <div className="text-center">
-              <div className="font-semibold text-sm">{node.name}</div>
-              {node.subtitle && (
-                <div className="text-xs text-gray-600 mt-1">{node.subtitle}</div>
-              )}
-            </div>
-          ),
+          label: node.name,
+          type: node.type,
+          variant,
+          subtitle: node.subtitle,
         },
-        style: {
-          animationDelay: `${index * 200}ms`,
-          background: node.color,
-          color: 'white',
-          border: 'none',
-          borderRadius: '8px',
-          padding: '10px',
-          fontSize: '12px',
-          minWidth: '120px',
-          minHeight: '60px',
-        },
+        draggable: false,
       };
     });
-    console.log('🔧 Created ReactFlow nodes:', nodes.map(n => n.id));
+    console.log('🔧 Created ReactFlow nodes:', nodes.map(n => `${n.id}:${n.type}`));
     return nodes;
   }, [nodeData, variant]);
 
@@ -270,26 +323,11 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
   // We'll handle this through the ReactFlow component's fitView prop and fitViewOptions
 
   const nodeTypes = useMemo(() => ({
-    users: ActorNode,
-    clients: ActorNode,
-    mobile: ActorNode,
-    web: ActorNode,
-    'd1': DatabaseNode,
+    actor: ActorNode,
+    process: ProcessNode,
     database: DatabaseNode,
-    default: ProcessNode,
-    // All other types use ProcessNode
-    pages: ProcessNode,
-    workers: ProcessNode,
-    cdn: ProcessNode,
-    r2: ProcessNode,
-    kv: ProcessNode,
-    'durable-objects': ProcessNode,
-    analytics: ProcessNode,
-    stream: ProcessNode,
-    images: ProcessNode,
-    webhooks: ProcessNode,
-    service: ProcessNode,
-    function: ProcessNode,
+    decision: DecisionNode,
+    storage: StorageNode,
   }), []);
 
   const displayTitle = variant === 'competitor' && competitorName 
