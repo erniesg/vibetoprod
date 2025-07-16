@@ -51,8 +51,8 @@ interface EdgeData {
 
 interface StreamingReactFlowProps {
   title: string;
-  nodes: NodeData[];
-  edges: EdgeData[];
+  nodes: DiagramShape[];
+  edges: DiagramArrow[];
   isStreaming: boolean;
   variant: 'cloudflare' | 'competitor';
   isDarkMode: boolean;
@@ -249,6 +249,9 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
     setEdges(reactFlowEdges);
   }, [reactFlowEdges, setEdges]);
 
+  // Fit view when nodes or edges change during streaming
+  // We'll handle this through the ReactFlow component's fitView prop and fitViewOptions
+
   const nodeTypes = useMemo(() => ({
     users: ActorNode,
     clients: ActorNode,
@@ -324,10 +327,13 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
             onEdgesChange={onEdgesChange}
             nodeTypes={nodeTypes}
             connectionMode={ConnectionMode.Loose}
-            fitView
+            fitView={nodeData.length >= 2 || (nodeData.length >= 1 && edgeData.length >= 1)}
             fitViewOptions={{
-              padding: 0.2,
+              padding: 0.15,
               includeHiddenNodes: false,
+              duration: 600,
+              minZoom: 0.3,
+              maxZoom: 1.2
             }}
             minZoom={0.5}
             maxZoom={2}
@@ -375,3 +381,4 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
     </div>
   );
 };
+
