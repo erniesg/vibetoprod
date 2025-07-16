@@ -241,8 +241,6 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
   isDarkMode,
   competitorName
 }) => {
-  const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
-  
   // Don't use internal state, pass data directly to ReactFlow
   const onNodesChange = useCallback(() => {}, []);
   const onEdgesChange = useCallback(() => {}, []);
@@ -278,7 +276,6 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
         draggable: false,
       };
     });
-    console.log('🔧 Created ReactFlow nodes:', nodes.map(n => `${n.id}:${n.type}`));
     return nodes;
   }, [nodeData, variant]);
 
@@ -322,22 +319,7 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
 
   // No need to manage state separately, React Flow will handle it
 
-  // Constantly update viewport as nodes/edges stream in
-  useEffect(() => {
-    // Auto-fit whenever we have content - simple!
-    if (reactFlowInstance.current && reactFlowNodes.length > 0) {
-      const timeoutId = setTimeout(() => {
-        reactFlowInstance.current?.fitView({
-          padding: 0.15,
-          duration: 400,
-          minZoom: 0.3,
-          maxZoom: 1.2
-        });
-      }, 100); // Small debounce to prevent excessive updates
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [reactFlowNodes.length, reactFlowEdges.length]);
+  // Remove manual fitView management - let ReactFlow handle it via props
 
   const nodeTypes = useMemo(() => ({
     actor: ActorNode,
@@ -399,10 +381,8 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
             onEdgesChange={onEdgesChange}
             nodeTypes={nodeTypes}
             connectionMode={ConnectionMode.Loose}
-            onInit={(instance) => {
-              reactFlowInstance.current = instance;
-              console.log('🚀 ReactFlow initialized with nodes:', reactFlowNodes.length, 'edges:', reactFlowEdges.length);
-            }}
+            fitView
+            fitViewOptions={{ padding: 0.15, duration: 400, minZoom: 0.3, maxZoom: 1.2 }}
             minZoom={0.5}
             maxZoom={2}
             defaultViewport={{ x: 0, y: 0, zoom: 1 }}
