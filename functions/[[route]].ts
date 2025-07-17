@@ -281,6 +281,185 @@ const generateConstraintValueProps = (constraints: string[], appDescription: str
   });
 };
 
+// Real-time streaming function
+const createRealTimeStreamingResponse = async (c: any, userInput: any) => {
+  console.log('🚀 Creating real-time streaming response');
+  
+  const useAIGateway = c.env.CLOUDFLARE_ACCOUNT_ID && c.env.AI_GATEWAY_ID;
+  const openai = useAIGateway
+    ? new OpenAIService(c.env.OPENAI_API_KEY, {
+        accountId: c.env.CLOUDFLARE_ACCOUNT_ID,
+        gatewayId: c.env.AI_GATEWAY_ID
+      })
+    : new OpenAIService(c.env.OPENAI_API_KEY);
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      const encoder = new TextEncoder();
+      
+      function sendChunk(chunk: Record<string, unknown>) {
+        const line = `data: ${JSON.stringify(chunk)}\n\n`;
+        controller.enqueue(encoder.encode(line));
+      }
+
+      try {
+        // Phase 1: Generate and stream Cloudflare architecture
+        console.log('🔄 Generating Cloudflare architecture...');
+        const cloudflareArch = await openai.generateCloudflareArchitecture({
+          appDescription: userInput.appDescription,
+          persona: userInput.persona,
+          scale: userInput.scale || 'Startup',
+          constraints: userInput.constraints || [],
+          region: userInput.region || 'Global'
+        });
+
+        // Stream Cloudflare nodes
+        if (cloudflareArch.nodes) {
+          for (const node of cloudflareArch.nodes) {
+            sendChunk({
+              type: 'node',
+              platform: 'cloudflare',
+              data: node,
+              timestamp: Date.now()
+            });
+            await new Promise(resolve => setTimeout(resolve, 300));
+          }
+        }
+
+        // Stream Cloudflare edges
+        if (cloudflareArch.edges) {
+          for (const edge of cloudflareArch.edges) {
+            sendChunk({
+              type: 'edge',
+              platform: 'cloudflare',
+              data: edge,
+              timestamp: Date.now()
+            });
+            await new Promise(resolve => setTimeout(resolve, 200));
+          }
+        }
+
+        // Phase 2: Generate and stream competitor architecture
+        console.log('🔄 Generating competitor architecture...');
+        const competitorArch = await openai.generateCompetitorArchitecture({
+          competitor: userInput.competitors?.[0] || 'AWS',
+          appDescription: userInput.appDescription,
+          persona: userInput.persona,
+          scale: userInput.scale || 'Startup',
+          region: userInput.region || 'Global'
+        });
+
+        // Stream competitor nodes
+        if (competitorArch.nodes) {
+          for (const node of competitorArch.nodes) {
+            sendChunk({
+              type: 'node',
+              platform: 'competitor',
+              data: node,
+              timestamp: Date.now()
+            });
+            await new Promise(resolve => setTimeout(resolve, 200));
+          }
+        }
+
+        // Stream competitor edges
+        if (competitorArch.edges) {
+          for (const edge of competitorArch.edges) {
+            sendChunk({
+              type: 'edge',
+              platform: 'competitor',
+              data: edge,
+              timestamp: Date.now()
+            });
+            await new Promise(resolve => setTimeout(resolve, 200));
+          }
+        }
+
+        // Phase 3: Generate and stream constraint advantages
+        if (userInput.constraints && userInput.constraints.length > 0) {
+          console.log('🔄 Generating constraint advantages...');
+          try {
+            const constraintValueProps = await openai.generateConstraintAdvantages({
+              constraints: userInput.constraints,
+              appDescription: userInput.appDescription,
+              competitor: userInput.competitors?.[0] || 'AWS',
+              cloudflareArch,
+              competitorArch
+            });
+
+            if (constraintValueProps && Array.isArray(constraintValueProps)) {
+              for (const valueProp of constraintValueProps) {
+                sendChunk({
+                  type: 'constraint_value_prop',
+                  platform: 'cloudflare',
+                  data: valueProp,
+                  timestamp: Date.now()
+                });
+                await new Promise(resolve => setTimeout(resolve, 800));
+              }
+            }
+          } catch (error) {
+            console.error('❌ Failed to generate constraint advantages:', error);
+          }
+        }
+
+        // Phase 4: Stream generic advantages if no constraints
+        if (cloudflareArch.advantages && (!userInput.constraints || userInput.constraints.length === 0)) {
+          for (const advantage of cloudflareArch.advantages) {
+            sendChunk({
+              type: 'advantage',
+              platform: 'cloudflare',
+              data: advantage,
+              timestamp: Date.now()
+            });
+            await new Promise(resolve => setTimeout(resolve, 600));
+          }
+        }
+
+        // Phase 5: Stream value props
+        if (cloudflareArch.valueProps && (!userInput.constraints || userInput.constraints.length === 0)) {
+          for (const valueProp of cloudflareArch.valueProps) {
+            sendChunk({
+              type: 'value_prop',
+              platform: 'cloudflare',
+              data: valueProp,
+              timestamp: Date.now()
+            });
+            await new Promise(resolve => setTimeout(resolve, 600));
+          }
+        }
+
+        // Complete
+        sendChunk({
+          type: 'complete',
+          platform: 'cloudflare',
+          data: 'Architecture generation complete',
+          timestamp: Date.now()
+        });
+
+      } catch (error) {
+        console.error('❌ Streaming error:', error);
+        sendChunk({
+          type: 'error',
+          data: error.message,
+          timestamp: Date.now()
+        });
+      } finally {
+        controller.close();
+      }
+    }
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*',
+    },
+  });
+};
+
 // Streaming API endpoint
 app.post('/api/generate-architecture', async (c) => {
   const userInput = await c.req.json();
@@ -318,23 +497,17 @@ app.post('/api/generate-architecture', async (c) => {
     }
   }
 
-  // Generate with OpenAI if not cached
+  // Handle streaming requests differently
+  if (isStreamingRequest && useOpenAI) {
+    // For streaming, we'll generate and stream in real-time
+    return createRealTimeStreamingResponse(c, userInput);
+  }
+
+  // Generate with OpenAI if not cached (non-streaming)
   if (useOpenAI && !cloudflareData) {
     try {
-      const useAIGateway = isStreamingRequest && c.env.CLOUDFLARE_ACCOUNT_ID && c.env.AI_GATEWAY_ID;
-      console.log('🤖 Using OpenAI for architecture generation', {
-        isStreamingRequest,
-        useAIGateway,
-        accountId: c.env.CLOUDFLARE_ACCOUNT_ID ? 'configured' : 'missing',
-        gatewayId: c.env.AI_GATEWAY_ID || 'missing'
-      });
-      
-      const openai = useAIGateway
-        ? new OpenAIService(c.env.OPENAI_API_KEY, {
-            accountId: c.env.CLOUDFLARE_ACCOUNT_ID,
-            gatewayId: c.env.AI_GATEWAY_ID
-          })
-        : new OpenAIService(c.env.OPENAI_API_KEY);
+      console.log('🤖 Using OpenAI for architecture generation (non-streaming)');
+      const openai = new OpenAIService(c.env.OPENAI_API_KEY);
       
       // Generate both architectures in parallel
       const [cloudflareArch, competitorArch] = await Promise.all([
@@ -354,22 +527,34 @@ app.post('/api/generate-architecture', async (c) => {
         })
       ]);
 
-      cloudflareData = cloudflareArch;
+      // Ensure cloudflareData has all required fields
+      cloudflareData = {
+        nodes: cloudflareArch.nodes || [],
+        edges: cloudflareArch.edges || [],
+        advantages: cloudflareArch.advantages || [],
+        valueProps: cloudflareArch.valueProps || []
+      };
       competitorData = competitorArch;
 
       // Generate constraint-based advantages if constraints are provided
       if (userInput.constraints && userInput.constraints.length > 0) {
-        constraintValueProps = await openai.generateConstraintAdvantages({
-          constraints: userInput.constraints,
-          appDescription: userInput.appDescription,
-          competitor: userInput.competitors?.[0] || 'AWS',
-          cloudflareArch,
-          competitorArch
-        });
+        try {
+          constraintValueProps = await openai.generateConstraintAdvantages({
+            constraints: userInput.constraints,
+            appDescription: userInput.appDescription,
+            competitor: userInput.competitors?.[0] || 'AWS',
+            cloudflareArch,
+            competitorArch
+          });
+          console.log('🎯 Generated constraint value props:', constraintValueProps?.length || 0);
+        } catch (error) {
+          console.error('❌ Failed to generate constraint advantages:', error);
+          constraintValueProps = [];
+        }
       }
 
-      // Cache the successful result (skip for streaming requests)
-      if (!isStreamingRequest && cache) {
+      // Cache the successful result
+      if (cache) {
         await cache.set(userInput, {
           cloudflare: cloudflareData,
           competitor: competitorData,
@@ -479,7 +664,7 @@ app.post('/api/generate-architecture', async (c) => {
           setTimeout(sendNext, 1200);
         }
         // Phase 6: Send generic advantages (fallback if no constraints)
-        else if (constraintValueProps.length === 0 && index < cloudflareData.nodes.length + cloudflareData.edges.length + competitorData.nodes.length + competitorData.edges.length + cloudflareData.advantages.length) {
+        else if (constraintValueProps.length === 0 && cloudflareData.advantages && index < cloudflareData.nodes.length + cloudflareData.edges.length + competitorData.nodes.length + competitorData.edges.length + cloudflareData.advantages.length) {
           const advantageIndex = index - cloudflareData.nodes.length - cloudflareData.edges.length - competitorData.nodes.length - competitorData.edges.length;
           sendChunk({
             type: 'advantage',
@@ -490,7 +675,19 @@ app.post('/api/generate-architecture', async (c) => {
           index++;
           setTimeout(sendNext, 1000);
         } 
-        // Phase 7: Complete
+        // Phase 7: Send value props (if no constraints)
+        else if (constraintValueProps.length === 0 && cloudflareData.valueProps && index < cloudflareData.nodes.length + cloudflareData.edges.length + competitorData.nodes.length + competitorData.edges.length + (cloudflareData.advantages?.length || 0) + cloudflareData.valueProps.length) {
+          const valuePropIndex = index - cloudflareData.nodes.length - cloudflareData.edges.length - competitorData.nodes.length - competitorData.edges.length - (cloudflareData.advantages?.length || 0);
+          sendChunk({
+            type: 'value_prop',
+            platform: 'cloudflare',
+            data: cloudflareData.valueProps[valuePropIndex],
+            timestamp: Date.now()
+          });
+          index++;
+          setTimeout(sendNext, 1000);
+        }
+        // Phase 8: Complete
         else {
           sendChunk({
             type: 'complete',

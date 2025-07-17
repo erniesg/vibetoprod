@@ -98,7 +98,7 @@ export class OpenAIService {
     scale: string;
     constraints: string[];
     region: string;
-  }): Promise<{ nodes: ArchitectureNode[]; edges: ArchitectureEdge[] }> {
+  }): Promise<{ nodes: ArchitectureNode[]; edges: ArchitectureEdge[]; advantages?: string[]; valueProps?: string[] }> {
     const systemPrompt = `You are an expert cloud architect specializing in Cloudflare's edge computing platform. 
 Generate architectures that showcase Cloudflare's unique advantages: zero egress fees, global edge network, integrated services, and serverless compute.`;
 
@@ -130,6 +130,16 @@ Create a realistic architecture using Cloudflare services. Return JSON with:
       "color": "#f97316",
       "style": "solid"
     }
+  ],
+  "advantages": [
+    "3-4 specific advantages of using Cloudflare for this architecture",
+    "Each advantage should highlight a unique benefit",
+    "Focus on performance, cost, or developer experience"
+  ],
+  "valueProps": [
+    "3-4 value propositions specific to ${input.persona}",
+    "Each should be 1-2 sentences with concrete benefits",
+    "Include metrics where possible"
   ]
 }
 
