@@ -69,7 +69,7 @@ export function useStreamingArchitecture() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(userInput),
+        body: JSON.stringify({ ...userInput, streaming: true }),
       });
 
       if (!response.ok) {

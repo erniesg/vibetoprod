@@ -6,9 +6,15 @@ assets = { directory = "dist" }
 
 [env.production.vars]
 ENVIRONMENT = "production"
+USE_OPENAI = "true"
+CLOUDFLARE_ACCOUNT_ID = "5b25778cf6d9821373d913f5236e1606"
+AI_GATEWAY_ID = "vibetoprod-ai"
 
 [env.development.vars]
 ENVIRONMENT = "development"
+USE_OPENAI = "true"
+CLOUDFLARE_ACCOUNT_ID = "5b25778cf6d9821373d913f5236e1606"
+AI_GATEWAY_ID = "vibetoprod-ai"
 
 [[env.production.kv_namespaces]]
 binding = "KV"

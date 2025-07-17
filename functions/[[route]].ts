@@ -1,4 +1,7 @@
 import { Hono } from 'hono';
+import { OpenAIService } from './services/openaiService';
+import { CacheService } from './services/cacheService';
+import type { Env } from './types';
 
 // Mock architecture data with both Cloudflare and competitor structures
 const mockArchitectureData = {
@@ -158,7 +161,7 @@ const mockArchitectureData = {
   }
 };
 
-const app = new Hono();
+const app = new Hono<{ Bindings: Env }>();
 
 // CORS middleware
 app.use('*', async (c, next) => {
@@ -281,19 +284,130 @@ const generateConstraintValueProps = (constraints: string[], appDescription: str
 // Streaming API endpoint
 app.post('/api/generate-architecture', async (c) => {
   const userInput = await c.req.json();
-  console.log('🎯 Generate Architecture Request:', userInput);
-
-  const persona = userInput.persona || 'Vibe Coder';
-  const personaData = mockArchitectureData[persona] || mockArchitectureData['Vibe Coder'];
-  const cloudflareData = personaData.cloudflare;
-  const competitorData = personaData.competitor;
+  console.log('🎯 Generate Architecture Request:', {
+    ...userInput,
+    isStreaming: userInput.streaming === true,
+    hasConstraints: userInput.constraints?.length > 0,
+    constraintsCount: userInput.constraints?.length || 0
+  });
   
-  // Generate constraint-based advantages if constraints are provided
-  const constraintValueProps = userInput.constraints && userInput.constraints.length > 0 
-    ? generateConstraintValueProps(userInput.constraints, userInput.appDescription || '', userInput.competitors?.[0] || 'AWS')
-    : [];
+  // Check if this is a streaming request
+  const isStreamingRequest = userInput.streaming === true;
+
+  // Initialize services
+  const cache = isStreamingRequest ? null : new CacheService(c.env.KV);
+  const useOpenAI = c.env.OPENAI_API_KEY && c.env.USE_OPENAI !== 'false';
+  
+  let cloudflareData;
+  let competitorData;
+  let constraintValueProps = [];
+
+  // Check cache first (skip for streaming requests)
+  if (useOpenAI && !isStreamingRequest && cache) {
+    const cached = await cache.get<{
+      cloudflare: any;
+      competitor: any;
+      constraintValueProps: any[];
+    }>(userInput);
+    
+    if (cached) {
+      console.log('🎯 Using cached architecture');
+      cloudflareData = cached.cloudflare;
+      competitorData = cached.competitor;
+      constraintValueProps = cached.constraintValueProps || [];
+    }
+  }
+
+  // Generate with OpenAI if not cached
+  if (useOpenAI && !cloudflareData) {
+    try {
+      const useAIGateway = isStreamingRequest && c.env.CLOUDFLARE_ACCOUNT_ID && c.env.AI_GATEWAY_ID;
+      console.log('🤖 Using OpenAI for architecture generation', {
+        isStreamingRequest,
+        useAIGateway,
+        accountId: c.env.CLOUDFLARE_ACCOUNT_ID ? 'configured' : 'missing',
+        gatewayId: c.env.AI_GATEWAY_ID || 'missing'
+      });
+      
+      const openai = useAIGateway
+        ? new OpenAIService(c.env.OPENAI_API_KEY, {
+            accountId: c.env.CLOUDFLARE_ACCOUNT_ID,
+            gatewayId: c.env.AI_GATEWAY_ID
+          })
+        : new OpenAIService(c.env.OPENAI_API_KEY);
+      
+      // Generate both architectures in parallel
+      const [cloudflareArch, competitorArch] = await Promise.all([
+        openai.generateCloudflareArchitecture({
+          appDescription: userInput.appDescription,
+          persona: userInput.persona,
+          scale: userInput.scale || 'Startup',
+          constraints: userInput.constraints || [],
+          region: userInput.region || 'Global'
+        }),
+        openai.generateCompetitorArchitecture({
+          competitor: userInput.competitors?.[0] || 'AWS',
+          appDescription: userInput.appDescription,
+          persona: userInput.persona,
+          scale: userInput.scale || 'Startup',
+          region: userInput.region || 'Global'
+        })
+      ]);
+
+      cloudflareData = cloudflareArch;
+      competitorData = competitorArch;
+
+      // Generate constraint-based advantages if constraints are provided
+      if (userInput.constraints && userInput.constraints.length > 0) {
+        constraintValueProps = await openai.generateConstraintAdvantages({
+          constraints: userInput.constraints,
+          appDescription: userInput.appDescription,
+          competitor: userInput.competitors?.[0] || 'AWS',
+          cloudflareArch,
+          competitorArch
+        });
+      }
+
+      // Cache the successful result (skip for streaming requests)
+      if (!isStreamingRequest && cache) {
+        await cache.set(userInput, {
+          cloudflare: cloudflareData,
+          competitor: competitorData,
+          constraintValueProps
+        });
+      }
+    } catch (error) {
+      console.error('❌ OpenAI generation failed, falling back to mock data:', error);
+      // Fall back to mock data
+      const persona = userInput.persona || 'Vibe Coder';
+      const personaData = mockArchitectureData[persona] || mockArchitectureData['Vibe Coder'];
+      cloudflareData = personaData.cloudflare;
+      competitorData = personaData.competitor;
+      
+      if (userInput.constraints && userInput.constraints.length > 0) {
+        constraintValueProps = generateConstraintValueProps(userInput.constraints, userInput.appDescription || '', userInput.competitors?.[0] || 'AWS');
+      }
+    }
+  } else {
+    // Use mock data
+    console.log('📦 Using mock data (OpenAI disabled or not configured)');
+    const persona = userInput.persona || 'Vibe Coder';
+    const personaData = mockArchitectureData[persona] || mockArchitectureData['Vibe Coder'];
+    cloudflareData = personaData.cloudflare;
+    competitorData = personaData.competitor;
+    
+    if (userInput.constraints && userInput.constraints.length > 0) {
+      constraintValueProps = generateConstraintValueProps(userInput.constraints, userInput.appDescription || '', userInput.competitors?.[0] || 'AWS');
+    }
+  }
 
   // Create streaming response
+  console.log('📡 Creating streaming response', {
+    hasCloudflareData: !!cloudflareData,
+    hasCompetitorData: !!competitorData,
+    constraintValuePropsCount: constraintValueProps.length
+  });
+  
   const stream = new ReadableStream({
     start(controller) {
       const encoder = new TextEncoder();
