@@ -255,15 +255,15 @@ Position nodes logically with users on the left, progressing to backend services
     cloudflareArch: { nodes: ArchitectureNode[]; edges: ArchitectureEdge[] };
     competitorArch: { nodes: ArchitectureNode[]; edges: ArchitectureEdge[] };
   }): Promise<ConstraintValueProp[]> {
-    const systemPrompt = `You are a cloud architecture expert who creates compelling value propositions.
-Generate specific, metric-driven comparisons between Cloudflare and ${input.competitor}.
-Focus on real business impact with concrete numbers and benefits.
+    const systemPrompt = `You are a cloud architecture expert. Your task is to generate exactly ${input.constraints.length} value propositions.
 
-CRITICAL INSTRUCTIONS:
-- You MUST return exactly ${input.constraints.length} value propositions (not 1, exactly ${input.constraints.length})
-- You MUST return a JSON array starting with [ and ending with ]
-- Each constraint gets its own separate value proposition object
-- Do NOT return a single object, ALWAYS return an array`;
+MANDATORY REQUIREMENTS:
+1. Return EXACTLY ${input.constraints.length} objects in a JSON array
+2. Start response with [ and end with ]
+3. Each constraint gets its own object
+4. NO single objects allowed
+
+OUTPUT MUST BE: [object1, object2, object3] for ${input.constraints.length} constraints`;
 
     const userPrompt = `Compare these architectures for "${input.appDescription}":
 
