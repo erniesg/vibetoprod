@@ -27,6 +27,19 @@ const constraintIcons = {
   'Scalability': { icon: TrendingUp, emoji: '📈' }
 };
 
+// Convert icon name strings to actual icon components for streaming mode
+const getIconByName = (iconName: string) => {
+  const iconMap = {
+    'DollarSign': DollarSign,
+    'Shield': Shield, 
+    'Globe': Globe,
+    'Users': Users,
+    'TrendingUp': TrendingUp,
+    'CheckCircle': CheckCircle
+  };
+  return iconMap[iconName as keyof typeof iconMap] || CheckCircle;
+};
+
 export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({ 
   loading, 
   isDarkMode, 
@@ -143,6 +156,23 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
     ? constraintValueProps 
     : (constraints.length > 0 ? generatedValueProps : []);
 
+  // Show loading state during streaming when we have constraints but no constraint value props yet
+  const shouldShowLoading = streamingMode && constraints.length > 0 && constraintValueProps.length === 0;
+  const hasValidData = displayAdvantages.length > 0;
+
+  // Debug logging
+  if (streamingMode) {
+    console.log('🔍 AdvantagesPanel Debug:', {
+      constraints: constraints.length,
+      constraintValueProps: constraintValueProps.length,
+      displayAdvantages: displayAdvantages.length,
+      shouldShowLoading,
+      hasValidData,
+      streamingMode,
+      loading
+    });
+  }
+
   const getAdvantageColors = (index: number) => {
     const colorSets = [
       { 
@@ -204,7 +234,7 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
 
       {/* Content */}
       <div className="p-6">
-        {loading ? (
+        {(loading || shouldShowLoading) ? (
           <div className="space-y-6">
             {[1, 2, 3].map((i) => (
               <div key={i} className="flex items-start space-x-4 p-4">
@@ -225,11 +255,11 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
               </div>
             ))}
           </div>
-        ) : displayAdvantages.length > 0 ? (
+        ) : hasValidData ? (
           <div className="space-y-6">
             {displayAdvantages.map((advantage, index) => {
               const colors = getAdvantageColors(index);
-              const Icon = advantage.icon;
+              const Icon = streamingMode ? getIconByName(advantage.icon) : advantage.icon;
               
               return (
                 <div 

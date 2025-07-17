@@ -133,7 +133,9 @@ export function useStreamingArchitecture() {
                     break;
 
                   case 'constraint_value_prop':
+                    console.log('🎯 Received constraint_value_prop:', chunk.data);
                     newState.constraintValueProps = [...prev.constraintValueProps, chunk.data];
+                    console.log('🎯 Updated constraintValueProps:', newState.constraintValueProps);
                     break;
 
                   case 'complete':

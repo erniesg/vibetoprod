@@ -216,14 +216,14 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
   isDarkMode,
   competitorName
 }) => {
-  console.log('🎯 StreamingReactFlow render:', title, 'nodes:', nodeData.length, 'edges:', edgeData.length);
+  if (isStreaming) console.log('🎯 StreamingReactFlow render:', title, 'nodes:', nodeData.length, 'edges:', edgeData.length);
   const reactFlowInstanceRef = useRef<ReactFlowInstance | null>(null);
   const onNodesChange = useCallback(() => {}, []);
   const onEdgesChange = useCallback(() => {}, []);
 
   // Convert node data to React Flow format - SAME LOGIC AS NON-STREAMING
   const reactFlowNodes = useMemo(() => {
-    console.log('🔄 Converting', nodeData.length, 'nodes to ReactFlow format');
+    if (isStreaming) console.log('🔄 Converting', nodeData.length, 'nodes to ReactFlow format');
     const nodes = nodeData.map((node) => {
       // Map node types to ReactFlow node types (same as DiagramCanvas.tsx)
       let nodeType = 'process'; // default
@@ -252,7 +252,7 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
         },
         draggable: false,
       };
-      console.log('📍 Created ReactFlow node:', reactFlowNode.id, reactFlowNode.type);
+      if (isStreaming) console.log('📍 Created ReactFlow node:', reactFlowNode.id, reactFlowNode.type);
       return reactFlowNode;
     });
     return nodes;
@@ -260,10 +260,12 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
 
   // Convert edge data to React Flow format
   const reactFlowEdges = useMemo(() => {
-    console.log('🔍 Converting edge data:', edgeData);
-    console.log('🔍 Available node IDs:', nodeData.map(n => n.id));
+    if (isStreaming) {
+      console.log('🔍 Converting edge data:', edgeData);
+      console.log('🔍 Available node IDs:', nodeData.map(n => n.id));
+    }
     return edgeData.map((edge, index) => {
-      console.log('🔍 Edge mapping:', edge.from, '->', edge.to);
+      if (isStreaming) console.log('🔍 Edge mapping:', edge.from, '->', edge.to);
       return {
         id: edge.id,
         source: edge.from,
@@ -298,18 +300,18 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
 
   // Dynamic viewport fitting for streaming using ref
   useEffect(() => {
-    console.log('🔍 useEffect triggered - nodes:', reactFlowNodes.length, 'instance:', !!reactFlowInstanceRef.current);
+    if (isStreaming) console.log('🔍 useEffect triggered - nodes:', reactFlowNodes.length, 'instance:', !!reactFlowInstanceRef.current);
     if (reactFlowNodes.length > 0 && reactFlowInstanceRef.current) {
       const timer = setTimeout(() => {
         try {
-          console.log('📐 Calling fitView with', reactFlowNodes.length, 'nodes');
+          if (isStreaming) console.log('📐 Calling fitView with', reactFlowNodes.length, 'nodes');
           reactFlowInstanceRef.current?.fitView({ 
             padding: 0.2, 
             duration: 300 
           });
-          console.log('✅ fitView called successfully');
+          if (isStreaming) console.log('✅ fitView called successfully');
         } catch (error) {
-          console.warn('❌ fitView failed:', error);
+          if (isStreaming) console.warn('❌ fitView failed:', error);
         }
       }, 200);
       return () => clearTimeout(timer);
@@ -378,7 +380,7 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
             connectionMode={ConnectionMode.Loose}
             onInit={(instance) => {
               reactFlowInstanceRef.current = instance;
-              console.log('🚀 ReactFlow initialized with', reactFlowNodes.length, 'nodes');
+              if (isStreaming) console.log('🚀 ReactFlow initialized with', reactFlowNodes.length, 'nodes');
               // Initial fit
               instance.fitView({ padding: 0.2 });
             }}

@@ -303,15 +303,24 @@ const createRealTimeStreamingResponse = async (c: any, userInput: any) => {
       }
 
       try {
-        // Phase 1: Generate and stream Cloudflare architecture
-        console.log('🔄 Generating Cloudflare architecture...');
-        const cloudflareArch = await openai.generateCloudflareArchitecture({
-          appDescription: userInput.appDescription,
-          persona: userInput.persona,
-          scale: userInput.scale || 'Startup',
-          constraints: userInput.constraints || [],
-          region: userInput.region || 'Global'
-        });
+        // Generate both architectures in parallel
+        console.log('🔄 Generating both architectures in parallel...');
+        const [cloudflareArch, competitorArch] = await Promise.all([
+          openai.generateCloudflareArchitecture({
+            appDescription: userInput.appDescription,
+            persona: userInput.persona,
+            scale: userInput.scale || 'Startup',
+            constraints: userInput.constraints || [],
+            region: userInput.region || 'Global'
+          }),
+          openai.generateCompetitorArchitecture({
+            competitor: userInput.competitors?.[0] || 'AWS',
+            appDescription: userInput.appDescription,
+            persona: userInput.persona,
+            scale: userInput.scale || 'Startup',
+            region: userInput.region || 'Global'
+          })
+        ]);
 
         // Stream Cloudflare nodes
         if (cloudflareArch.nodes) {
@@ -338,16 +347,6 @@ const createRealTimeStreamingResponse = async (c: any, userInput: any) => {
             await new Promise(resolve => setTimeout(resolve, 200));
           }
         }
-
-        // Phase 2: Generate and stream competitor architecture
-        console.log('🔄 Generating competitor architecture...');
-        const competitorArch = await openai.generateCompetitorArchitecture({
-          competitor: userInput.competitors?.[0] || 'AWS',
-          appDescription: userInput.appDescription,
-          persona: userInput.persona,
-          scale: userInput.scale || 'Startup',
-          region: userInput.region || 'Global'
-        });
 
         // Stream competitor nodes
         if (competitorArch.nodes) {
@@ -387,8 +386,25 @@ const createRealTimeStreamingResponse = async (c: any, userInput: any) => {
               competitorArch
             });
 
-            if (constraintValueProps && Array.isArray(constraintValueProps)) {
-              for (const valueProp of constraintValueProps) {
+            console.log('🎯 Raw constraint value props response:', constraintValueProps);
+            console.log('🎯 Is array?', Array.isArray(constraintValueProps));
+            console.log('🎯 Length:', constraintValueProps?.length);
+
+            // Handle both array and single object responses
+            let valuePropsArray;
+            if (Array.isArray(constraintValueProps)) {
+              valuePropsArray = constraintValueProps;
+            } else if (constraintValueProps && typeof constraintValueProps === 'object') {
+              console.log('🔧 Converting single object to array');
+              valuePropsArray = [constraintValueProps];
+            } else {
+              valuePropsArray = [];
+            }
+
+            if (valuePropsArray.length > 0) {
+              console.log('🚀 Starting to stream', valuePropsArray.length, 'constraint value props');
+              for (const valueProp of valuePropsArray) {
+                console.log('📤 Sending constraint_value_prop chunk:', valueProp);
                 sendChunk({
                   type: 'constraint_value_prop',
                   platform: 'cloudflare',
@@ -397,6 +413,9 @@ const createRealTimeStreamingResponse = async (c: any, userInput: any) => {
                 });
                 await new Promise(resolve => setTimeout(resolve, 800));
               }
+              console.log('✅ Finished streaming constraint value props');
+            } else {
+              console.log('❌ No valid constraint value props to stream');
             }
           } catch (error) {
             console.error('❌ Failed to generate constraint advantages:', error);
@@ -465,7 +484,6 @@ app.post('/api/generate-architecture', async (c) => {
   const userInput = await c.req.json();
   console.log('🎯 Generate Architecture Request:', {
     ...userInput,
-    isStreaming: userInput.streaming === true,
     hasConstraints: userInput.constraints?.length > 0,
     constraintsCount: userInput.constraints?.length || 0
   });

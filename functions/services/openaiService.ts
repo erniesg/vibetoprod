@@ -257,31 +257,53 @@ Position nodes logically with users on the left, progressing to backend services
   }): Promise<ConstraintValueProp[]> {
     const systemPrompt = `You are a cloud architecture expert who creates compelling value propositions.
 Generate specific, metric-driven comparisons between Cloudflare and ${input.competitor}.
-Focus on real business impact with concrete numbers and benefits.`;
+Focus on real business impact with concrete numbers and benefits.
+
+CRITICAL INSTRUCTIONS:
+- You MUST return exactly ${input.constraints.length} value propositions (not 1, exactly ${input.constraints.length})
+- You MUST return a JSON array starting with [ and ending with ]
+- Each constraint gets its own separate value proposition object
+- Do NOT return a single object, ALWAYS return an array`;
 
     const userPrompt = `Compare these architectures for "${input.appDescription}":
 
 Cloudflare services: ${input.cloudflareArch.nodes.map(n => n.name).join(', ')}
 ${input.competitor} services: ${input.competitorArch.nodes.map(n => n.name).join(', ')}
 
-Generate value propositions for these constraints: ${input.constraints.join(', ')}
+Generate ${input.constraints.length} value propositions, one for each of these constraints:
+${input.constraints.map((c, i) => {
+  const iconMap = {
+    'Performance-Critical': { icon: 'TrendingUp', emoji: '⚡' },
+    'Cost-Conscious': { icon: 'DollarSign', emoji: '💰' },
+    'Security-First': { icon: 'Shield', emoji: '🔒' },
+    'Developer-Focused': { icon: 'Users', emoji: '👨‍💻' }
+  };
+  const iconData = iconMap[c as keyof typeof iconMap] || { icon: 'CheckCircle', emoji: '✅' };
+  return `${i+1}. ${c} (use icon: "${iconData.icon}", emoji: "${iconData.emoji}")`;
+}).join('\n')}
 
-Return JSON array with exactly ${input.constraints.length} items:
-[
-  {
-    "icon": "DollarSign|Globe|Shield|Users|TrendingUp",
-    "emoji": "💰|🌍|🔒|👨‍💻|📈",
-    "title": "Short, impactful title (4-5 words)",
-    "description": "Specific comparison showing Cloudflare advantage with metrics. Include: specific cost savings OR performance improvements OR developer experience benefits. Be concrete with numbers."
-  }
+RETURN FORMAT: You MUST return a JSON array with exactly ${input.constraints.length} objects.
+
+EXACT REQUIRED FORMAT - Return JSON array starting with [ and ending with ]:
+[${input.constraints.map((c, i) => {
+  const iconMap = {
+    'Performance-Critical': { icon: 'TrendingUp', emoji: '⚡' },
+    'Cost-Conscious': { icon: 'DollarSign', emoji: '💰' },
+    'Security-First': { icon: 'Shield', emoji: '🔒' },
+    'Developer-Focused': { icon: 'Users', emoji: '👨‍💻' }
+  };
+  const iconData = iconMap[c as keyof typeof iconMap] || { icon: 'CheckCircle', emoji: '✅' };
+  return `\n  {"icon": "${iconData.icon}", "emoji": "${iconData.emoji}", "title": "Title for ${c}", "description": "Description for ${c} with metrics..."}`;
+}).join(',')}
 ]
 
+Each object in the array must correspond to one constraint in the exact order listed above.
+
 Match each constraint to the appropriate icon/emoji:
-- Cost Optimization: DollarSign/💰
-- Global Performance: Globe/🌍
-- Enterprise Security: Shield/🔒
-- Developer Velocity: Users/👨‍💻
-- Scalability: TrendingUp/📈`;
+- Performance-Critical: TrendingUp/⚡
+- Cost-Conscious: DollarSign/💰
+- Security-First: Shield/🔒
+- Developer-Focused: Users/👨‍💻`;
 
     const messages = [
       { role: 'system', content: systemPrompt },
@@ -289,6 +311,18 @@ Match each constraint to the appropriate icon/emoji:
     ];
 
     const response = await this.callOpenAI(messages, 0.7);
-    return JSON.parse(response);
+    console.log('🔧 Raw OpenAI response for constraint advantages:', response);
+    console.log('🔧 Response type:', typeof response);
+    console.log('🔧 Response trimmed:', response.trim());
+    
+    try {
+      const parsed = JSON.parse(response.trim());
+      console.log('✅ Successfully parsed constraint advantages:', parsed);
+      return parsed;
+    } catch (error) {
+      console.error('❌ Failed to parse constraint advantages JSON:', error);
+      console.error('❌ Raw response was:', response);
+      throw error;
+    }
   }
 }
