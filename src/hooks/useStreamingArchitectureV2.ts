@@ -71,6 +71,12 @@ export function useStreamingArchitectureV2() {
             try {
               const partialObject = JSON.parse(dataStr);
               console.log('📦 V2 Streaming Chunk:', partialObject);
+              
+              // Debug constraintValueProps specifically
+              if (partialObject.constraintValueProps && partialObject.constraintValueProps.length > 0) {
+                console.log('🎯 CONSTRAINT VALUE PROPS RECEIVED:', partialObject.constraintValueProps);
+              }
+              
               setObject(partialObject);
             } catch (parseError) {
               console.warn('Failed to parse chunk:', dataStr);
@@ -144,14 +150,24 @@ export function useStreamingArchitectureV2() {
     typeof advantage === 'string' && 
     advantage.trim().length > 0
   );
-  const constraintValueProps = (object?.constraintValueProps || []).filter(prop => 
-    prop && 
-    typeof prop === 'object' && 
-    prop.title && 
-    prop.description && 
-    prop.icon && 
-    prop.emoji
-  );
+  const allConstraintValueProps = object?.constraintValueProps || [];
+  console.log('🔍 All constraintValueProps from object:', allConstraintValueProps);
+  
+  const constraintValueProps = allConstraintValueProps.filter(prop => {
+    const isValid = prop && 
+      typeof prop === 'object' && 
+      prop.title && 
+      prop.description && 
+      prop.emoji;
+    
+    if (!isValid) {
+      console.log('❌ Invalid constraintValueProp:', prop);
+    }
+    
+    return isValid;
+  });
+  
+  console.log('✅ Filtered constraintValueProps:', constraintValueProps);
 
   // Calculate completion status
   const isComplete = !isLoading && !!object;

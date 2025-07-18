@@ -750,8 +750,21 @@ app.post('/api/generate-architecture-v2', async (c) => {
       return c.json({ error: 'OpenAI API key not configured' }, 400);
     }
 
+    // Auto-select constraints if none provided
+    const finalConstraints = userInput.constraints?.length > 0 
+      ? userInput.constraints 
+      : new OpenAIService(c.env.OPENAI_API_KEY).selectConstraints(userInput.persona);
+      
+    console.log('🎯 Final constraints for V2:', finalConstraints);
+
+    // Update userInput to include auto-selected constraints
+    const updatedUserInput = {
+      ...userInput,
+      constraints: finalConstraints
+    };
+
     const modernOpenAI = new ModernOpenAIService(c.env.OPENAI_API_KEY);
-    const result = await modernOpenAI.streamArchitecture(userInput);
+    const result = await modernOpenAI.streamArchitecture(updatedUserInput);
     
     // Stream the partial objects using Server-Sent Events
     const stream = new ReadableStream({

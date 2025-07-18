@@ -398,13 +398,6 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
               className={isDarkMode ? 'dark' : ''}
               showInteractive={false}
             />
-            <Panel position="bottom-right">
-              <div className={`text-xs px-2 py-1 rounded ${
-                isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
-              }`}>
-                {reactFlowNodes.length} nodes, {reactFlowEdges.length} edges
-              </div>
-            </Panel>
           </ReactFlow>
         )}
       </div>

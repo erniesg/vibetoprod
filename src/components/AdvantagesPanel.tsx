@@ -171,6 +171,14 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
       streamingMode,
       loading
     });
+    
+    if (constraintValueProps.length > 0) {
+      console.log('🎯 AdvantagesPanel received constraintValueProps:', constraintValueProps);
+    }
+    
+    if (displayAdvantages.length > 0) {
+      console.log('🎯 AdvantagesPanel displayAdvantages:', displayAdvantages);
+    }
   }
 
   const getAdvantageColors = (index: number) => {

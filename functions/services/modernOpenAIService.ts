@@ -96,7 +96,12 @@ CRITICAL REQUIREMENTS:
 
 3. VALUE PROPOSITIONS:
    - Generate constraintValueProps for each selected priority: ${selectedConstraints.join(', ')}
-   - Each should have: icon (from allowed list), emoji, compelling title, detailed description
+   - Use EXACT titles and emojis for each priority:
+     * Cost Optimization: emoji "💰", title "Cost Optimization"
+     * Speed to Market: emoji "🚀", title "Speed to Market"  
+     * Enterprise Security: emoji "🔒", title "Enterprise Security"
+     * Global Performance: emoji "🌍", title "Global Performance"
+   - Each description should be 1 sentence maximum with specific metrics
    - Include specific metrics comparing Cloudflare vs ${competitor}
    - Reference the generated architectures to explain WHY Cloudflare is superior
    - Focus on: ${this.getConstraintFocus(selectedConstraints)}
