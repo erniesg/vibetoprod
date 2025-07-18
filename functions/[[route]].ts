@@ -600,7 +600,6 @@ app.post('/api/generate-architecture', async (c) => {
     }
   } else {
     // Use mock data
-    console.log('📦 Using mock data (OpenAI disabled or not configured)');
     const persona = userInput.persona || 'Vibe Coder';
     const personaData = mockArchitectureData[persona] || mockArchitectureData['Vibe Coder'];
     cloudflareData = personaData.cloudflare;
@@ -790,7 +789,6 @@ app.post('/api/generate-architecture-v2', async (c) => {
             // Use partialObjectStream as documented
             for await (const partialObject of result.partialObjectStream) {
               chunkCount++;
-              console.log(`📦 Partial object ${chunkCount}:`, partialObject);
               const chunk = `data: ${JSON.stringify(partialObject)}\n\n`;
               controller.enqueue(encoder.encode(chunk));
             }
@@ -804,7 +802,6 @@ app.post('/api/generate-architecture-v2', async (c) => {
               if (done) break;
               
               chunkCount++;
-              console.log(`📦 Streaming chunk ${chunkCount} (type: ${typeof value}):`, value);
               
               // Handle different value types
               if (typeof value === 'string') {

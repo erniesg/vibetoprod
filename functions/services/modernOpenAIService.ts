@@ -1,7 +1,6 @@
 import { streamObject } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { architectureResponseSchema } from '../../src/schemas/architecture';
-import type { z } from 'zod';
 
 export interface UserInput {
   appDescription: string;
@@ -13,25 +12,18 @@ export interface UserInput {
 }
 
 export class ModernOpenAIService {
-  private model: any;
+  private model: ReturnType<ReturnType<typeof createOpenAI>>;
 
   constructor(private apiKey: string) {
-    console.log('🔑 OpenAI API Key configured:', this.apiKey ? `Yes (${this.apiKey.substring(0, 7)}...)` : 'No');
     // Create OpenAI instance with explicit API key
     const openai = createOpenAI({
       apiKey: this.apiKey
     });
     this.model = openai('gpt-4o-2024-08-06');
-    console.log('🤖 Model configured');
   }
 
   async streamArchitecture(userInput: UserInput) {
     const prompt = this.buildPrompt(userInput);
-    
-    console.log('🚀 Starting true streaming with Vercel AI SDK');
-    console.log('📝 User input:', userInput);
-    console.log('🔍 Generated prompt:', prompt);
-    console.log('🔍 Using model: gpt-4o-2024-08-06');
     
     try {
       const result = streamObject({
@@ -39,20 +31,15 @@ export class ModernOpenAIService {
         schema: architectureResponseSchema,
         prompt,
         mode: 'json',
-        // Stream partial objects as they're generated
         experimental_telemetry: {
-          isEnabled: true,
+          isEnabled: false,
           functionId: 'stream-architecture'
         }
       });
       
-      console.log('✅ streamObject created successfully');
-      console.log('🔍 Available methods on result:', Object.getOwnPropertyNames(result));
-      console.log('🔍 Available properties on result:', Object.keys(result));
-      console.log('🔍 Has partialObjectStream:', 'partialObjectStream' in result);
       return result;
     } catch (error) {
-      console.error('❌ Error creating streamObject:', error);
+      console.error('Error creating streamObject:', error);
       throw error;
     }
   }
@@ -83,21 +70,22 @@ ${input.constraints.length === 0 ? '(Auto-selected based on persona and app type
 CRITICAL REQUIREMENTS:
 
 1. CLOUDFLARE ARCHITECTURE:
+   - IMPORTANT: Generate ALL nodes first, then ALL edges after nodes are complete
    - Generate 4-6 Cloudflare services that best fit the application
-   - ALWAYS include a Users/Actor node at the start (type: 'users', leftmost position)
+   - ALWAYS include a Users/Actor node at the start (type: 'users')
    - Include: Workers, Pages, D1, R2, KV, Durable Objects, Analytics, etc.
-   - Position nodes in a logical flow from left (users) to right (backend)
    - Use Cloudflare orange colors (#f97316, #ea580c, #dc2626)
-   - Connect services with meaningful data flow labels
-   - Layout: x: 0-800, y: 0-400
+   - DO NOT specify positions - they will be auto-generated
+   - After completing all nodes, connect services with meaningful data flow labels
 
 2. COMPETITOR ARCHITECTURE (${competitor}):
+   - IMPORTANT: Generate ALL nodes first, then ALL edges after nodes are complete
    - Generate 5-7 equivalent ${competitor} services
-   - ALWAYS include a Users/Actor node at the start (type: 'users', leftmost position)
+   - ALWAYS include a Users/Actor node at the start (type: 'users')
    - Include their typical stack: EC2/Lambda, RDS/DynamoDB, S3, CloudFront, etc.
    - Use gray colors (#6b7280, #4b5563)
    - Show the complexity of their multi-service approach
-   - Same layout constraints
+   - DO NOT specify positions - they will be auto-generated
 
 3. VALUE PROPOSITIONS:
    - Generate constraintValueProps for each selected priority: ${selectedConstraints.join(', ')}
@@ -108,9 +96,8 @@ CRITICAL REQUIREMENTS:
      * Global Performance: emoji "🌍", title "Global Performance"
    - Format: "**Service/Feature comparison with specific numbers** → **quantifiable outcome (%, x)** or brief explainer stating how this impacts business value, attention-grabbing spin"
    - MUST reference actual generated services from both architectures with specific numbers when possible
-   - Include quantified multipliers and engaging benefit statements
+   - Include quantified multipliers and engaging benefit statements that make mathematical sense
    - Focus on: ${this.getConstraintFocus(selectedConstraints)}
-   - Examples: "**Workers at 300+ locations** vs **AWS Lambda in 3 regions** → **10x faster** cold starts keep users engaged and coming back for more", "**R2 zero egress fees** vs **AWS S3's $0.09/GB charges** → **80% cost reduction** frees up budget for hiring that star developer", "**Built-in DDoS protection** vs **AWS WAF + Shield ($3k/month)** → **5x faster** security setup means sleeping soundly at night"
 
 4. ARCHITECTURE PATTERNS BY APP TYPE:
 ${this.getAppTypeGuidance(appType, input.persona)}
@@ -138,7 +125,6 @@ Generate realistic, production-ready architectures that clearly show why Cloudfl
   }
 
   private autoSelectConstraints(persona: string, appDescription: string, appType: string): string[] {
-    const allConstraints = ['Cost Optimization', 'Speed to Market', 'Enterprise Security', 'Global Performance'];
     
     // Persona-based priority preferences
     const personaPreferences = {

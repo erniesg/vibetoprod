@@ -11,9 +11,9 @@ export const diagramNodeSchema = z.object({
   name: z.string().describe('Display name of the service'),
   subtitle: z.string().optional().describe('Additional service description'),
   position: z.object({
-    x: z.number().describe('X coordinate (0-800)'),
-    y: z.number().describe('Y coordinate (0-400)')
-  }),
+    x: z.number().default(0).describe('X coordinate (auto-layout will override)'),
+    y: z.number().default(0).describe('Y coordinate (auto-layout will override)')
+  }).optional().default({ x: 0, y: 0 }),
   color: z.string().describe('Hex color code like #f97316')
 });
 

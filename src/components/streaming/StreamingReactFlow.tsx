@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useEffect, useRef } from 'react';
+import React, { useMemo, useCallback, useEffect, useRef, useState } from 'react';
 import {
   ReactFlow,
   Background,
@@ -11,6 +11,7 @@ import {
   ReactFlowInstance,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { getLayoutedElements } from '../../utils/autoLayout';
 import { 
   Cloud, 
   Database, 
@@ -216,14 +217,16 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
   isDarkMode,
   competitorName
 }) => {
-  if (isStreaming) console.log('🎯 StreamingReactFlow render:', title, 'nodes:', nodeData.length, 'edges:', edgeData.length);
   const reactFlowInstanceRef = useRef<ReactFlowInstance | null>(null);
   const onNodesChange = useCallback(() => {}, []);
   const onEdgesChange = useCallback(() => {}, []);
+  
+  // State for layouted nodes and edges
+  const [layoutedNodes, setLayoutedNodes] = useState<any[]>([]);
+  const [layoutedEdges, setLayoutedEdges] = useState<any[]>([]);
 
   // Convert node data to React Flow format - SAME LOGIC AS NON-STREAMING
   const reactFlowNodes = useMemo(() => {
-    if (isStreaming) console.log('🔄 Converting', nodeData.length, 'nodes to ReactFlow format');
     const nodes = nodeData.map((node) => {
       // Map node types to ReactFlow node types (same as DiagramCanvas.tsx)
       let nodeType = 'process'; // default
@@ -258,14 +261,10 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
     return nodes;
   }, [nodeData, variant]);
 
-  // Convert edge data to React Flow format
+  // Convert edge data to React Flow format - only include edges where both nodes exist
   const reactFlowEdges = useMemo(() => {
-    if (isStreaming) {
-      console.log('🔍 Converting edge data:', edgeData);
-      console.log('🔍 Available node IDs:', nodeData.map(n => n.id));
-    }
-    return edgeData.map((edge, index) => {
-      if (isStreaming) console.log('🔍 Edge mapping:', edge.from, '->', edge.to);
+    const nodeIds = new Set(nodeData.map(n => n.id));
+    return edgeData.filter(edge => nodeIds.has(edge.from) && nodeIds.has(edge.to)).map((edge, index) => {
       return {
         id: edge.id,
         source: edge.from,
@@ -298,20 +297,47 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
     });
   }, [edgeData, variant, nodeData.length, isDarkMode, nodeData]);
 
+  // Real-time ELK layout - re-layout on every streaming update
+  useEffect(() => {
+    if (reactFlowNodes.length > 0) {
+      const beforeSample = reactFlowNodes[0];
+      console.log(`🔧 ${title} - Streaming layout:`, {
+        id: beforeSample.id,
+        position: beforeSample.position,
+        total: reactFlowNodes.length
+      });
+      
+      // Simple horizontal layout
+      const { nodes: layoutedNodesResult, edges: layoutedEdgesResult } = getLayoutedElements(
+        reactFlowNodes, 
+        reactFlowEdges,
+        'LR'
+      );
+      
+      setLayoutedNodes(layoutedNodesResult);
+      setLayoutedEdges(layoutedEdgesResult);
+      
+      setTimeout(() => {
+        if (reactFlowInstanceRef.current) {
+          reactFlowInstanceRef.current.fitView({ padding: 0.2 });
+        }
+      }, 50);
+    } else {
+      setLayoutedNodes([]);
+      setLayoutedEdges([]);
+    }
+  }, [reactFlowNodes.length, reactFlowEdges.length, title]); // Re-run on every count change
+
   // Dynamic viewport fitting for streaming using ref
   useEffect(() => {
-    if (isStreaming) console.log('🔍 useEffect triggered - nodes:', reactFlowNodes.length, 'instance:', !!reactFlowInstanceRef.current);
     if (reactFlowNodes.length > 0 && reactFlowInstanceRef.current) {
       const timer = setTimeout(() => {
         try {
-          if (isStreaming) console.log('📐 Calling fitView with', reactFlowNodes.length, 'nodes');
           reactFlowInstanceRef.current?.fitView({ 
             padding: 0.2, 
             duration: 300 
           });
-          if (isStreaming) console.log('✅ fitView called successfully');
         } catch (error) {
-          if (isStreaming) console.warn('❌ fitView failed:', error);
         }
       }, 200);
       return () => clearTimeout(timer);
@@ -372,8 +398,8 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
           </div>
         ) : (
           <ReactFlow
-            nodes={reactFlowNodes}
-            edges={reactFlowEdges}
+            nodes={layoutedNodes}
+            edges={layoutedEdges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             nodeTypes={nodeTypes}

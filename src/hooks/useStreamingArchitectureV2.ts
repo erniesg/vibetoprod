@@ -9,14 +9,12 @@ export function useStreamingArchitectureV2() {
   const [object, setObject] = useState<Partial<ArchitectureResponse> | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [debugCount, setDebugCount] = useState(0);
 
   const generateArchitecture = useCallback(async (userInput: UserInput) => {
       
     setIsLoading(true);
     setError(null);
     setObject(null);
-    setDebugCount(0);
 
     try {
       const response = await fetch('/api/generate-architecture-v2', {
@@ -71,22 +69,6 @@ export function useStreamingArchitectureV2() {
             
             try {
               const partialObject = JSON.parse(dataStr);
-              
-              // Minimal debug: first 3 partial objects and final complete
-              setDebugCount(prev => {
-                const newCount = prev + 1;
-                if (newCount <= 3) {
-                  console.log(`📦 Partial ${newCount}:`, {
-                    cfNodes: partialObject.cloudflare?.nodes?.length || 0,
-                    cfEdges: partialObject.cloudflare?.edges?.length || 0,
-                    compNodes: partialObject.competitor?.nodes?.length || 0,
-                    compEdges: partialObject.competitor?.edges?.length || 0,
-                    valueProps: partialObject.constraintValueProps?.length || 0
-                  });
-                }
-                return newCount;
-              });
-              
               setObject(partialObject);
             } catch (parseError) {
               // Parse error - continue processing other chunks
@@ -101,26 +83,6 @@ export function useStreamingArchitectureV2() {
     }
   }, []);
 
-  // Log final complete object when streaming completes (only once)
-  const isComplete = !isLoading && !!object;
-  useEffect(() => {
-    if (isComplete && object) {
-      console.log('✅ Complete:', {
-        cfNodes: object.cloudflare?.nodes?.length || 0,
-        cfEdges: object.cloudflare?.edges?.length || 0,
-        compNodes: object.competitor?.nodes?.length || 0,
-        compEdges: object.competitor?.edges?.length || 0,
-        valueProps: object.constraintValueProps?.length || 0
-      });
-    }
-  }, [isComplete, object]);
-
-  const reset = useCallback(() => {
-    setObject(null);
-    setError(null);
-    setIsLoading(false);
-  }, []);
-
   // Extract data with proper fallbacks and filter out incomplete objects
   const allCloudflareNodes = object?.cloudflare?.nodes || [];
   const cloudflareNodes = allCloudflareNodes.filter(node => {
@@ -128,22 +90,32 @@ export function useStreamingArchitectureV2() {
       typeof node === 'object' && 
       node.id && 
       node.type && 
-      node.name && 
-      node.position && 
-      typeof node.position === 'object' && 
-      typeof node.position.x === 'number' && 
-      typeof node.position.y === 'number';
+      node.name;
     
     return isComplete;
   });
   
-  // Debug disappearing nodes - minimal logging
-  if (allCloudflareNodes.length > 0 && cloudflareNodes.length === 0) {
-    console.warn('🐛 BUG: All Cloudflare nodes filtered out!', {
-      rawCount: allCloudflareNodes.length,
-      filteredCount: cloudflareNodes.length
-    });
-  }
+  const isComplete = !isLoading && !!object;
+  
+  // Debug: Log final architecture when streaming completes
+  useEffect(() => {
+    if (isComplete && object && cloudflareNodes.length > 0) {
+      const sample = cloudflareNodes[0];
+      console.log('🏗️ AI-generated sample node:', {
+        id: sample.id,
+        name: sample.name,
+        position: sample.position || 'NO_POSITION',
+        total: cloudflareNodes.length
+      });
+    }
+  }, [isComplete, object, cloudflareNodes]);
+
+  const reset = useCallback(() => {
+    setObject(null);
+    setError(null);
+    setIsLoading(false);
+  }, []);
+  
   
   const cloudflareEdges = (object?.cloudflare?.edges || []).filter(edge => 
     edge && 
@@ -159,11 +131,7 @@ export function useStreamingArchitectureV2() {
     typeof node === 'object' && 
     node.id && 
     node.type && 
-    node.name && 
-    node.position && 
-    typeof node.position === 'object' && 
-    typeof node.position.x === 'number' && 
-    typeof node.position.y === 'number'
+    node.name
   );
   const competitorEdges = (object?.competitor?.edges || []).filter(edge => 
     edge && 

@@ -1,19 +1,20 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useEffect } from 'react';
 import {
   ReactFlow,
   Node,
   Edge,
   Background,
   Controls,
-  Panel,
   useNodesState,
   useEdgesState,
   ConnectionMode,
   MarkerType,
   Handle,
   Position,
+  useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { getLayoutedElements } from '../utils/autoLayout';
 import { 
   Cloud, 
   Database, 
@@ -30,11 +31,6 @@ import {
   Lock,
   BarChart3,
   Webhook,
-  GitBranch,
-  AlertTriangle,
-  DollarSign,
-  Clock,
-  TrendingUp,
 } from 'lucide-react';
 import { DiagramData } from '../types';
 
@@ -48,7 +44,7 @@ interface DiagramCanvasProps {
 }
 
 // Actor/User Node (Circle)
-const ActorNode = ({ data }: { data: any }) => {
+const ActorNode = ({ data }: { data: { label: string; variant: string; subtitle?: string } }) => {
   const isCloudflare = data.variant === 'cloudflare';
   
   return (
@@ -70,7 +66,7 @@ const ActorNode = ({ data }: { data: any }) => {
 };
 
 // Process/Service Node (Rectangle)
-const ProcessNode = ({ data }: { data: any }) => {
+const ProcessNode = ({ data }: { data: { label: string; type: string; variant: string; subtitle?: string } }) => {
   const getIcon = (type: string) => {
     const iconMap = {
       'cdn': Globe,
@@ -126,7 +122,7 @@ const ProcessNode = ({ data }: { data: any }) => {
 };
 
 // Database Node (Cylinder shape using CSS)
-const DatabaseNode = ({ data }: { data: any }) => {
+const DatabaseNode = ({ data }: { data: { label: string; variant: string; subtitle?: string } }) => {
   const isCloudflare = data.variant === 'cloudflare';
   
   return (
@@ -161,7 +157,7 @@ const DatabaseNode = ({ data }: { data: any }) => {
 };
 
 // Decision Node (Diamond shape)
-const DecisionNode = ({ data }: { data: any }) => {
+const DecisionNode = ({ data }: { data: { label: string; variant: string } }) => {
   const isCloudflare = data.variant === 'cloudflare';
   
   return (
@@ -185,7 +181,7 @@ const DecisionNode = ({ data }: { data: any }) => {
 };
 
 // Storage Node (Hexagon-like shape)
-const StorageNode = ({ data }: { data: any }) => {
+const StorageNode = ({ data }: { data: { label: string; variant: string; subtitle?: string } }) => {
   const isCloudflare = data.variant === 'cloudflare';
   
   return (
@@ -218,16 +214,16 @@ const nodeTypes = {
   storage: StorageNode,
 };
 
-export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({ 
+const DiagramCanvasContent: React.FC<DiagramCanvasProps> = ({ 
   title, 
   data, 
   loading, 
   variant,
-  isDarkMode,
-  competitorName = 'AWS'
+  isDarkMode
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const { fitView } = useReactFlow();
 
   const { initialNodes, initialEdges } = useMemo(() => {
     if (!data) return { initialNodes: [], initialEdges: [] };
@@ -295,33 +291,26 @@ export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({
     return { initialNodes: flowNodes, initialEdges: flowEdges };
   }, [data, variant, isDarkMode]);
 
-  React.useEffect(() => {
-    setNodes(initialNodes);
-    setEdges(initialEdges);
-  }, [initialNodes, initialEdges, setNodes, setEdges]);
+  // Auto-layout effect
+  useEffect(() => {
+    if (initialNodes.length > 0 && initialEdges.length > 0) {
+      // Apply automatic layout using Dagre
+      const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+        initialNodes, 
+        initialEdges, 
+        'LR' // Left to Right layout
+      );
+      setNodes(layoutedNodes);
+      setEdges(layoutedEdges);
+      // Fit view after layout is applied
+      setTimeout(() => fitView({ padding: 0.2 }), 100);
+    } else {
+      setNodes(initialNodes);
+      setEdges(initialEdges);
+    }
+  }, [initialNodes, initialEdges, setNodes, setEdges, fitView]);
 
   const onConnect = useCallback(() => {}, []);
-
-  // Get key metrics for panels
-  const getKeyMetrics = () => {
-    if (variant === 'cloudflare') {
-      return {
-        cost: '$0 egress',
-        latency: '<50ms globally',
-        setup: '30 seconds',
-        scaling: 'Auto-scale to ∞'
-      };
-    } else {
-      return {
-        cost: '$0.09/GB egress',
-        latency: '200ms+ regional',
-        setup: '30+ minutes',
-        scaling: 'Manual config'
-      };
-    }
-  };
-
-  const metrics = getKeyMetrics();
 
   return (
     <div className={`rounded-xl shadow-lg overflow-hidden ${
@@ -403,5 +392,12 @@ export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({
         )}
       </div>
     </div>
+  );
+};
+
+// Wrapper component with ReactFlowProvider
+export const DiagramCanvas: React.FC<DiagramCanvasProps> = (props) => {
+  return (
+    <DiagramCanvasContent {...props} />
   );
 };
