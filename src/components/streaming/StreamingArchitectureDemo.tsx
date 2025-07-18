@@ -9,12 +9,14 @@ interface StreamingArchitectureDemoProps {
   isDarkMode: boolean;
   currentPersona: UserInput['persona'];
   onPersonaChange: (persona: UserInput['persona']) => void;
+  hideControlPanel?: boolean;
 }
 
 export const StreamingArchitectureDemo: React.FC<StreamingArchitectureDemoProps> = ({
   isDarkMode,
   currentPersona,
-  onPersonaChange
+  onPersonaChange,
+  hideControlPanel = false
 }) => {
   const [currentInput, setCurrentInput] = useState<UserInput | null>(null);
   
@@ -42,17 +44,19 @@ export const StreamingArchitectureDemo: React.FC<StreamingArchitectureDemoProps>
   return (
     <>
       {/* Control Panel */}
-      <section className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} py-12`}>
-        <div className="px-8">
-          <StreamingControlPanel 
-            onGenerate={handleGenerate}
-            loading={isStreaming}
-            onPersonaChange={onPersonaChange}
-            isDarkMode={isDarkMode}
-            currentPersona={currentPersona}
-          />
-        </div>
-      </section>
+      {!hideControlPanel && (
+        <section className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} py-12`}>
+          <div className="px-8">
+            <StreamingControlPanel 
+              onGenerate={handleGenerate}
+              loading={isStreaming}
+              onPersonaChange={onPersonaChange}
+              isDarkMode={isDarkMode}
+              currentPersona={currentPersona}
+            />
+          </div>
+        </section>
+      )}
 
       {/* Results Section */}
       {(hasData || isStreaming) && (

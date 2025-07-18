@@ -14,6 +14,7 @@ interface StreamingControlPanelProps {
   onPersonaChange: (persona: UserInput['persona']) => void;
   isDarkMode: boolean;
   currentPersona: UserInput['persona'];
+  hideTitle?: boolean;
 }
 
 export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({ 

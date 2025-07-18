@@ -22,6 +22,7 @@ export const CompleteWhitepaper: React.FC<CompleteWhitepaperProps> = ({ isDarkMo
         isDarkMode={isDarkMode}
         currentPersona={currentPersona}
         onPersonaChange={handlePersonaChange}
+        hideControlPanel={true}
       />
 
       {/* Whitepaper-Specific Content Starts Here */}
