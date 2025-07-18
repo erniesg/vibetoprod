@@ -117,7 +117,7 @@ function App() {
                 )}
               </h1>
               <p className={`text-xl md:text-2xl mt-6 font-medium transition-all duration-500 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                {currentPersona === 'Vibe Coder' ? 'Go from vibe to prod in minutes with Cloudflare' :
+                {currentPersona === 'Vibe Coder' ? 'Go from vibe to prod in minutes, not weeks' :
                  currentPersona === 'AIE/FDE' ? 'Deploy AI-native services globally with 0 DevOps' :
                  'Day 1 compliance + global scale at half the cost'}
               </p>
