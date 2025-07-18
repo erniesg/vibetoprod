@@ -271,8 +271,8 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
                   key={index} 
                   className={`flex items-start space-x-4 p-5 rounded-xl border transition-all shadow-sm ${
                     isDarkMode 
-                      ? 'bg-gray-700 border-gray-600 hover:bg-gray-650' 
-                      : 'bg-white border-gray-200 hover:bg-gray-50'
+                      ? 'bg-gray-700 border-gray-600' 
+                      : 'bg-white border-gray-200'
                   } ${streamingMode ? 'animate-slide-in' : ''}`}
                   style={streamingMode ? { animationDelay: `${index * 200}ms` } : {}}>
                   <div className={`p-4 rounded-xl ${colors.iconBg} flex-shrink-0 flex items-center justify-center`}>

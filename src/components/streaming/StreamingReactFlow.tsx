@@ -336,7 +336,7 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
     }`}>
       {/* Header */}
       <div className={`px-6 py-4 border-b ${
-        isDarkMode ? 'border-gray-700 bg-gray-750' : 'border-gray-200 bg-gray-50'
+        isDarkMode ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-gray-50'
       }`}>
         <div className="flex items-center justify-between">
           <h3 className={`text-lg font-bold ${
