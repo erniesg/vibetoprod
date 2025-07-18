@@ -66,11 +66,14 @@ export class ModernOpenAIService {
       ? input.constraints 
       : this.autoSelectConstraints(input.persona, input.appDescription, appType);
     
+    // Auto-select scale if none selected
+    const selectedScale = input.scale || this.autoSelectScale(input.persona);
+    
     return `You are an expert cloud architect. Generate a detailed cloud architecture comparison for the following application.
 
 Application: "${input.appDescription}"
 Target Persona: ${input.persona === 'AIE/FDE' ? 'AI Engineer and Forward Deployed Engineer' : input.persona}
-Scale: ${input.scale || 'Startup'}
+Scale: ${selectedScale} ${this.getScaleDescription(selectedScale)}
 Region: ${input.region || 'Global'}
 Competitor: ${competitor}
 Available Priorities: Cost Optimization, Speed to Market, Enterprise Security, Global Performance
@@ -111,6 +114,25 @@ CRITICAL REQUIREMENTS:
 ${this.getAppTypeGuidance(appType, input.persona)}
 
 Generate realistic, production-ready architectures that clearly show why Cloudflare is superior for this use case.`;
+  }
+
+  private autoSelectScale(persona: string): string {
+    const scaleMapping = {
+      'Vibe Coder': 'Startup',
+      'AIE/FDE': 'Growth',
+      'CIO/CTO': 'Enterprise'
+    };
+    return scaleMapping[persona as keyof typeof scaleMapping] || 'Startup';
+  }
+
+  private getScaleDescription(scale: string): string {
+    const scaleDescriptions = {
+      'Startup': '(< 10K users)',
+      'Growth': '(10K - 100K users)',
+      'Enterprise': '(100K - 1M users)',
+      'Global': '(1M+ users)'
+    };
+    return scaleDescriptions[scale as keyof typeof scaleDescriptions] || '(< 10K users)';
   }
 
   private autoSelectConstraints(persona: string, appDescription: string, appType: string): string[] {
