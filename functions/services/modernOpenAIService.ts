@@ -104,13 +104,14 @@ CRITICAL REQUIREMENTS:
      * Speed to Market: emoji "🚀", title "Speed to Market"  
      * Enterprise Security: emoji "🔒", title "Enterprise Security"
      * Global Performance: emoji "🌍", title "Global Performance"
-   - Each description should be 1 sentence maximum with dynamic performance metrics
-   - Use multipliers and speed comparisons (e.g., "10x faster", "3x speed boost", "5x reduction") instead of percentages
+   - Each description MUST include quantified multipliers (e.g., "10x faster", "3x speed boost", "5x reduction", "8x more efficient")
+   - MANDATORY: Every description must contain at least one multiplier comparison (2x, 3x, 5x, 10x, etc.)
+   - Use **bold** formatting for the multipliers and key metrics (e.g., "Deploy **10x faster** with integrated platform" or "**5x cost reduction** vs AWS")
    - Reference the generated architectures to explain WHY Cloudflare is superior
    - Focus on: ${this.getConstraintFocus(selectedConstraints)}
    - Show concrete examples from the architecture diagrams (e.g., "1 Workers service vs 3 EC2 instances")
    - Vary the language: "lightning fast", "instant", "blazing speed", "dramatically faster", "orders of magnitude"
-   - Use **bold** formatting for 1-2 key points in each description (e.g., "Deploy **10x faster** with integrated platform" or "**Zero egress fees** vs AWS's punitive charges")
+   - Examples of required format: "**10x faster** deployment", "**3x cost savings**", "**5x performance boost**", "**8x more reliable**"
 
 4. ARCHITECTURE PATTERNS BY APP TYPE:
 ${this.getAppTypeGuidance(appType, input.persona)}
