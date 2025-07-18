@@ -13,7 +13,7 @@ const renderTextWithBold = (text: string, isDarkMode: boolean) => {
           <svg 
             className="absolute inset-0 w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0"
             style={{ 
-              transform: 'scale(1.8)',
+              transform: 'scale(2.0)',
               transformOrigin: 'center'
             }}
             viewBox="0 0 100 50"
