@@ -104,14 +104,13 @@ CRITICAL REQUIREMENTS:
      * Speed to Market: emoji "🚀", title "Speed to Market"  
      * Enterprise Security: emoji "🔒", title "Enterprise Security"
      * Global Performance: emoji "🌍", title "Global Performance"
-   - Each description MUST include quantified multipliers (e.g., "10x faster", "3x speed boost", "5x reduction", "8x more efficient")
-   - MANDATORY: Every description must contain at least one multiplier comparison (2x, 3x, 5x, 10x, etc.)
-   - Use **bold** formatting for the multipliers and key metrics (e.g., "Deploy **10x faster** with integrated platform" or "**5x cost reduction** vs AWS")
-   - Reference the generated architectures to explain WHY Cloudflare is superior
+   - Each description MUST include quantified multipliers AND direct business impact (e.g., "**10x faster** deployment = ship features weekly vs monthly")
+   - MANDATORY: Connect every multiplier to business value - revenue, time-to-market, operational efficiency, customer satisfaction
+   - Use **bold** formatting for multipliers and business outcomes (e.g., "Deploy **10x faster** = **capture market opportunities** first")
+   - Link performance to business results: faster = more revenue, cheaper = better margins, secure = reduced risk, global = bigger market
    - Focus on: ${this.getConstraintFocus(selectedConstraints)}
-   - Show concrete examples from the architecture diagrams (e.g., "1 Workers service vs 3 EC2 instances")
-   - Vary the language: "lightning fast", "instant", "blazing speed", "dramatically faster", "orders of magnitude"
-   - Examples of required format: "**10x faster** deployment", "**3x cost savings**", "**5x performance boost**", "**8x more reliable**"
+   - Show concrete examples from architecture diagrams (e.g., "1 Workers service vs 3 EC2 instances")
+   - Examples of required format: "**5x cost reduction** = **higher profit margins**", "**3x performance boost** = **better user retention**", "**10x faster** deployment = **beat competitors to market**"
 
 4. ARCHITECTURE PATTERNS BY APP TYPE:
 ${this.getAppTypeGuidance(appType, input.persona)}
