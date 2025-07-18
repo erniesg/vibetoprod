@@ -96,9 +96,9 @@ function App() {
       <section className={`relative overflow-hidden ${theme.heroBackground}`}>
         <div className={`absolute inset-0 bg-[url('${SVG_PATTERN}')] opacity-20`}></div>
         <div className="relative px-8 py-16">
-          <div className="text-center max-w-5xl mx-auto">
+          <div className="text-center max-w-6xl mx-auto">
             <div className="mb-8">
-              <h1 className={`text-4xl md:text-7xl font-bold transition-all duration-500`}>
+              <h1 className={`text-4xl md:text-7xl font-bold transition-all duration-500 whitespace-nowrap`}>
                 {currentPersona === 'Vibe Coder' ? (
                   <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent">
                     Vibe Coders of the World Unite!
