@@ -104,13 +104,13 @@ function App() {
                 'from-orange-400 via-red-400 to-pink-400'
               } bg-clip-text text-transparent transition-all duration-500`}>
                 {currentPersona === 'Vibe Coder' ? 'Vibe Coders of the World Unite!' :
-                 currentPersona === 'AIE/FDE' ? 'AIE/FDE, Ship Your App to Region: 🌍' :
-                 'CIO/CTOs, The Edge is Your Advantage'}
+                 currentPersona === 'AIE/FDE' ? 'Ship Your App to Region: 🌍' :
+                 'Make Infra Your Advantage'}
               </h1>
               <p className={`text-xl md:text-2xl mt-4 font-medium transition-all duration-500 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                 {currentPersona === 'Vibe Coder' ? 'Go from vibe to prod in minutes with Cloudflare' :
-                 currentPersona === 'AIE/FDE' ? 'Deploy AI-native services globally with zero infrastructure complexity' :
-                 'Cut cloud costs by 50% while delivering <50ms performance globally'}
+                 currentPersona === 'AIE/FDE' ? 'Deploy AI-native services globally with 0 DevOps' :
+                 'Day 1 compliance + global scale at half the cost'}
               </p>
             </div>
           </div>
