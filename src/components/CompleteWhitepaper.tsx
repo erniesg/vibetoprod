@@ -1,14 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Zap, Globe, Shield, Users, Building, CheckCircle, ArrowRight, Sparkles, Database, Server, DollarSign, Cloud } from 'lucide-react';
 import { CompetitiveLandscape } from './CompetitiveLandscape';
+import { StreamingArchitectureDemo } from './streaming/StreamingArchitectureDemo';
+import { UserInput } from '../types';
 
 interface CompleteWhitepaperProps {
   isDarkMode: boolean;
 }
 
 export const CompleteWhitepaper: React.FC<CompleteWhitepaperProps> = ({ isDarkMode }) => {
+  const [currentPersona, setCurrentPersona] = useState<UserInput['persona']>('Vibe Coder');
+
+  const handlePersonaChange = (persona: UserInput['persona']) => {
+    setCurrentPersona(persona);
+  };
+
   return (
     <>
+      {/* Landing Page Content - Streaming Architecture Demo */}
+      <StreamingArchitectureDemo
+        isDarkMode={isDarkMode}
+        currentPersona={currentPersona}
+        onPersonaChange={handlePersonaChange}
+      />
+
+      {/* Whitepaper-Specific Content Starts Here */}
       {/* Opportunity Section */}
       <section className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} py-16 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
         <div className="px-8 max-w-7xl mx-auto">

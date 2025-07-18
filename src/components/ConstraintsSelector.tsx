@@ -1,4 +1,5 @@
 import React from 'react';
+import { PRIORITY_MAPPINGS } from '../constants/priorities';
 
 interface ConstraintsSelectorProps {
   selected: string[];
@@ -7,12 +8,11 @@ interface ConstraintsSelectorProps {
   isDarkMode: boolean;
 }
 
-const availableConstraints = [
-  { id: 'Cost Optimization', icon: '💰', description: 'Reduce cloud spend by 50-80%' },
-  { id: 'Speed to Market', icon: '🚀', description: 'Ship features 10x faster' },
-  { id: 'Enterprise Security', icon: '🔒', description: 'Bank-grade security, 99.99% uptime' },
-  { id: 'Global Performance', icon: '🌍', description: 'Delight users worldwide, <50ms' }
-];
+const availableConstraints = Object.entries(PRIORITY_MAPPINGS).map(([id, mapping]) => ({
+  id,
+  icon: mapping.emoji,
+  description: mapping.description
+}));
 
 export const ConstraintsSelector: React.FC<ConstraintsSelectorProps> = ({ 
   selected, 

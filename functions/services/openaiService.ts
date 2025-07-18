@@ -114,7 +114,7 @@ Available priorities for context:
 
     const userPrompt = `Generate a Cloudflare architecture for:
 - Application: ${input.appDescription}
-- User Type: ${input.persona}
+- User Type: ${input.persona === 'AIE/FDE' ? 'AI Engineer and Forward Deployed Engineer' : input.persona}
 - Scale: ${input.scale}
 - Region: ${input.region}
 - Key Constraints: ${finalConstraints.join(', ')}
@@ -262,11 +262,22 @@ Position nodes logically with users on the left, progressing to backend services
   public selectConstraints(persona: string): string[] {
     const personaMapping = {
       'Vibe Coder': ['Speed to Market', 'Cost Optimization', 'Global Performance'],
-      'FDE': ['Global Performance', 'Speed to Market', 'Cost Optimization'],
+      'AIE/FDE': ['Global Performance', 'Speed to Market', 'Cost Optimization'],
       'CIO/CTO': ['Enterprise Security', 'Cost Optimization', 'Global Performance']
     };
 
     return personaMapping[persona as keyof typeof personaMapping] || ['Global Performance', 'Cost Optimization', 'Speed to Market'];
+  }
+
+  // Auto-assign scale based on persona
+  public selectScale(persona: string): string {
+    const scaleMapping = {
+      'Vibe Coder': 'Startup',
+      'AIE/FDE': 'Growth', 
+      'CIO/CTO': 'Enterprise'
+    };
+
+    return scaleMapping[persona as keyof typeof scaleMapping] || 'Startup';
   }
 
   async generateConstraintAdvantages(input: {

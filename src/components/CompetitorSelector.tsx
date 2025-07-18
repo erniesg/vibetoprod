@@ -11,7 +11,7 @@ const competitors = [
   { id: 'AWS' as const, name: 'AWS', logo: '🟠' },
   { id: 'GCP' as const, name: 'GCP', logo: '🔵' },
   { id: 'Azure' as const, name: 'Azure', logo: '🔷' },
-  { id: 'Vercel' as const, name: 'Vercel', logo: '⚫' },
+  { id: 'Alibaba' as const, name: 'Alibaba', logo: '🟡' },
 ];
 
 export const CompetitorSelector: React.FC<CompetitorSelectorProps> = ({ 

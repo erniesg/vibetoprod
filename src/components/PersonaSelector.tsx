@@ -17,8 +17,8 @@ const personas = [
     selectedRing: 'ring-purple-500'
   },
   {
-    id: 'FDE' as const,
-    title: 'AI Engineer/Forward-Deployed Engineer',
+    id: 'AIE/FDE' as const,
+    title: 'AIE/FDE',
     icon: Users,
     gradient: 'from-blue-500 to-cyan-500',
     selectedRing: 'ring-blue-500'

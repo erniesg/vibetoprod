@@ -69,7 +69,7 @@ export class ModernOpenAIService {
     return `You are an expert cloud architect. Generate a detailed cloud architecture comparison for the following application.
 
 Application: "${input.appDescription}"
-Target Persona: ${input.persona}
+Target Persona: ${input.persona === 'AIE/FDE' ? 'AI Engineer and Forward Deployed Engineer' : input.persona}
 Scale: ${input.scale || 'Startup'}
 Region: ${input.region || 'Global'}
 Competitor: ${competitor}
@@ -119,7 +119,7 @@ Generate realistic, production-ready architectures that clearly show why Cloudfl
     // Persona-based priority preferences
     const personaPreferences = {
       'Vibe Coder': ['Speed to Market', 'Cost Optimization', 'Global Performance'],
-      'FDE': ['Speed to Market', 'Global Performance', 'Cost Optimization'], 
+      'AIE/FDE': ['Speed to Market', 'Global Performance', 'Cost Optimization'], 
       'CIO/CTO': ['Enterprise Security', 'Cost Optimization', 'Global Performance']
     };
     

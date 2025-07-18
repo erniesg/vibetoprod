@@ -82,7 +82,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onGenerate, loading,
         <p className={`text-base ${
           isDarkMode ? 'text-gray-200' : 'text-gray-700'
         }`}>
-          Tell us about your project and we'll design the perfect Cloudflare solution
+          Describe your project and AI will design the systems architecture for you
         </p>
       </div>
 

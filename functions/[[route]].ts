@@ -310,7 +310,7 @@ const createRealTimeStreamingResponse = async (c: any, userInput: any) => {
           openai.generateCloudflareArchitecture({
             appDescription: userInput.appDescription,
             persona: userInput.persona,
-            scale: userInput.scale || 'Startup',
+            scale: finalScale,
             constraints: userInput.constraints || [],
             region: userInput.region || 'Global'
           }),
@@ -318,7 +318,7 @@ const createRealTimeStreamingResponse = async (c: any, userInput: any) => {
             competitor: userInput.competitors?.[0] || 'AWS',
             appDescription: userInput.appDescription,
             persona: userInput.persona,
-            scale: userInput.scale || 'Startup',
+            scale: finalScale,
             region: userInput.region || 'Global'
           })
         ]);
@@ -532,13 +532,16 @@ app.post('/api/generate-architecture', async (c) => {
       const finalConstraints = userInput.constraints?.length > 0 
         ? userInput.constraints 
         : openai.selectConstraints(userInput.persona);
+      
+      // Auto-select scale if none provided
+      const finalScale = userInput.scale || openai.selectScale(userInput.persona);
 
       // Generate both architectures in parallel
       const [cloudflareArch, competitorArch] = await Promise.all([
         openai.generateCloudflareArchitecture({
           appDescription: userInput.appDescription,
           persona: userInput.persona,
-          scale: userInput.scale || 'Startup',
+          scale: finalScale,
           constraints: finalConstraints,
           region: userInput.region || 'Global'
         }),
@@ -546,7 +549,7 @@ app.post('/api/generate-architecture', async (c) => {
           competitor: userInput.competitors?.[0] || 'AWS',
           appDescription: userInput.appDescription,
           persona: userInput.persona,
-          scale: userInput.scale || 'Startup',
+          scale: finalScale,
           region: userInput.region || 'Global'
         })
       ]);
@@ -751,16 +754,22 @@ app.post('/api/generate-architecture-v2', async (c) => {
     }
 
     // Auto-select constraints if none provided
+    const openaiService = new OpenAIService(c.env.OPENAI_API_KEY);
     const finalConstraints = userInput.constraints?.length > 0 
       ? userInput.constraints 
-      : new OpenAIService(c.env.OPENAI_API_KEY).selectConstraints(userInput.persona);
+      : openaiService.selectConstraints(userInput.persona);
+      
+    // Auto-select scale if none provided  
+    const finalScale = userInput.scale || openaiService.selectScale(userInput.persona);
       
     console.log('🎯 Final constraints for V2:', finalConstraints);
+    console.log('🎯 Final scale for V2:', finalScale);
 
-    // Update userInput to include auto-selected constraints
+    // Update userInput to include auto-selected constraints and scale
     const updatedUserInput = {
       ...userInput,
-      constraints: finalConstraints
+      constraints: finalConstraints,
+      scale: finalScale
     };
 
     const modernOpenAI = new ModernOpenAIService(c.env.OPENAI_API_KEY);

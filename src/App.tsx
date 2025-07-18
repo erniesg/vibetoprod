@@ -15,7 +15,7 @@ function App() {
   useEffect(() => {
     if (!isAutoCycling) return;
     
-    const personas: UserInput['persona'][] = ['Vibe Coder', 'FDE', 'CIO/CTO'];
+    const personas: UserInput['persona'][] = ['Vibe Coder', 'AIE/FDE', 'CIO/CTO'];
     const interval = setInterval(() => {
       setCurrentPersona(prev => {
         const currentIndex = personas.indexOf(prev);
@@ -41,7 +41,7 @@ function App() {
           heroBackground: isDarkMode ? 'bg-gradient-to-br from-purple-800 via-pink-800 to-purple-800' : 'bg-gradient-to-br from-purple-100 via-pink-100 to-purple-100',
           headerAccent: 'from-purple-500 to-pink-500'
         };
-      case 'FDE':
+      case 'AIE/FDE':
         return {
           pageBackground: isDarkMode ? 'bg-gray-900' : 'bg-white',
           heroBackground: isDarkMode ? 'bg-gradient-to-br from-blue-800 via-cyan-800 to-blue-800' : 'bg-gradient-to-br from-blue-100 via-cyan-100 to-blue-100',
@@ -73,7 +73,7 @@ function App() {
               </div>
               <div>
                 <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Vibe to Prod</h1>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>The APAC Edge Blueprint</p>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>The Edge Advantage</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -100,16 +100,16 @@ function App() {
             <div className="mb-8">
               <h1 className={`text-5xl md:text-7xl font-bold bg-gradient-to-r ${
                 currentPersona === 'Vibe Coder' ? 'from-purple-400 via-pink-400 to-red-400' :
-                currentPersona === 'FDE' ? 'from-blue-400 via-cyan-400 to-teal-400' :
+                currentPersona === 'AIE/FDE' ? 'from-blue-400 via-cyan-400 to-teal-400' :
                 'from-orange-400 via-red-400 to-pink-400'
               } bg-clip-text text-transparent transition-all duration-500`}>
                 {currentPersona === 'Vibe Coder' ? 'Vibe Coders of the World Unite!' :
-                 currentPersona === 'FDE' ? 'Frontend Developers, Build Without Limits!' :
+                 currentPersona === 'AIE/FDE' ? 'AIE/FDE, Ship Your App to Region: Earth' :
                  'Leaders, Scale with Confidence!'}
               </h1>
               <p className={`text-xl md:text-2xl mt-6 font-medium transition-all duration-500 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                 {currentPersona === 'Vibe Coder' ? 'Go from vibe to prod in minutes with Cloudflare' :
-                 currentPersona === 'FDE' ? 'Deploy globally with zero backend complexity' :
+                 currentPersona === 'AIE/FDE' ? 'Deploy AI-native services globally with zero infrastructure complexity' :
                  'Enterprise-grade infrastructure that just works'}
               </p>
             </div>

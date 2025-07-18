@@ -1,8 +1,8 @@
 export interface UserInput {
-  persona: 'Vibe Coder' | 'FDE' | 'CIO/CTO';
+  persona: 'Vibe Coder' | 'AIE/FDE' | 'CIO/CTO';
   region: string;
   appDescription: string;
-  competitors: ('AWS' | 'GCP' | 'Azure' | 'Vercel')[];
+  competitors: ('AWS' | 'GCP' | 'Azure' | 'Alibaba')[];
   scale: 'Startup' | 'Growth' | 'Enterprise' | 'Global';
   constraints: string[];
   maxConstraints: number;
