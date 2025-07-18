@@ -25,7 +25,6 @@ interface ArchitectureEdge {
 }
 
 interface ConstraintValueProp {
-  icon: string;
   emoji: string;
   title: string;
   description: string;
@@ -255,55 +254,43 @@ Position nodes logically with users on the left, progressing to backend services
     cloudflareArch: { nodes: ArchitectureNode[]; edges: ArchitectureEdge[] };
     competitorArch: { nodes: ArchitectureNode[]; edges: ArchitectureEdge[] };
   }): Promise<ConstraintValueProp[]> {
-    const systemPrompt = `You are a cloud architecture expert. Your task is to generate exactly ${input.constraints.length} value propositions.
+    const systemPrompt = `You are a cloud architecture expert. Generate exactly ${input.constraints.length} concise value propositions comparing Cloudflare to ${input.competitor}.
 
-MANDATORY REQUIREMENTS:
+REQUIREMENTS:
 1. Return EXACTLY ${input.constraints.length} objects in a JSON array
-2. Start response with [ and end with ]
-3. Each constraint gets its own object
-4. NO single objects allowed
-
-OUTPUT MUST BE: [object1, object2, object3] for ${input.constraints.length} constraints`;
+2. Each description must be 1-2 sentences maximum
+3. Include specific metrics or concrete benefits
+4. Focus on architectural differences between the two platforms`;
 
     const userPrompt = `Compare these architectures for "${input.appDescription}":
 
-Cloudflare services: ${input.cloudflareArch.nodes.map(n => n.name).join(', ')}
-${input.competitor} services: ${input.competitorArch.nodes.map(n => n.name).join(', ')}
+Cloudflare: ${input.cloudflareArch.nodes.map(n => n.name).join(', ')}
+${input.competitor}: ${input.competitorArch.nodes.map(n => n.name).join(', ')}
 
-Generate ${input.constraints.length} value propositions, one for each of these constraints:
+Generate ${input.constraints.length} value propositions, one for each priority:
 ${input.constraints.map((c, i) => {
-  const iconMap = {
-    'Performance-Critical': { icon: 'TrendingUp', emoji: '⚡' },
-    'Cost-Conscious': { icon: 'DollarSign', emoji: '💰' },
-    'Security-First': { icon: 'Shield', emoji: '🔒' },
-    'Developer-Focused': { icon: 'Users', emoji: '👨‍💻' }
+  const priorityMap = {
+    'Performance-Critical': { emoji: '🌍', title: 'Global Performance' },
+    'Cost-Conscious': { emoji: '💰', title: 'Cost Optimization' },
+    'Security-First': { emoji: '🔒', title: 'Enterprise Security' },
+    'Developer-Focused': { emoji: '🚀', title: 'Speed to Market' }
   };
-  const iconData = iconMap[c as keyof typeof iconMap] || { icon: 'CheckCircle', emoji: '✅' };
-  return `${i+1}. ${c} (use icon: "${iconData.icon}", emoji: "${iconData.emoji}")`;
+  const priority = priorityMap[c as keyof typeof priorityMap] || { emoji: '✅', title: 'Cloudflare Advantage' };
+  return `${i+1}. ${c} (emoji: "${priority.emoji}", title: "${priority.title}")`;
 }).join('\n')}
 
-RETURN FORMAT: You MUST return a JSON array with exactly ${input.constraints.length} objects.
+Return JSON array with exactly ${input.constraints.length} objects:
+[{
+  "emoji": "🌍",
+  "title": "Global Performance",
+  "description": "Cloudflare delivers 40% faster response times vs ${input.competitor} with edge computing."
+}]
 
-EXACT REQUIRED FORMAT - Return JSON array starting with [ and ending with ]:
-[${input.constraints.map((c, i) => {
-  const iconMap = {
-    'Performance-Critical': { icon: 'TrendingUp', emoji: '⚡' },
-    'Cost-Conscious': { icon: 'DollarSign', emoji: '💰' },
-    'Security-First': { icon: 'Shield', emoji: '🔒' },
-    'Developer-Focused': { icon: 'Users', emoji: '👨‍💻' }
-  };
-  const iconData = iconMap[c as keyof typeof iconMap] || { icon: 'CheckCircle', emoji: '✅' };
-  return `\n  {"icon": "${iconData.icon}", "emoji": "${iconData.emoji}", "title": "Title for ${c}", "description": "Description for ${c} with metrics..."}`;
-}).join(',')}
-]
-
-Each object in the array must correspond to one constraint in the exact order listed above.
-
-Match each constraint to the appropriate icon/emoji:
-- Performance-Critical: TrendingUp/⚡
-- Cost-Conscious: DollarSign/💰
-- Security-First: Shield/🔒
-- Developer-Focused: Users/👨‍💻`;
+Each description must:
+- Be 1-2 sentences maximum
+- Include specific metrics (%, ms, $, etc.)
+- Compare architectural differences
+- Focus on concrete benefits`;
 
     const messages = [
       { role: 'system', content: systemPrompt },

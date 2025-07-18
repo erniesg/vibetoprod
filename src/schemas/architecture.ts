@@ -27,13 +27,9 @@ export const diagramEdgeSchema = z.object({
 });
 
 export const constraintValuePropSchema = z.object({
-  icon: z.enum([
-    'TrendingUp', 'DollarSign', 'Shield', 'Users', 'Globe', 
-    'Zap', 'CheckCircle', 'BarChart3', 'Lock', 'Cpu'
-  ]).describe('Lucide icon name'),
   emoji: z.string().describe('Display emoji'),
   title: z.string().describe('Short compelling title'),
-  description: z.string().describe('Detailed comparison with specific metrics')
+  description: z.string().describe('1-2 sentence comparison with specific metrics')
 });
 
 // Main architecture response schema

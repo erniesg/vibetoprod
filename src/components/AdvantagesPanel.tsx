@@ -11,7 +11,6 @@ interface AdvantagesPanelProps {
   competitor: string;
   streamingMode?: boolean;
   constraintValueProps?: Array<{
-    icon: string;
     emoji: string;
     title: string;
     description: string;
@@ -227,9 +226,6 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
             <ArrowRight className="w-4 h-4" />
           </div>
         </div>
-        <p className="text-orange-100 mt-3 text-base">
-          How Cloudflare delivers on your key constraints
-        </p>
       </div>
 
       {/* Content */}
@@ -259,7 +255,7 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
           <div className="space-y-6">
             {displayAdvantages.map((advantage, index) => {
               const colors = getAdvantageColors(index);
-              const Icon = streamingMode ? getIconByName(advantage.icon) : advantage.icon;
+              // Only use emoji in streaming mode, no redundant icon
               
               return (
                 <div 
@@ -270,20 +266,15 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
                       : 'bg-white border-gray-200 hover:bg-gray-50'
                   } ${streamingMode ? 'animate-slide-in' : ''}`}
                   style={streamingMode ? { animationDelay: `${index * 200}ms` } : {}}>
-                  <div className={`p-3 rounded-xl ${colors.iconBg} flex-shrink-0`}>
-                    <div className={colors.text}>
-                      <Icon className="w-8 h-8" />
-                    </div>
+                  <div className={`p-4 rounded-xl ${colors.iconBg} flex-shrink-0 flex items-center justify-center`}>
+                    <span className="text-3xl">{advantage.emoji}</span>
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <span className="text-2xl">{advantage.emoji}</span>
-                      <h4 className={`text-lg font-bold ${
-                        isDarkMode ? 'text-white' : 'text-gray-900'
-                      }`}>
-                        {advantage.title}
-                      </h4>
-                    </div>
+                    <h4 className={`text-lg font-bold mb-2 ${
+                      isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}>
+                      {advantage.title}
+                    </h4>
                     <p className={`text-sm leading-relaxed ${
                       isDarkMode ? 'text-gray-300' : 'text-gray-700'
                     }`}>

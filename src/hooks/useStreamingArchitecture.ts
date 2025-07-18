@@ -10,7 +10,6 @@ interface StreamingChunk {
 }
 
 interface ConstraintValueProp {
-  icon: string;
   emoji: string;
   title: string;
   description: string;
