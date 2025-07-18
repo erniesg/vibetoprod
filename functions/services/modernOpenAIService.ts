@@ -104,13 +104,13 @@ CRITICAL REQUIREMENTS:
      * Speed to Market: emoji "🚀", title "Speed to Market"  
      * Enterprise Security: emoji "🔒", title "Enterprise Security"
      * Global Performance: emoji "🌍", title "Global Performance"
-   - Each description MUST include quantified multipliers AND direct business impact (e.g., "**10x faster** deployment = ship features weekly vs monthly")
-   - MANDATORY: Connect every multiplier to business value - revenue, time-to-market, operational efficiency, customer satisfaction
-   - Use **bold** formatting for multipliers and business outcomes (e.g., "Deploy **10x faster** = **capture market opportunities** first")
-   - Link performance to business results: faster = more revenue, cheaper = better margins, secure = reduced risk, global = bigger market
+   - Keep descriptions SHORT and punchy (maximum 15 words)
+   - ALWAYS compare directly vs ${competitor} (e.g., "vs AWS's 5-service setup")
+   - Use arrows for impact: "**Built-in DDoS protection** vs AWS's complex setup → **zero downtime**"
+   - Format: "Cloudflare advantage vs ${competitor} disadvantage → business outcome"
+   - MANDATORY: Include quantified multipliers with competitor comparison
    - Focus on: ${this.getConstraintFocus(selectedConstraints)}
-   - Show concrete examples from architecture diagrams (e.g., "1 Workers service vs 3 EC2 instances")
-   - Examples of required format: "**5x cost reduction** = **higher profit margins**", "**3x performance boost** = **better user retention**", "**10x faster** deployment = **beat competitors to market**"
+   - Examples: "**Zero egress fees** vs AWS's punitive charges → **5x cost savings**", "**1 Workers service** vs AWS's 3 EC2 instances → **10x faster** deployment"
 
 4. ARCHITECTURE PATTERNS BY APP TYPE:
 ${this.getAppTypeGuidance(appType, input.persona)}
