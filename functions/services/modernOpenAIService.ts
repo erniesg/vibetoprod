@@ -104,11 +104,12 @@ CRITICAL REQUIREMENTS:
      * Speed to Market: emoji "🚀", title "Speed to Market"  
      * Enterprise Security: emoji "🔒", title "Enterprise Security"
      * Global Performance: emoji "🌍", title "Global Performance"
-   - Each description should be 1 sentence maximum with specific metrics
-   - Include specific metrics comparing Cloudflare vs ${competitor}
+   - Each description should be 1 sentence maximum with dynamic performance metrics
+   - Use multipliers and speed comparisons (e.g., "10x faster", "3x speed boost", "5x reduction") instead of percentages
    - Reference the generated architectures to explain WHY Cloudflare is superior
    - Focus on: ${this.getConstraintFocus(selectedConstraints)}
    - Show concrete examples from the architecture diagrams (e.g., "1 Workers service vs 3 EC2 instances")
+   - Vary the language: "lightning fast", "instant", "blazing speed", "dramatically faster", "orders of magnitude"
 
 4. ARCHITECTURE PATTERNS BY APP TYPE:
 ${this.getAppTypeGuidance(appType, input.persona)}
