@@ -187,7 +187,6 @@ export function useStreamingArchitectureV2() {
   
 
   // Calculate completion status
-  const isComplete = !isLoading && !!object;
   const hasData = cloudflareNodes.length > 0 || competitorNodes.length > 0;
   
   
