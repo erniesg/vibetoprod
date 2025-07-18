@@ -12,6 +12,26 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Scribble animation for bold text hover */
+@keyframes scribble {
+  0% {
+    stroke-dasharray: 0 300;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 150 150;
+    stroke-dashoffset: -75;
+  }
+  100% {
+    stroke-dasharray: 300 0;
+    stroke-dashoffset: -150;
+  }
+}
+
+.animate-scribble {
+  animation: scribble 0.8s ease-in-out;
+}
+
 /* Custom slider styles */
 .slider::-webkit-slider-thumb {
   appearance: none;

@@ -1,16 +1,38 @@
 import React from 'react';
 import { CheckCircle, ArrowRight, DollarSign, Shield, Globe, Users, TrendingUp } from 'lucide-react';
 
-// Helper function to render text with bold formatting
+// Helper function to render text with bold formatting and scribble effect
 const renderTextWithBold = (text: string, isDarkMode: boolean) => {
   const parts = text.split(/(\*\*.*?\*\*)/);
   return parts.map((part, index) => {
     if (part.startsWith('**') && part.endsWith('**')) {
       const boldText = part.slice(2, -2);
       return (
-        <strong key={index} className={isDarkMode ? 'text-orange-400' : 'text-orange-600'}>
-          {boldText}
-        </strong>
+        <span key={index} className="relative inline-block group">
+          <strong className={`${isDarkMode ? 'text-orange-400' : 'text-orange-600'} relative z-10`}>
+            {boldText}
+          </strong>
+          {/* Scribble circle SVG */}
+          <svg 
+            className="absolute inset-0 w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+            style={{ 
+              transform: 'scale(1.2)',
+              transformOrigin: 'center'
+            }}
+            viewBox="0 0 120 40"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M15,20 Q30,5 45,20 Q60,35 75,20 Q90,5 105,20 Q90,35 75,20 Q60,5 45,20 Q30,35 15,20"
+              fill="none"
+              stroke={isDarkMode ? '#fb923c' : '#ea580c'}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="animate-scribble"
+            />
+          </svg>
+        </span>
       );
     }
     return part;
