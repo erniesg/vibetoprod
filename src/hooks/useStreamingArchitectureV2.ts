@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { architectureResponseSchema } from '../schemas/architecture';
 import type { UserInput } from '../types';
 import type { z } from 'zod';
@@ -101,17 +101,19 @@ export function useStreamingArchitectureV2() {
     }
   }, []);
 
-  // Log final complete object when streaming completes
+  // Log final complete object when streaming completes (only once)
   const isComplete = !isLoading && !!object;
-  if (isComplete && object) {
-    console.log('✅ Complete:', {
-      cfNodes: object.cloudflare?.nodes?.length || 0,
-      cfEdges: object.cloudflare?.edges?.length || 0,
-      compNodes: object.competitor?.nodes?.length || 0,
-      compEdges: object.competitor?.edges?.length || 0,
-      valueProps: object.constraintValueProps?.length || 0
-    });
-  }
+  useEffect(() => {
+    if (isComplete && object) {
+      console.log('✅ Complete:', {
+        cfNodes: object.cloudflare?.nodes?.length || 0,
+        cfEdges: object.cloudflare?.edges?.length || 0,
+        compNodes: object.competitor?.nodes?.length || 0,
+        compEdges: object.competitor?.edges?.length || 0,
+        valueProps: object.constraintValueProps?.length || 0
+      });
+    }
+  }, [isComplete, object]);
 
   const reset = useCallback(() => {
     setObject(null);
@@ -135,21 +137,11 @@ export function useStreamingArchitectureV2() {
     return isComplete;
   });
   
-  // Debug disappearing nodes - only log when nodes actually disappear
+  // Debug disappearing nodes - minimal logging
   if (allCloudflareNodes.length > 0 && cloudflareNodes.length === 0) {
-    console.warn('🐛 BUG: All Cloudflare nodes filtered out!');
-    console.warn('Raw nodes:', allCloudflareNodes);
-    console.warn('Validation failures:');
-    allCloudflareNodes.forEach(node => {
-      if (!node) console.warn('- Node is null/undefined');
-      else if (typeof node !== 'object') console.warn('- Node is not object:', typeof node);
-      else if (!node.id) console.warn('- Missing id:', node);
-      else if (!node.type) console.warn('- Missing type:', node);
-      else if (!node.name) console.warn('- Missing name:', node);
-      else if (!node.position) console.warn('- Missing position:', node);
-      else if (typeof node.position !== 'object') console.warn('- Position not object:', node);
-      else if (typeof node.position.x !== 'number') console.warn('- Position.x not number:', node);
-      else if (typeof node.position.y !== 'number') console.warn('- Position.y not number:', node);
+    console.warn('🐛 BUG: All Cloudflare nodes filtered out!', {
+      rawCount: allCloudflareNodes.length,
+      filteredCount: cloudflareNodes.length
     });
   }
   
