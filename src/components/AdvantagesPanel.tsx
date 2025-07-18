@@ -176,26 +176,6 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
   const shouldShowLoading = streamingMode && constraintValueProps.length === 0;
   const hasValidData = displayAdvantages.length > 0;
 
-  // Debug logging
-  if (streamingMode) {
-    console.log('🔍 AdvantagesPanel Debug:', {
-      constraints: constraints.length,
-      constraintValueProps: constraintValueProps.length,
-      displayAdvantages: displayAdvantages.length,
-      shouldShowLoading,
-      hasValidData,
-      streamingMode,
-      loading
-    });
-    
-    if (constraintValueProps.length > 0) {
-      console.log('🎯 AdvantagesPanel received constraintValueProps:', constraintValueProps);
-    }
-    
-    if (displayAdvantages.length > 0) {
-      console.log('🎯 AdvantagesPanel displayAdvantages:', displayAdvantages);
-    }
-  }
 
   const getAdvantageColors = (index: number) => {
     const colorSets = [

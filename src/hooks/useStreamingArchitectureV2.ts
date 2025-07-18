@@ -69,23 +69,15 @@ export function useStreamingArchitectureV2() {
             
             try {
               const partialObject = JSON.parse(dataStr);
-              console.log('📦 V2 Streaming Chunk:', partialObject);
-              
-              // Debug constraintValueProps specifically
-              if (partialObject.constraintValueProps && partialObject.constraintValueProps.length > 0) {
-                console.log('🎯 CONSTRAINT VALUE PROPS RECEIVED:', partialObject.constraintValueProps);
-              }
-              
               setObject(partialObject);
             } catch (parseError) {
-              console.warn('Failed to parse chunk:', dataStr);
+              // Parse error - continue processing other chunks
             }
           }
         }
       }
 
     } catch (err) {
-      console.error('🚨 V2 Streaming Error:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
       setIsLoading(false);
     }
@@ -110,14 +102,9 @@ export function useStreamingArchitectureV2() {
       typeof node.position.x === 'number' && 
       typeof node.position.y === 'number';
     
-    if (!isComplete && node?.id) {
     return isComplete;
   });
   
-  // Debug disappearing nodes bug
-  if (allCloudflareNodes.length > 0 && cloudflareNodes.length === 0) {
-    console.warn('🐛 Cloudflare nodes filtered out - check validation. Raw nodes:', allCloudflareNodes);
-  }
   const cloudflareEdges = (object?.cloudflare?.edges || []).filter(edge => 
     edge && 
     typeof edge === 'object' && 
@@ -160,9 +147,6 @@ export function useStreamingArchitectureV2() {
       prop.description && 
       prop.emoji;
     
-    if (!isValid) {
-    }
-    
     return isValid;
   });
   
@@ -171,9 +155,6 @@ export function useStreamingArchitectureV2() {
   const isComplete = !isLoading && !!object;
   const hasData = cloudflareNodes.length > 0 || competitorNodes.length > 0;
   
-  // Debug logging
-  if (object && (cloudflareNodes.length > 0 || competitorNodes.length > 0)) {
-  }
   
   // Progress tracking
   const progress = {
