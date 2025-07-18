@@ -94,7 +94,7 @@ CRITICAL REQUIREMENTS:
      * Speed to Market: emoji "🚀", title "Speed to Market"  
      * Enterprise Security: emoji "🔒", title "Enterprise Security"
      * Global Performance: emoji "🌍", title "Global Performance"
-   - Format: "**Service/Feature comparison with specific numbers** → **quantifiable outcome (%, x)** or brief explainer stating how this impacts business value, attention-grabbing spin"
+   - Format: "**Cloudflare vs. ${competitor} comparison with specific services** → **quantifiable outcome (%, x)** or brief explainer stating how this impacts business value"
    - MUST reference actual generated services from both architectures with specific numbers when possible
    - Include quantified multipliers and engaging benefit statements that make mathematical sense
    - Focus on: ${this.getConstraintFocus(selectedConstraints)}
