@@ -11,8 +11,7 @@ export function useStreamingArchitectureV2() {
   const [error, setError] = useState<string | null>(null);
 
   const generateArchitecture = useCallback(async (userInput: UserInput) => {
-    console.log('🚀 V2 Starting architecture generation:', userInput);
-    
+      
     setIsLoading(true);
     setError(null);
     setObject(null);
@@ -112,11 +111,13 @@ export function useStreamingArchitectureV2() {
       typeof node.position.y === 'number';
     
     if (!isComplete && node?.id) {
-      console.log(`⏳ Incomplete node ${node.id}:`, node);
-    }
-    
     return isComplete;
   });
+  
+  // Debug disappearing nodes bug
+  if (allCloudflareNodes.length > 0 && cloudflareNodes.length === 0) {
+    console.warn('🐛 Cloudflare nodes filtered out - check validation. Raw nodes:', allCloudflareNodes);
+  }
   const cloudflareEdges = (object?.cloudflare?.edges || []).filter(edge => 
     edge && 
     typeof edge === 'object' && 
@@ -151,7 +152,6 @@ export function useStreamingArchitectureV2() {
     advantage.trim().length > 0
   );
   const allConstraintValueProps = object?.constraintValueProps || [];
-  console.log('🔍 All constraintValueProps from object:', allConstraintValueProps);
   
   const constraintValueProps = allConstraintValueProps.filter(prop => {
     const isValid = prop && 
@@ -161,13 +161,11 @@ export function useStreamingArchitectureV2() {
       prop.emoji;
     
     if (!isValid) {
-      console.log('❌ Invalid constraintValueProp:', prop);
     }
     
     return isValid;
   });
   
-  console.log('✅ Filtered constraintValueProps:', constraintValueProps);
 
   // Calculate completion status
   const isComplete = !isLoading && !!object;
@@ -175,7 +173,6 @@ export function useStreamingArchitectureV2() {
   
   // Debug logging
   if (object && (cloudflareNodes.length > 0 || competitorNodes.length > 0)) {
-    console.log(`🎯 Rendering: CF nodes: ${cloudflareNodes.length}/${allCloudflareNodes.length}, CF edges: ${cloudflareEdges.length}, Competitor nodes: ${competitorNodes.length}, Advantages: ${advantages.length}, Value props: ${constraintValueProps.length}`);
   }
   
   // Progress tracking
