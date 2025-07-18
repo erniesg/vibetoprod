@@ -105,6 +105,24 @@ export function useStreamingArchitectureV2() {
     return isComplete;
   });
   
+  // Debug disappearing nodes - only log when nodes actually disappear
+  if (allCloudflareNodes.length > 0 && cloudflareNodes.length === 0) {
+    console.warn('🐛 BUG: All Cloudflare nodes filtered out!');
+    console.warn('Raw nodes:', allCloudflareNodes);
+    console.warn('Validation failures:');
+    allCloudflareNodes.forEach(node => {
+      if (!node) console.warn('- Node is null/undefined');
+      else if (typeof node !== 'object') console.warn('- Node is not object:', typeof node);
+      else if (!node.id) console.warn('- Missing id:', node);
+      else if (!node.type) console.warn('- Missing type:', node);
+      else if (!node.name) console.warn('- Missing name:', node);
+      else if (!node.position) console.warn('- Missing position:', node);
+      else if (typeof node.position !== 'object') console.warn('- Position not object:', node);
+      else if (typeof node.position.x !== 'number') console.warn('- Position.x not number:', node);
+      else if (typeof node.position.y !== 'number') console.warn('- Position.y not number:', node);
+    });
+  }
+  
   const cloudflareEdges = (object?.cloudflare?.edges || []).filter(edge => 
     edge && 
     typeof edge === 'object' && 
