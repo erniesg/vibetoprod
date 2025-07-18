@@ -13,7 +13,13 @@ export const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'L
   // Create fresh graph for each layout (no shared state)
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
-  dagreGraph.setGraph({ rankdir: direction });
+  dagreGraph.setGraph({ 
+    rankdir: direction,
+    nodesep: 150,  // Space between nodes on same rank
+    ranksep: 200,  // Space between ranks (layers) 
+    marginx: 80,   // Graph margin
+    marginy: 80
+  });
 
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });

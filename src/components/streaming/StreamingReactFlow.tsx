@@ -380,7 +380,7 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
       </div>
 
       {/* React Flow Container */}
-      <div className="h-96 relative">
+      <div className="h-[600px] relative">
         {nodeData.length === 0 && !isStreaming ? (
           <div className={`h-full flex items-center justify-center ${
             isDarkMode ? 'text-gray-400' : 'text-gray-500'
@@ -412,7 +412,7 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
             }}
             minZoom={0.5}
             maxZoom={2}
-            defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+            defaultViewport={{ x: 0, y: 0, zoom: 0.7 }}
             className={isDarkMode ? 'dark' : ''}
           >
             <Background 
