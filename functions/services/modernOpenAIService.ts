@@ -84,6 +84,7 @@ CRITICAL REQUIREMENTS:
 
 1. CLOUDFLARE ARCHITECTURE:
    - Generate 4-6 Cloudflare services that best fit the application
+   - ALWAYS include a Users/Actor node at the start (type: 'users', leftmost position)
    - Include: Workers, Pages, D1, R2, KV, Durable Objects, Analytics, etc.
    - Position nodes in a logical flow from left (users) to right (backend)
    - Use Cloudflare orange colors (#f97316, #ea580c, #dc2626)
@@ -92,6 +93,7 @@ CRITICAL REQUIREMENTS:
 
 2. COMPETITOR ARCHITECTURE (${competitor}):
    - Generate 5-7 equivalent ${competitor} services
+   - ALWAYS include a Users/Actor node at the start (type: 'users', leftmost position)
    - Include their typical stack: EC2/Lambda, RDS/DynamoDB, S3, CloudFront, etc.
    - Use gray colors (#6b7280, #4b5563)
    - Show the complexity of their multi-service approach
