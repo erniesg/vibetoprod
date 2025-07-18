@@ -96,9 +96,9 @@ function App() {
       <section className={`relative overflow-hidden ${theme.heroBackground}`}>
         <div className={`absolute inset-0 bg-[url('${SVG_PATTERN}')] opacity-20`}></div>
         <div className="relative px-8 py-16">
-          <div className="text-center max-w-4xl mx-auto">
+          <div className="text-center max-w-5xl mx-auto">
             <div className="mb-8">
-              <h1 className={`text-4xl md:text-6xl font-bold transition-all duration-500`}>
+              <h1 className={`text-4xl md:text-7xl font-bold transition-all duration-500`}>
                 {currentPersona === 'Vibe Coder' ? (
                   <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent">
                     Vibe Coders of the World Unite!
@@ -108,7 +108,7 @@ function App() {
                     <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">
                       Ship Your App to Region: 
                     </span>
-                    <span className="text-4xl md:text-6xl"> 🌍</span>
+                    <span className="text-4xl md:text-7xl"> 🌍</span>
                   </>
                 ) : (
                   <span className="bg-gradient-to-r from-orange-400 via-red-400 to-pink-400 bg-clip-text text-transparent">
@@ -116,7 +116,7 @@ function App() {
                   </span>
                 )}
               </h1>
-              <p className={`text-lg md:text-xl mt-6 font-medium transition-all duration-500 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+              <p className={`text-xl md:text-2xl mt-6 font-medium transition-all duration-500 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                 {currentPersona === 'Vibe Coder' ? 'Go from vibe to prod in minutes with Cloudflare' :
                  currentPersona === 'AIE/FDE' ? 'Deploy AI-native services globally with 0 DevOps' :
                  'Day 1 compliance + global scale at half the cost'}
