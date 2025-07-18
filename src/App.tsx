@@ -144,19 +144,27 @@ function App() {
       <footer className={`${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} border-t`}>
         <div className="px-8 py-6">
           <div className="flex items-center justify-between">
-            <div className={`flex items-center space-x-2 text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              <Sparkles className="w-4 h-4" />
-              <span>Powered by Cloudflare</span>
+            <div className={`flex items-center space-x-3 text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              <div className="flex items-center space-x-2">
+                <Sparkles className="w-4 h-4" />
+                <span>Powered by Cloudflare</span>
+              </div>
+              <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                AI-generated for demo purposes
+              </span>
             </div>
             <div className={`flex items-center space-x-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              <span>Made with ❤️ by erniesg</span>
+              <span>Made with ❤️ by </span>
+              <a 
+                href="https://github.com/erniesg" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={`hover:text-orange-500 transition-colors ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}
+              >
+                erniesg
+              </a>
               <Github className="w-4 h-4" />
             </div>
-          </div>
-          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-            <p className={`text-xs text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              All architecture diagrams and performance claims are AI-generated for demonstration purposes only.
-            </p>
           </div>
         </div>
       </footer>
