@@ -106,12 +106,11 @@ CRITICAL REQUIREMENTS:
      * Speed to Market: emoji "🚀", title "Speed to Market"  
      * Enterprise Security: emoji "🔒", title "Enterprise Security"
      * Global Performance: emoji "🌍", title "Global Performance"
-   - Descriptions should be 2-3 sentences with specific architectural references
-   - MUST reference actual generated services from both architectures (e.g., "Cloudflare's D1 database vs AWS's RDS + ElastiCache combination")
-   - Include quantified multipliers with competitor comparison
-   - Format: "Cloudflare advantage vs ${competitor} disadvantage → business outcome with context"
+   - Format: "**Service/Feature comparison with specific numbers** → **quantifiable outcome (%, x)** or brief explainer stating how this impacts business value, attention-grabbing spin"
+   - MUST reference actual generated services from both architectures with specific numbers when possible
+   - Include quantified multipliers and engaging benefit statements
    - Focus on: ${this.getConstraintFocus(selectedConstraints)}
-   - Examples: "**Cloudflare Workers** handle compute at 300+ locations vs **AWS Lambda** requiring separate API Gateway and ALB setup → **10x faster** cold starts and no regional bottlenecks"
+   - Examples: "**Workers at 300+ locations** vs **AWS Lambda in 3 regions** → **10x faster** cold starts keep users engaged and coming back for more", "**R2 zero egress fees** vs **AWS S3's $0.09/GB charges** → **80% cost reduction** frees up budget for hiring that star developer", "**Built-in DDoS protection** vs **AWS WAF + Shield ($3k/month)** → **5x faster** security setup means sleeping soundly at night"
 
 4. ARCHITECTURE PATTERNS BY APP TYPE:
 ${this.getAppTypeGuidance(appType, input.persona)}
