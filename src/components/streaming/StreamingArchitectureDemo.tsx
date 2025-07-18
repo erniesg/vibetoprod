@@ -25,7 +25,6 @@ export const StreamingArchitectureDemo: React.FC<StreamingArchitectureDemoProps>
     competitorNodes,
     cloudflareEdges,
     competitorEdges,
-    advantages,
     constraintValueProps,
     isStreaming,
     isComplete,
@@ -135,7 +134,6 @@ export const StreamingArchitectureDemo: React.FC<StreamingArchitectureDemoProps>
         <section className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} py-12 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
           <div className="px-8 max-w-5xl mx-auto">
             <AdvantagesPanel
-              advantages={advantages}
               loading={isStreaming && constraintValueProps.length === 0}
               persona={currentPersona}
               isDarkMode={isDarkMode}
