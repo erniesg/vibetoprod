@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { OpenAIService } from './services/openaiService';
+import { ModernOpenAIService } from './services/modernOpenAIService';
 import { CacheService } from './services/cacheService';
 import type { Env } from './types';
 
@@ -732,6 +733,104 @@ app.post('/api/generate-architecture', async (c) => {
   });
 });
 
+// NEW: True streaming with Vercel AI SDK
+app.post('/api/generate-architecture-v2', async (c) => {
+  try {
+    const requestBody = await c.req.json();
+    console.log('🚀 V2 Generate Architecture Request:', requestBody);
+    
+    // Handle both direct input and wrapped input from experimental_useObject
+    const userInput = requestBody.input || requestBody;
+    console.log('🎯 Processed user input:', userInput);
+    
+    if (!c.env.OPENAI_API_KEY) {
+      return c.json({ error: 'OpenAI API key not configured' }, 400);
+    }
+
+    const modernOpenAI = new ModernOpenAIService(c.env.OPENAI_API_KEY);
+    const result = await modernOpenAI.streamArchitecture(userInput);
+    
+    // Stream the partial objects using Server-Sent Events
+    const stream = new ReadableStream({
+      async start(controller) {
+        const encoder = new TextEncoder();
+        
+        try {
+          console.log('🔄 Starting to consume partialObjectStream...');
+          let chunkCount = 0;
+          
+          // Check if partialObjectStream exists
+          if ('partialObjectStream' in result) {
+            console.log('✅ partialObjectStream found! Using it...');
+            // Use partialObjectStream as documented
+            for await (const partialObject of result.partialObjectStream) {
+              chunkCount++;
+              console.log(`📦 Partial object ${chunkCount}:`, partialObject);
+              const chunk = `data: ${JSON.stringify(partialObject)}\n\n`;
+              controller.enqueue(encoder.encode(chunk));
+            }
+          } else {
+            console.log('❌ partialObjectStream not found, using baseStream...');
+            // Fallback to baseStream
+            const reader = result.baseStream.getReader();
+          
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              
+              chunkCount++;
+              console.log(`📦 Streaming chunk ${chunkCount} (type: ${typeof value}):`, value);
+              
+              // Handle different value types
+              if (typeof value === 'string') {
+                // Already a string
+                controller.enqueue(encoder.encode(value));
+              } else if (value instanceof Uint8Array) {
+                // Bytes array - decode first
+                const text = new TextDecoder().decode(value);
+                controller.enqueue(encoder.encode(text));
+              } else {
+                // Object or other type - stringify
+                const text = JSON.stringify(value);
+                controller.enqueue(encoder.encode(text));
+              }
+            }
+          }
+          
+          console.log(`✅ Stream complete. Total chunks: ${chunkCount}`);
+          
+          // Send completion marker
+          controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+        } catch (error) {
+          console.error('❌ Streaming error:', error);
+          const errorChunk = `data: ${JSON.stringify({ error: error.message })}\n\n`;
+          controller.enqueue(encoder.encode(errorChunk));
+        } finally {
+          controller.close();
+        }
+      }
+    });
+    
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    });
+
+  } catch (error) {
+    console.error('❌ V2 API Error:', error);
+    return c.json({ 
+      error: 'Failed to generate architecture',
+      details: error.message 
+    }, 500);
+  }
+});
+
 // Health check
 app.get('/api/health', (c) => {
   return c.json({ 
@@ -750,8 +849,8 @@ app.get('*', (c) => {
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vibe to Prod: The APAC Edge Blueprint</title>
-    <script type="module" crossorigin src="/assets/index-BTOYLb-T.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-DM-siCN2.css">
+    <script type="module" crossorigin src="/assets/index-CKm2B1Iw.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BmtrZPm_.css">
   </head>
   <body>
     <div id="root"></div>

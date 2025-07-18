@@ -234,7 +234,7 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
         nodeType = 'database';
       } else if (node.type === 'storage' || node.type === 'r2' || node.type === 's3' || node.type === 'kv') {
         nodeType = 'storage';
-      } else if (node.name.toLowerCase().includes('decision') || node.name.toLowerCase().includes('route') || node.name.toLowerCase().includes('gateway')) {
+      } else if (node.name && (node.name.toLowerCase().includes('decision') || node.name.toLowerCase().includes('route') || node.name.toLowerCase().includes('gateway'))) {
         nodeType = 'decision';
       } else {
         nodeType = 'process'; // services, workers, functions, etc.
@@ -243,12 +243,12 @@ export const StreamingReactFlow: React.FC<StreamingReactFlowProps> = ({
       const reactFlowNode = {
         id: node.id,
         type: nodeType,
-        position: node.position,
+        position: node.position || { x: 0, y: 0 },
         data: {
-          label: node.name,
-          type: node.type,
+          label: node.name || '',
+          type: node.type || 'service',
           variant,
-          subtitle: node.subtitle,
+          subtitle: node.subtitle || '',
         },
         draggable: false,
       };

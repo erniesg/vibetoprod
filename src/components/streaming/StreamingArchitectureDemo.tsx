@@ -3,7 +3,7 @@ import { UserInput } from '../../types';
 import { StreamingControlPanel } from './StreamingControlPanel';
 import { StreamingReactFlow } from './StreamingReactFlow';
 import { AdvantagesPanel } from '../AdvantagesPanel';
-import { useStreamingArchitecture } from '../../hooks/useStreamingArchitecture';
+import { useStreamingArchitectureV2 } from '../../hooks/useStreamingArchitectureV2';
 
 interface StreamingArchitectureDemoProps {
   isDarkMode: boolean;
@@ -30,7 +30,7 @@ export const StreamingArchitectureDemo: React.FC<StreamingArchitectureDemoProps>
     error,
     generateArchitecture,
     reset
-  } = useStreamingArchitecture();
+  } = useStreamingArchitectureV2();
 
   const handleGenerate = async (input: UserInput) => {
     setCurrentInput(input);
