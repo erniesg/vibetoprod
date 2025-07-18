@@ -128,11 +128,13 @@ function App() {
 
       {/* Main Content */}
       <main className="space-y-0">
-        <StreamingArchitectureDemo
-          isDarkMode={isDarkMode}
-          currentPersona={currentPersona}
-          onPersonaChange={handlePersonaChange}
-        />
+        {!showWhitepaper && (
+          <StreamingArchitectureDemo
+            isDarkMode={isDarkMode}
+            currentPersona={currentPersona}
+            onPersonaChange={handlePersonaChange}
+          />
+        )}
       </main>
 
       {/* Whitepaper Content - Only show if ?whitepaper=true */}
