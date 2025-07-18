@@ -150,13 +150,14 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
   // In streaming mode, use the props passed in; otherwise generate them
   const generatedValueProps = streamingMode ? constraintValueProps : generateConstraintValueProps();
   
-  // Always show advantages if we have constraints, otherwise show default message
+  // In streaming mode, always show constraintValueProps (auto-selected or user-selected)
+  // In non-streaming mode, only show if user has selected constraints
   const displayAdvantages = streamingMode 
     ? constraintValueProps 
     : (constraints.length > 0 ? generatedValueProps : []);
 
-  // Show loading state during streaming when we have constraints but no constraint value props yet
-  const shouldShowLoading = streamingMode && constraints.length > 0 && constraintValueProps.length === 0;
+  // Show loading state during streaming when we should have constraint value props but don't yet
+  const shouldShowLoading = streamingMode && constraintValueProps.length === 0;
   const hasValidData = displayAdvantages.length > 0;
 
   // Debug logging
@@ -297,7 +298,7 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
             <p className={`text-base ${
               isDarkMode ? 'text-gray-300' : 'text-gray-600'
             }`}>
-              Select constraints to see targeted value propositions
+              Select priorities to see targeted value propositions
             </p>
           </div>
         )}

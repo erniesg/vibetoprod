@@ -91,6 +91,7 @@ export class OpenAIService {
     return data.choices[0].message.content;
   }
 
+
   async generateCloudflareArchitecture(input: {
     appDescription: string;
     persona: string;
@@ -98,15 +99,25 @@ export class OpenAIService {
     constraints: string[];
     region: string;
   }): Promise<{ nodes: ArchitectureNode[]; edges: ArchitectureEdge[]; advantages?: string[]; valueProps?: string[] }> {
+    // Auto-select constraints if none provided
+    const finalConstraints = input.constraints.length > 0 
+      ? input.constraints 
+      : this.selectConstraints(input.persona);
     const systemPrompt = `You are an expert cloud architect specializing in Cloudflare's edge computing platform. 
-Generate architectures that showcase Cloudflare's unique advantages: zero egress fees, global edge network, integrated services, and serverless compute.`;
+Generate architectures that showcase Cloudflare's unique advantages: zero egress fees, global edge network, integrated services, and serverless compute.
+
+Available priorities for context:
+- Cost Optimization (💰): Reduce cloud spend by half  
+- Speed to Market (🚀): Deploy faster with zero DevOps
+- Enterprise Security (🔒): Built-in DDoS protection and WAF
+- Global Performance (🌍): Reach worldwide users in <50ms`;
 
     const userPrompt = `Generate a Cloudflare architecture for:
 - Application: ${input.appDescription}
 - User Type: ${input.persona}
 - Scale: ${input.scale}
 - Region: ${input.region}
-- Key Constraints: ${input.constraints.join(', ')}
+- Key Constraints: ${finalConstraints.join(', ')}
 
 Create a realistic architecture using Cloudflare services. Return JSON with:
 {
@@ -247,6 +258,17 @@ Position nodes logically with users on the left, progressing to backend services
     return JSON.parse(response);
   }
 
+  // Auto-assign priorities based on persona
+  public selectConstraints(persona: string): string[] {
+    const personaMapping = {
+      'Vibe Coder': ['Speed to Market', 'Cost Optimization', 'Global Performance'],
+      'FDE': ['Global Performance', 'Speed to Market', 'Cost Optimization'],
+      'CIO/CTO': ['Enterprise Security', 'Cost Optimization', 'Global Performance']
+    };
+
+    return personaMapping[persona as keyof typeof personaMapping] || ['Global Performance', 'Cost Optimization', 'Speed to Market'];
+  }
+
   async generateConstraintAdvantages(input: {
     constraints: string[];
     appDescription: string;
@@ -270,10 +292,10 @@ ${input.competitor}: ${input.competitorArch.nodes.map(n => n.name).join(', ')}
 Generate ${input.constraints.length} value propositions, one for each priority:
 ${input.constraints.map((c, i) => {
   const priorityMap = {
-    'Performance-Critical': { emoji: '🌍', title: 'Global Performance' },
-    'Cost-Conscious': { emoji: '💰', title: 'Cost Optimization' },
-    'Security-First': { emoji: '🔒', title: 'Enterprise Security' },
-    'Developer-Focused': { emoji: '🚀', title: 'Speed to Market' }
+    'Global Performance': { emoji: '🌍', title: 'Global Performance' },
+    'Cost Optimization': { emoji: '💰', title: 'Cost Optimization' },
+    'Enterprise Security': { emoji: '🔒', title: 'Enterprise Security' },
+    'Speed to Market': { emoji: '🚀', title: 'Speed to Market' }
   };
   const priority = priorityMap[c as keyof typeof priorityMap] || { emoji: '✅', title: 'Cloudflare Advantage' };
   return `${i+1}. ${c} (emoji: "${priority.emoji}", title: "${priority.title}")`;
@@ -283,14 +305,14 @@ Return JSON array with exactly ${input.constraints.length} objects:
 [{
   "emoji": "🌍",
   "title": "Global Performance",
-  "description": "Cloudflare delivers 40% faster response times vs ${input.competitor} with edge computing."
+  "description": "Cloudflare's 300+ edge locations deliver <50ms latency worldwide vs ${input.competitor}'s regional delays of 200ms+."
 }]
 
 Each description must:
-- Be 1-2 sentences maximum
+- Be 1 sentence maximum
+- Follow format: "Cloudflare's [feature] means [business outcome] unlike [competitor's limitation]"
 - Include specific metrics (%, ms, $, etc.)
-- Compare architectural differences
-- Focus on concrete benefits`;
+- Focus on business value, not technical features`;
 
     const messages = [
       { role: 'system', content: systemPrompt },

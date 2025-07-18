@@ -528,13 +528,18 @@ app.post('/api/generate-architecture', async (c) => {
       console.log('🤖 Using OpenAI for architecture generation (non-streaming)');
       const openai = new OpenAIService(c.env.OPENAI_API_KEY);
       
+      // Auto-select constraints if none provided
+      const finalConstraints = userInput.constraints?.length > 0 
+        ? userInput.constraints 
+        : openai.selectConstraints(userInput.persona);
+
       // Generate both architectures in parallel
       const [cloudflareArch, competitorArch] = await Promise.all([
         openai.generateCloudflareArchitecture({
           appDescription: userInput.appDescription,
           persona: userInput.persona,
           scale: userInput.scale || 'Startup',
-          constraints: userInput.constraints || [],
+          constraints: finalConstraints,
           region: userInput.region || 'Global'
         }),
         openai.generateCompetitorArchitecture({
@@ -555,21 +560,19 @@ app.post('/api/generate-architecture', async (c) => {
       };
       competitorData = competitorArch;
 
-      // Generate constraint-based advantages if constraints are provided
-      if (userInput.constraints && userInput.constraints.length > 0) {
-        try {
-          constraintValueProps = await openai.generateConstraintAdvantages({
-            constraints: userInput.constraints,
-            appDescription: userInput.appDescription,
-            competitor: userInput.competitors?.[0] || 'AWS',
-            cloudflareArch,
-            competitorArch
-          });
-          console.log('🎯 Generated constraint value props:', constraintValueProps?.length || 0);
-        } catch (error) {
-          console.error('❌ Failed to generate constraint advantages:', error);
-          constraintValueProps = [];
-        }
+      // Generate constraint-based advantages
+      try {
+        constraintValueProps = await openai.generateConstraintAdvantages({
+          constraints: finalConstraints,
+          appDescription: userInput.appDescription,
+          competitor: userInput.competitors?.[0] || 'AWS',
+          cloudflareArch,
+          competitorArch
+        });
+        console.log('🎯 Generated constraint value props:', constraintValueProps?.length || 0);
+      } catch (error) {
+        console.error('❌ Failed to generate constraint advantages:', error);
+        constraintValueProps = [];
       }
 
       // Cache the successful result

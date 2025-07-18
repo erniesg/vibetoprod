@@ -1,20 +1,20 @@
 export const PRIORITY_MAPPINGS = {
-  'Cost-Conscious': {
+  'Cost Optimization': {
     emoji: '💰',
     title: 'Cost Optimization',
     description: 'Reduce cloud spend by half'
   },
-  'Developer-Focused': {
+  'Speed to Market': {
     emoji: '🚀',
     title: 'Speed to Market',
     description: 'Deploy faster with zero DevOps'
   },
-  'Security-First': {
+  'Enterprise Security': {
     emoji: '🔒',
     title: 'Enterprise Security',
     description: 'Built-in DDoS protection and WAF'
   },
-  'Performance-Critical': {
+  'Global Performance': {
     emoji: '🌍',
     title: 'Global Performance',
     description: 'Reach worldwide users in <50ms'
