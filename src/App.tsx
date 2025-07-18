@@ -150,7 +150,7 @@ function App() {
                 <span>Powered by Cloudflare</span>
               </div>
               <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                AI-generated for demo purposes
+                All claims are AI-generated for demo purposes
               </span>
             </div>
             <div className={`flex items-center space-x-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -159,11 +159,11 @@ function App() {
                 href="https://github.com/erniesg" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className={`hover:text-orange-500 transition-colors ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}
+                className={`flex items-center space-x-1 hover:text-orange-500 transition-colors ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}
               >
-                erniesg
+                <span>erniesg</span>
+                <Github className="w-4 h-4" />
               </a>
-              <Github className="w-4 h-4" />
             </div>
           </div>
         </div>
