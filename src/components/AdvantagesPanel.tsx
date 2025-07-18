@@ -8,32 +8,9 @@ const renderTextWithBold = (text: string, isDarkMode: boolean) => {
     if (part.startsWith('**') && part.endsWith('**')) {
       const boldText = part.slice(2, -2);
       return (
-        <span key={index} className="relative inline-block group px-2 py-1">
-          {/* Scribble circle SVG - positioned behind text */}
-          <svg 
-            className="absolute inset-0 w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0"
-            style={{ 
-              transform: 'scale(2.0)',
-              transformOrigin: 'center'
-            }}
-            viewBox="0 0 100 50"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10,25 Q20,8 35,22 Q50,38 65,20 Q80,6 90,25 Q80,42 65,28 Q50,12 35,28 Q20,42 10,25 Z"
-              fill="none"
-              stroke={isDarkMode ? '#fb923c' : '#ea580c'}
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="animate-scribble"
-              opacity="0.8"
-            />
-          </svg>
-          <strong className={`${isDarkMode ? 'text-orange-400' : 'text-orange-600'} relative z-10`}>
-            {boldText}
-          </strong>
-        </span>
+        <strong key={index} className={isDarkMode ? 'text-orange-400' : 'text-orange-600'}>
+          {boldText}
+        </strong>
       );
     }
     return part;
