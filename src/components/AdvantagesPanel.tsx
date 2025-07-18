@@ -1,6 +1,22 @@
 import React from 'react';
 import { CheckCircle, ArrowRight, DollarSign, Shield, Globe, Users, TrendingUp } from 'lucide-react';
 
+// Helper function to render text with bold formatting
+const renderTextWithBold = (text: string, isDarkMode: boolean) => {
+  const parts = text.split(/(\*\*.*?\*\*)/);
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      const boldText = part.slice(2, -2);
+      return (
+        <strong key={index} className={isDarkMode ? 'text-orange-400' : 'text-orange-600'}>
+          {boldText}
+        </strong>
+      );
+    }
+    return part;
+  });
+};
+
 interface AdvantagesPanelProps {
   advantages: string[];
   loading: boolean;
@@ -287,7 +303,7 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
                     <p className={`text-sm leading-relaxed ${
                       isDarkMode ? 'text-gray-300' : 'text-gray-700'
                     }`}>
-                      {advantage.description}
+                      {renderTextWithBold(advantage.description, isDarkMode)}
                     </p>
                   </div>
                 </div>

@@ -110,6 +110,7 @@ CRITICAL REQUIREMENTS:
    - Focus on: ${this.getConstraintFocus(selectedConstraints)}
    - Show concrete examples from the architecture diagrams (e.g., "1 Workers service vs 3 EC2 instances")
    - Vary the language: "lightning fast", "instant", "blazing speed", "dramatically faster", "orders of magnitude"
+   - Use **bold** formatting for 1-2 key points in each description (e.g., "Deploy **10x faster** with integrated platform" or "**Zero egress fees** vs AWS's punitive charges")
 
 4. ARCHITECTURE PATTERNS BY APP TYPE:
 ${this.getAppTypeGuidance(appType, input.persona)}
