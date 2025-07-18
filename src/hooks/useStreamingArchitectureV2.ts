@@ -151,11 +151,6 @@ export function useStreamingArchitectureV2() {
     edge.to && 
     edge.label
   );
-  const advantages = (object?.cloudflare?.advantages || []).filter(advantage => 
-    advantage && 
-    typeof advantage === 'string' && 
-    advantage.trim().length > 0
-  );
   const allConstraintValueProps = object?.constraintValueProps || [];
   
   const constraintValueProps = allConstraintValueProps.filter(prop => {
@@ -180,9 +175,8 @@ export function useStreamingArchitectureV2() {
     cloudflareEdges: cloudflareEdges.length,
     competitorNodes: competitorNodes.length,
     competitorEdges: competitorEdges.length,
-    advantages: advantages.length,
     constraintValueProps: constraintValueProps.length,
-    total: cloudflareNodes.length + cloudflareEdges.length + competitorNodes.length + competitorEdges.length + advantages.length + constraintValueProps.length
+    total: cloudflareNodes.length + cloudflareEdges.length + competitorNodes.length + competitorEdges.length + constraintValueProps.length
   };
 
   return {
@@ -191,7 +185,6 @@ export function useStreamingArchitectureV2() {
     cloudflareEdges,
     competitorNodes,
     competitorEdges,
-    advantages,
     valueProps: [], // Legacy compatibility
     constraintValueProps,
     

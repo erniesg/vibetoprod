@@ -153,6 +153,11 @@ function App() {
               <Github className="w-4 h-4" />
             </div>
           </div>
+          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <p className={`text-xs text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              All architecture diagrams and performance claims are AI-generated for demonstration purposes only.
+            </p>
+          </div>
         </div>
       </footer>
     </div>

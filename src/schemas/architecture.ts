@@ -36,14 +36,13 @@ export const constraintValuePropSchema = z.object({
 export const architectureResponseSchema = z.object({
   cloudflare: z.object({
     nodes: z.array(diagramNodeSchema).describe('Cloudflare services and components'),
-    edges: z.array(diagramEdgeSchema).describe('Connections between Cloudflare services'),
-    advantages: z.array(z.string()).describe('Generic advantages (fallback when no constraints)')
+    edges: z.array(diagramEdgeSchema).describe('Connections between Cloudflare services')
   }),
   competitor: z.object({
     nodes: z.array(diagramNodeSchema).describe('Competitor services and components'),
     edges: z.array(diagramEdgeSchema).describe('Connections between competitor services')
   }),
-  constraintValueProps: z.array(constraintValuePropSchema).optional()
+  constraintValueProps: z.array(constraintValuePropSchema)
     .describe('Constraint-specific value propositions with metrics')
 });
 
@@ -63,11 +62,6 @@ export const streamingElementSchema = z.union([
     type: z.literal('constraint_value_prop'),
     platform: z.literal('cloudflare'),
     data: constraintValuePropSchema
-  }),
-  z.object({
-    type: z.literal('advantage'),
-    platform: z.literal('cloudflare'),
-    data: z.string()
   })
 ]);
 

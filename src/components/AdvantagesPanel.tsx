@@ -18,7 +18,6 @@ const renderTextWithBold = (text: string, isDarkMode: boolean) => {
 };
 
 interface AdvantagesPanelProps {
-  advantages: string[];
   loading: boolean;
   persona: 'Vibe Coder' | 'FDE' | 'CIO/CTO';
   isDarkMode: boolean;
