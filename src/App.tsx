@@ -136,7 +136,7 @@ function App() {
       </main>
 
       {/* Whitepaper Content - Only show if ?whitepaper=true */}
-      {showWhitepaper && <CompleteWhitepaper isDarkMode={isDarkMode} />}
+      {showWhitepaper && <CompleteWhitepaper isDarkMode={isDarkMode} currentPersona={currentPersona} onPersonaChange={handlePersonaChange} />}
 
       {/* Footer */}
       <footer className={`${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} border-t`}>

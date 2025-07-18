@@ -6,14 +6,11 @@ import { UserInput } from '../types';
 
 interface CompleteWhitepaperProps {
   isDarkMode: boolean;
+  currentPersona: UserInput['persona'];
+  onPersonaChange: (persona: UserInput['persona']) => void;
 }
 
-export const CompleteWhitepaper: React.FC<CompleteWhitepaperProps> = ({ isDarkMode }) => {
-  const [currentPersona, setCurrentPersona] = useState<UserInput['persona']>('Vibe Coder');
-
-  const handlePersonaChange = (persona: UserInput['persona']) => {
-    setCurrentPersona(persona);
-  };
+export const CompleteWhitepaper: React.FC<CompleteWhitepaperProps> = ({ isDarkMode, currentPersona, onPersonaChange }) => {
 
   return (
     <>
@@ -21,8 +18,7 @@ export const CompleteWhitepaper: React.FC<CompleteWhitepaperProps> = ({ isDarkMo
       <StreamingArchitectureDemo
         isDarkMode={isDarkMode}
         currentPersona={currentPersona}
-        onPersonaChange={handlePersonaChange}
-        hideControlPanel={true}
+        onPersonaChange={onPersonaChange}
       />
 
       {/* Whitepaper-Specific Content Starts Here */}
