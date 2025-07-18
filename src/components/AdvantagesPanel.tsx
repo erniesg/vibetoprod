@@ -220,7 +220,7 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
             <div className="p-3 bg-white bg-opacity-20 rounded-xl">
               <CheckCircle className="w-6 h-6 text-white" />
             </div>
-            <h3 className="text-2xl font-bold text-white">Value Proposition</h3>
+            <h3 className="text-2xl font-bold text-white">Why Cloudflare?</h3>
           </div>
           <div className="flex items-center space-x-2 text-white text-sm font-medium opacity-90">
             <span>Cloudflare vs {competitor}</span>

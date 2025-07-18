@@ -8,10 +8,10 @@ interface ConstraintsSelectorProps {
 }
 
 const availableConstraints = [
-  { id: 'Performance-Critical', icon: '⚡', description: 'Low latency & high scale' },
-  { id: 'Cost-Conscious', icon: '💰', description: 'Budget optimization' },
-  { id: 'Security-First', icon: '🔒', description: 'Enterprise compliance' },
-  { id: 'Developer-Focused', icon: '👨‍💻', description: 'Development velocity' }
+  { id: 'Cost Optimization', icon: '💰', description: 'Reduce cloud spend by 50-80%' },
+  { id: 'Speed to Market', icon: '🚀', description: 'Ship features 10x faster' },
+  { id: 'Enterprise Security', icon: '🔒', description: 'Bank-grade security, 99.99% uptime' },
+  { id: 'Global Performance', icon: '🌍', description: 'Delight users worldwide, <50ms' }
 ];
 
 export const ConstraintsSelector: React.FC<ConstraintsSelectorProps> = ({ 
@@ -28,7 +28,7 @@ export const ConstraintsSelector: React.FC<ConstraintsSelectorProps> = ({
         <label className={`block text-sm font-medium mb-2 ${
           isDarkMode ? 'text-white' : 'text-gray-900'
         }`}>
-          Key Constraints
+          Priorities
         </label>
         <span className={`text-xs font-medium ${
           isDarkMode ? 'text-gray-300' : 'text-gray-600'

@@ -21,7 +21,7 @@ export class ModernOpenAIService {
     const openai = createOpenAI({
       apiKey: this.apiKey
     });
-    this.model = openai('gpt-4-turbo');
+    this.model = openai('gpt-4o-2024-08-06');
     console.log('🤖 Model configured');
   }
 
@@ -31,7 +31,7 @@ export class ModernOpenAIService {
     console.log('🚀 Starting true streaming with Vercel AI SDK');
     console.log('📝 User input:', userInput);
     console.log('🔍 Generated prompt:', prompt);
-    console.log('🔍 Using model: gpt-4-turbo');
+    console.log('🔍 Using model: gpt-4o-2024-08-06');
     
     try {
       const result = streamObject({
@@ -61,6 +61,11 @@ export class ModernOpenAIService {
     const competitor = input.competitors[0] || 'AWS';
     const appType = this.detectAppType(input.appDescription);
     
+    // Auto-select 3 priorities if none selected
+    const selectedConstraints = input.constraints.length > 0 
+      ? input.constraints 
+      : this.autoSelectConstraints(input.persona, input.appDescription, appType);
+    
     return `You are an expert cloud architect. Generate a detailed cloud architecture comparison for the following application.
 
 Application: "${input.appDescription}"
@@ -68,7 +73,9 @@ Target Persona: ${input.persona}
 Scale: ${input.scale || 'Startup'}
 Region: ${input.region || 'Global'}
 Competitor: ${competitor}
-Key Constraints: ${input.constraints.length > 0 ? input.constraints.join(', ') : 'None specified'}
+Available Priorities: Cost Optimization, Speed to Market, Enterprise Security, Global Performance
+Selected Priorities: ${selectedConstraints.join(', ')}
+${input.constraints.length === 0 ? '(Auto-selected based on persona and app type)' : '(User-selected)'}
 
 CRITICAL REQUIREMENTS:
 
@@ -88,20 +95,44 @@ CRITICAL REQUIREMENTS:
    - Same layout constraints
 
 3. VALUE PROPOSITIONS:
-   ${input.constraints.length > 0 ? `
-   - Generate constraintValueProps for each constraint: ${input.constraints.join(', ')}
+   - Generate constraintValueProps for each selected priority: ${selectedConstraints.join(', ')}
    - Each should have: icon (from allowed list), emoji, compelling title, detailed description
    - Include specific metrics comparing Cloudflare vs ${competitor}
-   - Focus on: ${this.getConstraintFocus(input.constraints)}
-   ` : `
-   - Generate 4 general advantages highlighting Cloudflare's benefits
-   - Focus on: performance, cost, developer experience, global reach
-   `}
+   - Reference the generated architectures to explain WHY Cloudflare is superior
+   - Focus on: ${this.getConstraintFocus(selectedConstraints)}
+   - Show concrete examples from the architecture diagrams (e.g., "1 Workers service vs 3 EC2 instances")
 
 4. ARCHITECTURE PATTERNS BY APP TYPE:
 ${this.getAppTypeGuidance(appType, input.persona)}
 
 Generate realistic, production-ready architectures that clearly show why Cloudflare is superior for this use case.`;
+  }
+
+  private autoSelectConstraints(persona: string, appDescription: string, appType: string): string[] {
+    const allConstraints = ['Cost Optimization', 'Speed to Market', 'Enterprise Security', 'Global Performance'];
+    
+    // Persona-based priority preferences
+    const personaPreferences = {
+      'Vibe Coder': ['Speed to Market', 'Cost Optimization', 'Global Performance'],
+      'FDE': ['Speed to Market', 'Global Performance', 'Cost Optimization'], 
+      'CIO/CTO': ['Enterprise Security', 'Cost Optimization', 'Global Performance']
+    };
+    
+    // App type adjustments
+    const appTypeAdjustments = {
+      'gaming': ['Global Performance', 'Speed to Market', 'Cost Optimization'],
+      'social': ['Global Performance', 'Speed to Market', 'Enterprise Security'],
+      'ecommerce': ['Global Performance', 'Enterprise Security', 'Cost Optimization'],
+      'api': ['Speed to Market', 'Global Performance', 'Enterprise Security'],
+      'media': ['Global Performance', 'Cost Optimization', 'Speed to Market'],
+      'general': personaPreferences[persona as keyof typeof personaPreferences] || ['Speed to Market', 'Cost Optimization', 'Global Performance']
+    };
+    
+    // Get app-specific preferences or fall back to persona preferences
+    const preferences = appTypeAdjustments[appType] || personaPreferences[persona as keyof typeof personaPreferences] || ['Speed to Market', 'Cost Optimization', 'Global Performance'];
+    
+    // Return top 3 priorities
+    return preferences.slice(0, 3);
   }
 
   private detectAppType(description: string): string {
@@ -119,14 +150,12 @@ Generate realistic, production-ready architectures that clearly show why Cloudfl
       switch (c) {
         case 'Cost Optimization':
           return 'zero egress fees, pay-per-use pricing, no idle costs';
-        case 'Developer Velocity':
+        case 'Speed to Market':
           return 'integrated platform, instant deployments, minimal configuration';
         case 'Global Performance':
           return 'sub-50ms latency, 300+ edge locations, smart routing';
         case 'Enterprise Security':
-          return 'built-in DDoS protection, WAF, zero trust, compliance';
-        case 'Scalability':
-          return 'auto-scaling, no capacity planning, handles viral growth';
+          return 'built-in DDoS protection, WAF, zero trust, compliance, 99.99% uptime';
         default:
           return 'general optimization';
       }
