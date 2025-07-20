@@ -7,6 +7,7 @@ import { PrioritiesSelector } from '../PrioritiesSelector';
 import { Select } from '../ui/Select';
 import { Button } from '../ui/Button';
 import { UserInput } from '../../types';
+import { personaPresets } from '../../constants/personaPresets';
 
 interface StreamingControlPanelProps {
   onGenerate: (input: UserInput) => void;
@@ -25,6 +26,7 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
   currentPersona 
 }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [selectedPreset, setSelectedPreset] = useState<string>('');
   const [formData, setFormData] = useState<UserInput>({
     persona: 'Vibe Coder',
     region: 'Singapore',
@@ -38,6 +40,8 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
   // Sync internal persona state with auto-cycling
   useEffect(() => {
     setFormData(prev => ({ ...prev, persona: currentPersona }));
+    // Clear preset selection when persona changes
+    setSelectedPreset('');
   }, [currentPersona]);
 
   const regionOptions = [
@@ -76,6 +80,32 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
   const handlePersonaSelect = (persona: UserInput['persona']) => {
     setFormData(prev => ({ ...prev, persona }));
     onPersonaChange(persona);
+  };
+
+  const handlePresetSelect = (presetLabel: string) => {
+    if (!presetLabel) {
+      setSelectedPreset('');
+      return;
+    }
+
+    const preset = personaPresets[currentPersona]?.find(p => p.label === presetLabel);
+    if (preset) {
+      setFormData(prev => ({
+        ...prev,
+        appDescription: preset.appDescription,
+        scale: preset.scale,
+        priorities: preset.priorities
+      }));
+      setSelectedPreset(presetLabel);
+    }
+  };
+
+  // Clear preset selection when user types custom input
+  const handleAppDescriptionChange = (value: string) => {
+    setFormData(prev => ({ ...prev, appDescription: value }));
+    if (selectedPreset && value !== personaPresets[currentPersona]?.find(p => p.label === selectedPreset)?.appDescription) {
+      setSelectedPreset('');
+    }
   };
 
   return (
@@ -120,6 +150,30 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
           <label className={`block text-sm font-medium mb-2 ${
             isDarkMode ? 'text-white' : 'text-gray-900'
           }`}>
+            Quick Start Templates
+          </label>
+          <select 
+            value={selectedPreset}
+            onChange={(e) => handlePresetSelect(e.target.value)}
+            className={`w-full px-4 py-3 text-sm rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 ${
+              isDarkMode 
+                ? 'bg-gray-800 border-gray-600 text-white hover:border-gray-500 placeholder-gray-400'
+                : 'bg-white border-gray-300 text-gray-900 hover:border-gray-400 placeholder-gray-500'
+            }`}
+          >
+            <option value="">Choose a template or enter custom...</option>
+            {personaPresets[currentPersona]?.map(preset => (
+              <option key={preset.label} value={preset.label}>
+                {preset.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label className={`block text-sm font-medium mb-2 ${
+            isDarkMode ? 'text-white' : 'text-gray-900'
+          }`}>
             Describe your application
           </label>
           <input
@@ -131,7 +185,7 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
                 : 'bg-white border-gray-300 text-gray-900 hover:border-gray-400 placeholder-gray-500'
             }`}
             value={formData.appDescription}
-            onChange={(e) => setFormData({ ...formData, appDescription: e.target.value })}
+            onChange={(e) => handleAppDescriptionChange(e.target.value)}
             required
           />
         </div>

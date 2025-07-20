@@ -758,6 +758,36 @@ app.post('/api/generate-architecture-v2', async (c) => {
       return c.json({ error: 'OpenAI API key not configured' }, 400);
     }
 
+    // Phase 2: Rate Limiting with KV
+    const rateLimitKey = 'global_generation_count';
+    let currentCount = 0;
+    
+    // Check if KV is available
+    if (c.env.KV) {
+      try {
+        console.log('🔍 Checking rate limit...');
+        const countValue = await c.env.KV.get(rateLimitKey);
+        currentCount = countValue ? parseInt(countValue) : 0;
+        console.log(`📊 Current generation count: ${currentCount}/100`);
+        
+        if (currentCount >= 100) {
+          console.log('🚫 Rate limit exceeded');
+          return c.json({ 
+            error: 'Generation limit reached (100/100)', 
+            count: currentCount,
+            message: 'Daily generation limit exceeded. Contact admin to reset or try again tomorrow.',
+            canReset: true,
+            resetEndpoint: '/admin/reset'
+          }, 429);
+        }
+      } catch (error) {
+        console.error('⚠️ Rate limit check failed:', error);
+        // Continue without rate limiting if KV fails - don't block the user
+      }
+    } else {
+      console.log('⚠️ KV not available, skipping rate limit check');
+    }
+
     console.log('🔍 Environment debug:');
     console.log('🔑 OpenAI API key exists:', !!c.env.OPENAI_API_KEY);
     console.log('🔑 OpenAI API key length:', c.env.OPENAI_API_KEY?.length);
@@ -811,8 +841,54 @@ app.post('/api/generate-architecture-v2', async (c) => {
               controller.enqueue(encoder.encode(chunk));
             }
             
-            // Log the completed LLM response
+            // Enhanced logging for final completed architectures and priority advantages
             console.log('🎯 Final LLM Response:', JSON.stringify(finalResponse, null, 2));
+            
+            if (finalResponse) {
+              // Log detailed architecture analysis
+              const { cloudflare, competitor, priorityValueProps } = finalResponse;
+              
+              console.log('\n🏗️ === FINAL ARCHITECTURE ANALYSIS ===');
+              
+              // Cloudflare Architecture Details
+              if (cloudflare?.nodes) {
+                console.log(`🟦 Cloudflare Architecture: ${cloudflare.nodes.length} nodes, ${cloudflare.edges?.length || 0} edges`);
+                cloudflare.nodes.forEach((node, i) => {
+                  console.log(`  Node ${i+1}: ${node.name} (${node.type}) - ${node.description || 'No description'}`);
+                });
+                if (cloudflare.edges?.length) {
+                  console.log(`  Connections: ${cloudflare.edges.map(e => `${e.from}→${e.to}`).join(', ')}`);
+                }
+              }
+              
+              // Competitor Architecture Details  
+              if (competitor?.nodes) {
+                console.log(`🟩 Competitor Architecture: ${competitor.nodes.length} nodes, ${competitor.edges?.length || 0} edges`);
+                competitor.nodes.forEach((node, i) => {
+                  console.log(`  Node ${i+1}: ${node.name} (${node.type}) - ${node.description || 'No description'}`);
+                });
+                if (competitor.edges?.length) {
+                  console.log(`  Connections: ${competitor.edges.map(e => `${e.from}→${e.to}`).join(', ')}`);
+                }
+              }
+              
+              // Priority-Based Value Propositions
+              if (priorityValueProps?.length) {
+                console.log(`🎯 Priority Advantages: ${priorityValueProps.length} value propositions generated`);
+                priorityValueProps.forEach((prop, i) => {
+                  console.log(`  ${i+1}. ${prop.emoji} ${prop.title}`);
+                  console.log(`     ${prop.description?.substring(0, 100)}...`);
+                });
+              }
+              
+              // Architecture comparison summary
+              const cloudflareNodeCount = cloudflare?.nodes?.length || 0;
+              const competitorNodeCount = competitor?.nodes?.length || 0;
+              const complexity = cloudflareNodeCount < competitorNodeCount ? 'Simpler' : cloudflareNodeCount > competitorNodeCount ? 'More Complex' : 'Similar Complexity';
+              
+              console.log(`📊 Architecture Comparison: Cloudflare (${cloudflareNodeCount} nodes) vs Competitor (${competitorNodeCount} nodes) - ${complexity}`);
+              console.log('🏁 === END ARCHITECTURE ANALYSIS ===\n');
+            }
           } else {
             console.log('❌ partialObjectStream not found, using baseStream...');
             // Fallback to baseStream
@@ -841,6 +917,18 @@ app.post('/api/generate-architecture-v2', async (c) => {
           }
           
           console.log(`✅ Stream complete. Total chunks: ${chunkCount}`);
+          
+          // Phase 2: Increment rate limit counter after successful generation
+          if (c.env.KV && chunkCount > 0) {
+            try {
+              const newCount = currentCount + 1;
+              await c.env.KV.put(rateLimitKey, newCount.toString());
+              console.log(`✅ Generation count updated: ${newCount}/100`);
+            } catch (error) {
+              console.error('⚠️ Failed to update rate limit counter:', error);
+              // Don't fail the request if counter update fails
+            }
+          }
           
           // Send completion marker
           controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
@@ -874,6 +962,117 @@ app.post('/api/generate-architecture-v2', async (c) => {
   }
 });
 
+// Admin authentication helper
+async function verifyAdminAuth(c: any): Promise<boolean> {
+  const authHeader = c.req.header('Authorization') || c.req.header('X-Admin-Key');
+  
+  console.log('🔍 Auth debug: Headers received:', Object.fromEntries(c.req.raw.headers.entries()));
+  console.log('🔍 Auth debug: ADMIN_API_KEY exists:', !!c.env.ADMIN_API_KEY);
+  console.log('🔍 Auth debug: ADMIN_API_KEY length:', c.env.ADMIN_API_KEY?.length);
+  
+  if (!authHeader || !c.env.ADMIN_API_KEY) {
+    console.log('🔍 Auth debug: Missing auth header or admin key');
+    console.log('  Auth header:', authHeader);
+    console.log('  Admin key set:', !!c.env.ADMIN_API_KEY);
+    return false;
+  }
+  
+  // Support both formats: "Bearer <key>" and direct key
+  const providedKey = authHeader.startsWith('Bearer ') 
+    ? authHeader.slice(7) 
+    : authHeader;
+  
+  console.log('🔍 Auth debug:');
+  console.log('  Stored key length:', c.env.ADMIN_API_KEY.length);
+  console.log('  Provided key length:', providedKey.length);
+  console.log('  Stored key:', c.env.ADMIN_API_KEY);
+  console.log('  Provided key:', providedKey);
+  console.log('  Keys match directly:', c.env.ADMIN_API_KEY === providedKey);
+  
+  // For now, use direct comparison while debugging
+  return c.env.ADMIN_API_KEY === providedKey;
+}
+
+// Phase 3: Admin Reset Endpoints
+app.post('/admin/reset', async (c) => {
+  try {
+    const isAuthorized = await verifyAdminAuth(c);
+    
+    if (!isAuthorized) {
+      console.log('🚫 Unauthorized admin reset attempt');
+      return c.json({ 
+        error: 'Unauthorized',
+        message: 'Valid admin key required in Authorization header or X-Admin-Key' 
+      }, 401);
+    }
+    
+    if (!c.env.KV) {
+      return c.json({ 
+        error: 'KV not available',
+        message: 'Key-Value store is not configured' 
+      }, 500);
+    }
+    
+    await c.env.KV.put('global_generation_count', '0');
+    console.log('✅ Admin reset: Generation counter reset to 0');
+    
+    return c.json({ 
+      success: true, 
+      message: 'Generation counter reset to 0',
+      resetAt: new Date().toISOString(),
+      newCount: 0
+    });
+  } catch (error) {
+    console.error('❌ Admin reset failed:', error);
+    return c.json({ 
+      error: 'Reset failed',
+      details: error.message 
+    }, 500);
+  }
+});
+
+// Admin status endpoint for monitoring
+app.get('/admin/status', async (c) => {
+  try {
+    const isAuthorized = await verifyAdminAuth(c);
+    
+    if (!isAuthorized) {
+      return c.json({ 
+        error: 'Unauthorized',
+        message: 'Valid admin key required in Authorization header or X-Admin-Key' 
+      }, 401);
+    }
+    
+    if (!c.env.KV) {
+      return c.json({ 
+        error: 'KV not available',
+        currentCount: 'unknown',
+        limit: 100,
+        remaining: 'unknown',
+        status: 'KV_UNAVAILABLE'
+      });
+    }
+    
+    const countValue = await c.env.KV.get('global_generation_count');
+    const currentCount = countValue ? parseInt(countValue) : 0;
+    
+    return c.json({
+      currentCount,
+      limit: 100,
+      remaining: Math.max(0, 100 - currentCount),
+      status: currentCount >= 100 ? 'LIMITED' : 'ACTIVE',
+      lastChecked: new Date().toISOString(),
+      kvAvailable: true
+    });
+  } catch (error) {
+    console.error('❌ Admin status check failed:', error);
+    return c.json({ 
+      error: 'Status check failed',
+      details: error.message 
+    }, 500);
+  }
+});
+
 // Health check
 app.get('/api/health', (c) => {
   return c.json({ 
@@ -892,7 +1091,7 @@ app.get('*', (c) => {
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vibe to Prod: The Edge Advantage</title>
-    <script type="module" crossorigin src="/assets/index-CDjFXb1N.js"></script>
+    <script type="module" crossorigin src="/assets/index-8W9h6F-s.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-TAlNW-xx.css">
   </head>
   <body>

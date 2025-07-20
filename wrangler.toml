@@ -12,12 +12,20 @@ AI_GATEWAY_ID = "vibetoprod-ai"
 ENVIRONMENT = "production"
 CLOUDFLARE_ACCOUNT_ID = "5b25778cf6d9821373d913f5236e1606"
 AI_GATEWAY_ID = "vibetoprod-ai"
+ADMIN_API_KEY = "your-secret-admin-key-here"
 
 [env.development.vars]
 ENVIRONMENT = "development"
 CLOUDFLARE_ACCOUNT_ID = "5b25778cf6d9821373d913f5236e1606"
 AI_GATEWAY_ID = "vibetoprod-ai"
+ADMIN_API_KEY = "dev-admin-key-12345"
 
+# KV Namespaces for rate limiting and caching
+[[kv_namespaces]]
+binding = "KV"
+id = "f00b437aa90a4024bd0cc5a99c3d0dcd"
+preview_id = "56acbe3c4e7640eeb81c96b84b8c6ed2"
 
 # For local development, you can use:
 # wrangler pages dev dist --compatibility-date=2024-07-29
+# To create KV namespaces: wrangler kv:namespace create "vibetoprod-kv" --preview
