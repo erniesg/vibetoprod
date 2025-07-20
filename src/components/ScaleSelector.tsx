@@ -21,7 +21,6 @@ export const ScaleSelector: React.FC<ScaleSelectorProps> = ({ selected, onSelect
   return (
     <div className="space-y-2">
       <Slider
-        label="Expected Scale"
         isDarkMode={isDarkMode}
         min={0}
         max={3}

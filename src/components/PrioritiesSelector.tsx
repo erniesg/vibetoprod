@@ -23,6 +23,7 @@ export const PrioritiesSelector: React.FC<PrioritiesSelectorProps> = ({
   hideLabel = false
 }) => {
   const canSelectMore = selected.length < maxPriorities;
+  
 
   return (
     <div className="space-y-2">
@@ -53,7 +54,8 @@ export const PrioritiesSelector: React.FC<PrioritiesSelectorProps> = ({
       <div className="grid grid-cols-2 gap-3 mt-2">
         {availablePriorities.map((priority) => {
           const isSelected = selected.includes(priority.id);
-          const canSelect = isSelected || canSelectMore;
+          // Always allow deselecting. For selecting new: only if under limit
+          const canSelect = isSelected || selected.length < maxPriorities;
           
           return (
             <label
