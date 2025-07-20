@@ -147,35 +147,29 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
         </div>
 
         <div className="space-y-2">
-          <label className={`block text-sm font-medium mb-2 ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}>
-            Quick Start Templates
-          </label>
-          <select 
-            value={selectedPreset}
-            onChange={(e) => handlePresetSelect(e.target.value)}
-            className={`w-full px-4 py-3 text-sm rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 ${
-              isDarkMode 
-                ? 'bg-gray-800 border-gray-600 text-white hover:border-gray-500 placeholder-gray-400'
-                : 'bg-white border-gray-300 text-gray-900 hover:border-gray-400 placeholder-gray-500'
-            }`}
-          >
-            <option value="">Choose a template or enter custom...</option>
-            {personaPresets[currentPersona]?.map(preset => (
-              <option key={preset.label} value={preset.label}>
-                {preset.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="space-y-2">
-          <label className={`block text-sm font-medium mb-2 ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}>
-            Describe your application
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className={`block text-sm font-medium ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}>
+              Describe your application
+            </label>
+            <select 
+              value={selectedPreset}
+              onChange={(e) => handlePresetSelect(e.target.value)}
+              className={`text-xs px-2 py-1 rounded border ${
+                isDarkMode 
+                  ? 'bg-gray-700 border-gray-600 text-gray-300 hover:border-gray-500'
+                  : 'bg-gray-50 border-gray-300 text-gray-600 hover:border-gray-400'
+              }`}
+            >
+              <option value="">Templates ↓</option>
+              {personaPresets[currentPersona]?.map(preset => (
+                <option key={preset.label} value={preset.label}>
+                  {preset.label}
+                </option>
+              ))}
+            </select>
+          </div>
           <input
             type="text"
             placeholder="e.g., A high-traffic e-commerce platform with real-time inventory..."
@@ -188,6 +182,11 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
             onChange={(e) => handleAppDescriptionChange(e.target.value)}
             required
           />
+          {selectedPreset && (
+            <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              Using template: <span className="font-medium">{selectedPreset}</span>
+            </p>
+          )}
         </div>
 
         <div>

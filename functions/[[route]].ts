@@ -1091,7 +1091,7 @@ app.get('*', (c) => {
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vibe to Prod: The Edge Advantage</title>
-    <script type="module" crossorigin src="/assets/index-8W9h6F-s.js"></script>
+    <script type="module" crossorigin src="/assets/index-D05SDm3g.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-TAlNW-xx.css">
   </head>
   <body>
