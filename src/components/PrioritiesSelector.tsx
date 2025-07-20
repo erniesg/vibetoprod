@@ -24,7 +24,7 @@ export const PrioritiesSelector: React.FC<PrioritiesSelectorProps> = ({
 }) => {
   const canSelectMore = selected.length < maxPriorities;
   
-
+  
   return (
     <div className="space-y-2">
       {!hideLabel && (
@@ -56,6 +56,7 @@ export const PrioritiesSelector: React.FC<PrioritiesSelectorProps> = ({
           const isSelected = selected.includes(priority.id);
           // Always allow deselecting. For selecting new: only if under limit
           const canSelect = isSelected || selected.length < maxPriorities;
+          
           
           return (
             <label

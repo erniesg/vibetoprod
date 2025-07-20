@@ -180,8 +180,7 @@ const priorityIcons = {
   'Cost Optimization': { icon: 'DollarSign', emoji: '💰' },
   'Global Performance': { icon: 'Globe', emoji: '🌍' },
   'Enterprise Security': { icon: 'Shield', emoji: '🔒' },
-  'Developer Velocity': { icon: 'Users', emoji: '👨‍💻' },
-  'Scalability': { icon: 'TrendingUp', emoji: '📈' }
+  'Speed to Market': { icon: 'Rocket', emoji: '🚀' }
 };
 
 // App type detection
@@ -219,17 +218,17 @@ const generatePriorityValueProps = (priorities: string[], appDescription: string
           }, plus no idle server costs with true pay-per-use pricing.`
         };
         
-      case 'Developer Velocity':
+      case 'Speed to Market':
         return {
           icon: iconData?.icon || 'CheckCircle',
-          emoji: '👨‍💻',
-          title: 'Code, Not Config',
-          description: `Developer experience: Cloudflare's integrated platform vs ${competitor}'s service juggling means ${
+          emoji: '🚀',
+          title: 'Zero to Production',
+          description: `Deployment speed: Cloudflare's instant edge deployment vs ${competitor}'s complex provisioning means ${
             appType === 'gaming' ? 'you can push game updates and hotfixes instantly to all players worldwide' :
-            appType === 'social' ? 'you build features, not deployment pipelines' :
-            appType === 'api' ? 'you write business logic, not scaling configurations' :
-            'your developers spend 80% more time building features'
-          }, with TypeScript everywhere and zero DevOps overhead.`
+            appType === 'social' ? 'you launch features in minutes, not hours' :
+            appType === 'api' ? 'your APIs are live globally in seconds' :
+            'you deploy 10x faster with zero infrastructure setup'
+          }, shipping features while competitors are still configuring.`
         };
         
       case 'Global Performance':
@@ -256,19 +255,6 @@ const generatePriorityValueProps = (priorities: string[], appDescription: string
             appType === 'api' ? 'your APIs are protected from abuse and attacks automatically' :
             'your application gets enterprise-grade security'
           }, with zero additional configuration or licensing costs.`
-        };
-        
-      case 'Scalability':
-        return {
-          icon: iconData?.icon || 'CheckCircle',
-          emoji: '📈',
-          title: 'Auto-Scale to Infinity',
-          description: `Scaling advantage: Cloudflare's automatic scaling vs ${competitor}'s manual configuration means ${
-            appType === 'gaming' ? 'your game handles viral growth from 100 to 100,000 players seamlessly' :
-            appType === 'social' ? 'your platform scales from startup to unicorn without infrastructure rewrites' :
-            appType === 'ecommerce' ? 'your store handles Black Friday traffic spikes without crashes' :
-            'your application scales effortlessly from 1 user to 1 billion users'
-          }, with zero capacity planning or server provisioning required.`
         };
         
       default:
