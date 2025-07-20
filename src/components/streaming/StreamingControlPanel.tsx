@@ -27,6 +27,7 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
 }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<string>('');
+  const [originalPresetData, setOriginalPresetData] = useState<any>(null);
   const [formData, setFormData] = useState<UserInput>({
     persona: 'Vibe Coder',
     region: 'Singapore',
@@ -37,12 +38,39 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
     maxPriorities: 3
   });
 
-  // Sync internal persona state with auto-cycling
+  // Load from session storage on mount
+  useEffect(() => {
+    const savedData = sessionStorage.getItem('vibetoprod_form_data');
+    const savedPreset = sessionStorage.getItem('vibetoprod_selected_preset');
+    const savedOriginal = sessionStorage.getItem('vibetoprod_original_preset');
+    
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      setFormData(prev => ({ ...prev, ...parsed, persona: currentPersona }));
+    }
+    if (savedPreset) {
+      setSelectedPreset(savedPreset);
+    }
+    if (savedOriginal) {
+      setOriginalPresetData(JSON.parse(savedOriginal));
+    }
+  }, []);
+
+  // Sync internal persona state with auto-cycling (but keep preset selection)
   useEffect(() => {
     setFormData(prev => ({ ...prev, persona: currentPersona }));
-    // Clear preset selection when persona changes
-    setSelectedPreset('');
   }, [currentPersona]);
+
+  // Save to session storage whenever form data changes
+  useEffect(() => {
+    sessionStorage.setItem('vibetoprod_form_data', JSON.stringify({
+      appDescription: formData.appDescription,
+      scale: formData.scale,
+      priorities: formData.priorities,
+      region: formData.region,
+      competitors: formData.competitors
+    }));
+  }, [formData]);
 
   const regionOptions = [
     { value: 'Singapore', label: '🇸🇬 Singapore' },
@@ -85,10 +113,19 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
   const handlePresetSelect = (presetLabel: string) => {
     if (!presetLabel) {
       setSelectedPreset('');
+      setOriginalPresetData(null);
+      sessionStorage.removeItem('vibetoprod_selected_preset');
+      sessionStorage.removeItem('vibetoprod_original_preset');
       return;
     }
 
-    const preset = personaPresets[currentPersona]?.find(p => p.label === presetLabel);
+    // Find preset across all personas to support cross-persona templates
+    let preset = null;
+    for (const persona of Object.keys(personaPresets) as Array<keyof typeof personaPresets>) {
+      preset = personaPresets[persona]?.find(p => p.label === presetLabel);
+      if (preset) break;
+    }
+
     if (preset) {
       setFormData(prev => ({
         ...prev,
@@ -97,15 +134,33 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
         priorities: preset.priorities
       }));
       setSelectedPreset(presetLabel);
+      setOriginalPresetData(preset);
+      
+      // Save to session storage
+      sessionStorage.setItem('vibetoprod_selected_preset', presetLabel);
+      sessionStorage.setItem('vibetoprod_original_preset', JSON.stringify(preset));
     }
   };
 
-  // Clear preset selection when user types custom input
+  // Check if current values differ from original preset
+  const getModificationStatus = () => {
+    if (!originalPresetData) return { modified: false };
+    
+    const appModified = formData.appDescription !== originalPresetData.appDescription;
+    const scaleModified = formData.scale !== originalPresetData.scale;
+    const prioritiesModified = JSON.stringify(formData.priorities?.sort()) !== JSON.stringify(originalPresetData.priorities?.sort());
+    
+    return {
+      modified: appModified || scaleModified || prioritiesModified,
+      appModified,
+      scaleModified,
+      prioritiesModified
+    };
+  };
+
+  // Don't clear preset selection when user types - just show modification status
   const handleAppDescriptionChange = (value: string) => {
     setFormData(prev => ({ ...prev, appDescription: value }));
-    if (selectedPreset && value !== personaPresets[currentPersona]?.find(p => p.label === selectedPreset)?.appDescription) {
-      setSelectedPreset('');
-    }
   };
 
   return (
@@ -163,10 +218,14 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
               }`}
             >
               <option value="">Templates ↓</option>
-              {personaPresets[currentPersona]?.map(preset => (
-                <option key={preset.label} value={preset.label}>
-                  {preset.label}
-                </option>
+              {Object.entries(personaPresets).map(([persona, presets]) => (
+                <optgroup key={persona} label={persona}>
+                  {presets.map(preset => (
+                    <option key={preset.label} value={preset.label}>
+                      {preset.label}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
           </div>
@@ -185,6 +244,7 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
           {selectedPreset && (
             <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
               Using template: <span className="font-medium">{selectedPreset}</span>
+              {getModificationStatus().modified && <span className="text-orange-500 ml-1">*</span>}
             </p>
           )}
         </div>
@@ -209,18 +269,39 @@ export const StreamingControlPanel: React.FC<StreamingControlPanelProps> = ({
                 ? 'bg-gray-800 border-gray-700'
                 : 'bg-gray-50 border-gray-200'
             }`}>
-              <ScaleSelector
-                selected={formData.scale}
-                onSelect={(scale) => setFormData({ ...formData, scale })}
-                isDarkMode={isDarkMode}
-              />
+              <div>
+                <div className="flex items-center mb-2">
+                  <span className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Scale
+                  </span>
+                  {getModificationStatus().scaleModified && (
+                    <span className="text-orange-500 ml-1 text-xs">*</span>
+                  )}
+                </div>
+                <ScaleSelector
+                  selected={formData.scale}
+                  onSelect={(scale) => setFormData({ ...formData, scale })}
+                  isDarkMode={isDarkMode}
+                />
+              </div>
 
-              <PrioritiesSelector
-                selected={formData.priorities}
-                onToggle={togglePriority}
-                maxPriorities={formData.maxPriorities}
-                isDarkMode={isDarkMode}
-              />
+              <div>
+                <div className="flex items-center mb-2">
+                  <span className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Priorities
+                  </span>
+                  {getModificationStatus().prioritiesModified && (
+                    <span className="text-orange-500 ml-1 text-xs">*</span>
+                  )}
+                </div>
+                <PrioritiesSelector
+                  selected={formData.priorities}
+                  onToggle={togglePriority}
+                  maxPriorities={formData.maxPriorities}
+                  isDarkMode={isDarkMode}
+                  hideLabel={true}
+                />
+              </div>
             </div>
           )}
         </div>

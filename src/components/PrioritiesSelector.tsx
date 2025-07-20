@@ -6,6 +6,7 @@ interface PrioritiesSelectorProps {
   onToggle: (priority: string) => void;
   maxPriorities: number;
   isDarkMode: boolean;
+  hideLabel?: boolean;
 }
 
 const availablePriorities = Object.entries(PRIORITY_MAPPINGS).map(([id, mapping]) => ({
@@ -18,29 +19,41 @@ export const PrioritiesSelector: React.FC<PrioritiesSelectorProps> = ({
   selected, 
   onToggle, 
   maxPriorities,
-  isDarkMode
+  isDarkMode,
+  hideLabel = false
 }) => {
   const canSelectMore = selected.length < maxPriorities;
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className={`block text-sm font-medium mb-2 ${
-          isDarkMode ? 'text-white' : 'text-gray-900'
-        }`}>
-          Priorities
-        </label>
-        <span className={`text-xs font-medium ${
-          isDarkMode ? 'text-gray-300' : 'text-gray-600'
-        }`}>
-          {selected.length} of {maxPriorities} selected
-        </span>
-      </div>
+      {!hideLabel && (
+        <div className="flex items-center justify-between">
+          <label className={`block text-sm font-medium mb-2 ${
+            isDarkMode ? 'text-white' : 'text-gray-900'
+          }`}>
+            Priorities
+          </label>
+          <span className={`text-xs font-medium ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+          }`}>
+            {selected.length} of {maxPriorities} selected
+          </span>
+        </div>
+      )}
+      {hideLabel && (
+        <div className="flex justify-end mb-2">
+          <span className={`text-xs font-medium ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+          }`}>
+            {selected.length} of {maxPriorities} selected
+          </span>
+        </div>
+      )}
       
       <div className="grid grid-cols-2 gap-3 mt-2">
         {availablePriorities.map((priority) => {
           const isSelected = selected.includes(priority.id);
-          const canSelect = canSelectMore || isSelected;
+          const canSelect = isSelected || canSelectMore;
           
           return (
             <label

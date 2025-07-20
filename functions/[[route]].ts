@@ -966,14 +966,7 @@ app.post('/api/generate-architecture-v2', async (c) => {
 async function verifyAdminAuth(c: any): Promise<boolean> {
   const authHeader = c.req.header('Authorization') || c.req.header('X-Admin-Key');
   
-  console.log('🔍 Auth debug: Headers received:', Object.fromEntries(c.req.raw.headers.entries()));
-  console.log('🔍 Auth debug: ADMIN_API_KEY exists:', !!c.env.ADMIN_API_KEY);
-  console.log('🔍 Auth debug: ADMIN_API_KEY length:', c.env.ADMIN_API_KEY?.length);
-  
   if (!authHeader || !c.env.ADMIN_API_KEY) {
-    console.log('🔍 Auth debug: Missing auth header or admin key');
-    console.log('  Auth header:', authHeader);
-    console.log('  Admin key set:', !!c.env.ADMIN_API_KEY);
     return false;
   }
   
@@ -982,14 +975,6 @@ async function verifyAdminAuth(c: any): Promise<boolean> {
     ? authHeader.slice(7) 
     : authHeader;
   
-  console.log('🔍 Auth debug:');
-  console.log('  Stored key length:', c.env.ADMIN_API_KEY.length);
-  console.log('  Provided key length:', providedKey.length);
-  console.log('  Stored key:', c.env.ADMIN_API_KEY);
-  console.log('  Provided key:', providedKey);
-  console.log('  Keys match directly:', c.env.ADMIN_API_KEY === providedKey);
-  
-  // For now, use direct comparison while debugging
   return c.env.ADMIN_API_KEY === providedKey;
 }
 
@@ -1091,8 +1076,8 @@ app.get('*', (c) => {
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vibe to Prod: The Edge Advantage</title>
-    <script type="module" crossorigin src="/assets/index-D05SDm3g.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-TAlNW-xx.css">
+    <script type="module" crossorigin src="/assets/index-OtR4dV0c.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-kEwzlIDN.css">
   </head>
   <body>
     <div id="root"></div>
