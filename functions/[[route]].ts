@@ -175,8 +175,8 @@ app.use('*', async (c, next) => {
 // Handle OPTIONS requests
 app.options('*', (c) => c.text('', 200));
 
-// Constraint icon mapping (consistent with ConstraintsSelector)
-const constraintIcons = {
+// Priority icon mapping (consistent with PrioritiesSelector)
+const priorityIcons = {
   'Cost Optimization': { icon: 'DollarSign', emoji: '💰' },
   'Global Performance': { icon: 'Globe', emoji: '🌍' },
   'Enterprise Security': { icon: 'Shield', emoji: '🔒' },
@@ -198,14 +198,14 @@ const detectAppType = (description: string): string => {
   return 'webapp';
 };
 
-// Generate constraint-based advantages
-const generateConstraintValueProps = (constraints: string[], appDescription: string, competitor: string) => {
+// Generate priority-based advantages
+const generatePriorityValueProps = (priorities: string[], appDescription: string, competitor: string) => {
   const appType = detectAppType(appDescription);
   
-  return constraints.map((constraint) => {
-    const iconData = constraintIcons[constraint as keyof typeof constraintIcons];
+  return priorities.map((priority) => {
+    const iconData = priorityIcons[priority as keyof typeof priorityIcons];
     
-    switch (constraint) {
+    switch (priority) {
       case 'Cost Optimization':
         return {
           icon: iconData?.icon || 'CheckCircle',
@@ -294,6 +294,12 @@ const createRealTimeStreamingResponse = async (c: any, userInput: any) => {
       })
     : new OpenAIService(c.env.OPENAI_API_KEY);
 
+  // Auto-select priorities and scale if none provided
+  const finalPriorities = userInput.priorities?.length > 0 
+    ? userInput.priorities 
+    : openai.selectPriorities(userInput.persona);
+  const finalScale = userInput.scale || openai.selectScale(userInput.persona);
+
   const stream = new ReadableStream({
     async start(controller) {
       const encoder = new TextEncoder();
@@ -311,7 +317,7 @@ const createRealTimeStreamingResponse = async (c: any, userInput: any) => {
             appDescription: userInput.appDescription,
             persona: userInput.persona,
             scale: finalScale,
-            constraints: userInput.constraints || [],
+            priorities: finalPriorities,
             region: userInput.region || 'Global'
           }),
           openai.generateCompetitorArchitecture({
@@ -375,56 +381,56 @@ const createRealTimeStreamingResponse = async (c: any, userInput: any) => {
           }
         }
 
-        // Phase 3: Generate and stream constraint advantages
-        if (userInput.constraints && userInput.constraints.length > 0) {
-          console.log('🔄 Generating constraint advantages...');
+        // Phase 3: Generate and stream priority advantages
+        if (finalPriorities && finalPriorities.length > 0) {
+          console.log('🔄 Generating priority advantages...');
           try {
-            const constraintValueProps = await openai.generateConstraintAdvantages({
-              constraints: userInput.constraints,
+            const priorityValueProps = await openai.generatePriorityAdvantages({
+              priorities: finalPriorities,
               appDescription: userInput.appDescription,
               competitor: userInput.competitors?.[0] || 'AWS',
               cloudflareArch,
               competitorArch
             });
 
-            console.log('🎯 Raw constraint value props response:', constraintValueProps);
-            console.log('🎯 Is array?', Array.isArray(constraintValueProps));
-            console.log('🎯 Length:', constraintValueProps?.length);
+            console.log('🎯 Raw priority value props response:', priorityValueProps);
+            console.log('🎯 Is array?', Array.isArray(priorityValueProps));
+            console.log('🎯 Length:', priorityValueProps?.length);
 
             // Handle both array and single object responses
             let valuePropsArray;
-            if (Array.isArray(constraintValueProps)) {
-              valuePropsArray = constraintValueProps;
-            } else if (constraintValueProps && typeof constraintValueProps === 'object') {
+            if (Array.isArray(priorityValueProps)) {
+              valuePropsArray = priorityValueProps;
+            } else if (priorityValueProps && typeof priorityValueProps === 'object') {
               console.log('🔧 Converting single object to array');
-              valuePropsArray = [constraintValueProps];
+              valuePropsArray = [priorityValueProps];
             } else {
               valuePropsArray = [];
             }
 
             if (valuePropsArray.length > 0) {
-              console.log('🚀 Starting to stream', valuePropsArray.length, 'constraint value props');
+              console.log('🚀 Starting to stream', valuePropsArray.length, 'priority value props');
               for (const valueProp of valuePropsArray) {
-                console.log('📤 Sending constraint_value_prop chunk:', valueProp);
+                console.log('📤 Sending priority_value_prop chunk:', valueProp);
                 sendChunk({
-                  type: 'constraint_value_prop',
+                  type: 'priority_value_prop',
                   platform: 'cloudflare',
                   data: valueProp,
                   timestamp: Date.now()
                 });
                 await new Promise(resolve => setTimeout(resolve, 800));
               }
-              console.log('✅ Finished streaming constraint value props');
+              console.log('✅ Finished streaming priority value props');
             } else {
-              console.log('❌ No valid constraint value props to stream');
+              console.log('❌ No valid priority value props to stream');
             }
           } catch (error) {
-            console.error('❌ Failed to generate constraint advantages:', error);
+            console.error('❌ Failed to generate priority advantages:', error);
           }
         }
 
-        // Phase 4: Stream generic advantages if no constraints
-        if (cloudflareArch.advantages && (!userInput.constraints || userInput.constraints.length === 0)) {
+        // Phase 4: Stream generic advantages if no priorities
+        if (cloudflareArch.advantages && (!finalPriorities || finalPriorities.length === 0)) {
           for (const advantage of cloudflareArch.advantages) {
             sendChunk({
               type: 'advantage',
@@ -437,7 +443,7 @@ const createRealTimeStreamingResponse = async (c: any, userInput: any) => {
         }
 
         // Phase 5: Stream value props
-        if (cloudflareArch.valueProps && (!userInput.constraints || userInput.constraints.length === 0)) {
+        if (cloudflareArch.valueProps && (!finalPriorities || finalPriorities.length === 0)) {
           for (const valueProp of cloudflareArch.valueProps) {
             sendChunk({
               type: 'value_prop',
@@ -485,8 +491,8 @@ app.post('/api/generate-architecture', async (c) => {
   const userInput = await c.req.json();
   console.log('🎯 Generate Architecture Request:', {
     ...userInput,
-    hasConstraints: userInput.constraints?.length > 0,
-    constraintsCount: userInput.constraints?.length || 0
+    hasPriorities: userInput.priorities?.length > 0,
+    prioritiesCount: userInput.priorities?.length || 0
   });
   
   // Check if this is a streaming request
@@ -494,25 +500,25 @@ app.post('/api/generate-architecture', async (c) => {
 
   // Initialize services
   const cache = isStreamingRequest ? null : new CacheService(c.env.KV);
-  const useOpenAI = c.env.OPENAI_API_KEY && c.env.USE_OPENAI !== 'false';
+  const useOpenAI = !!c.env.OPENAI_API_KEY;
   
   let cloudflareData;
   let competitorData;
-  let constraintValueProps = [];
+  let priorityValueProps = [];
 
   // Check cache first (skip for streaming requests)
   if (useOpenAI && !isStreamingRequest && cache) {
     const cached = await cache.get<{
       cloudflare: any;
       competitor: any;
-      constraintValueProps: any[];
+      priorityValueProps: any[];
     }>(userInput);
     
     if (cached) {
       console.log('🎯 Using cached architecture');
       cloudflareData = cached.cloudflare;
       competitorData = cached.competitor;
-      constraintValueProps = cached.constraintValueProps || [];
+      priorityValueProps = cached.priorityValueProps || [];
     }
   }
 
@@ -528,10 +534,10 @@ app.post('/api/generate-architecture', async (c) => {
       console.log('🤖 Using OpenAI for architecture generation (non-streaming)');
       const openai = new OpenAIService(c.env.OPENAI_API_KEY);
       
-      // Auto-select constraints if none provided
-      const finalConstraints = userInput.constraints?.length > 0 
-        ? userInput.constraints 
-        : openai.selectConstraints(userInput.persona);
+      // Auto-select priorities if none provided
+      const finalPriorities = userInput.priorities?.length > 0 
+        ? userInput.priorities 
+        : openai.selectPriorities(userInput.persona);
       
       // Auto-select scale if none provided
       const finalScale = userInput.scale || openai.selectScale(userInput.persona);
@@ -542,7 +548,7 @@ app.post('/api/generate-architecture', async (c) => {
           appDescription: userInput.appDescription,
           persona: userInput.persona,
           scale: finalScale,
-          constraints: finalConstraints,
+          priorities: finalPriorities,
           region: userInput.region || 'Global'
         }),
         openai.generateCompetitorArchitecture({
@@ -563,19 +569,19 @@ app.post('/api/generate-architecture', async (c) => {
       };
       competitorData = competitorArch;
 
-      // Generate constraint-based advantages
+      // Generate priority-based advantages
       try {
-        constraintValueProps = await openai.generateConstraintAdvantages({
-          constraints: finalConstraints,
+        priorityValueProps = await openai.generatePriorityAdvantages({
+          priorities: finalPriorities,
           appDescription: userInput.appDescription,
           competitor: userInput.competitors?.[0] || 'AWS',
           cloudflareArch,
           competitorArch
         });
-        console.log('🎯 Generated constraint value props:', constraintValueProps?.length || 0);
+        console.log('🎯 Generated priority value props:', priorityValueProps?.length || 0);
       } catch (error) {
-        console.error('❌ Failed to generate constraint advantages:', error);
-        constraintValueProps = [];
+        console.error('❌ Failed to generate priority advantages:', error);
+        priorityValueProps = [];
       }
 
       // Cache the successful result
@@ -583,7 +589,7 @@ app.post('/api/generate-architecture', async (c) => {
         await cache.set(userInput, {
           cloudflare: cloudflareData,
           competitor: competitorData,
-          constraintValueProps
+          priorityValueProps
         });
       }
     } catch (error) {
@@ -594,8 +600,8 @@ app.post('/api/generate-architecture', async (c) => {
       cloudflareData = personaData.cloudflare;
       competitorData = personaData.competitor;
       
-      if (userInput.constraints && userInput.constraints.length > 0) {
-        constraintValueProps = generateConstraintValueProps(userInput.constraints, userInput.appDescription || '', userInput.competitors?.[0] || 'AWS');
+      if (userInput.priorities && userInput.priorities.length > 0) {
+        priorityValueProps = generatePriorityValueProps(userInput.priorities, userInput.appDescription || '', userInput.competitors?.[0] || 'AWS');
       }
     }
   } else {
@@ -605,8 +611,8 @@ app.post('/api/generate-architecture', async (c) => {
     cloudflareData = personaData.cloudflare;
     competitorData = personaData.competitor;
     
-    if (userInput.constraints && userInput.constraints.length > 0) {
-      constraintValueProps = generateConstraintValueProps(userInput.constraints, userInput.appDescription || '', userInput.competitors?.[0] || 'AWS');
+    if (userInput.priorities && userInput.priorities.length > 0) {
+      priorityValueProps = generatePriorityValueProps(userInput.priorities, userInput.appDescription || '', userInput.competitors?.[0] || 'AWS');
     }
   }
 
@@ -614,7 +620,7 @@ app.post('/api/generate-architecture', async (c) => {
   console.log('📡 Creating streaming response', {
     hasCloudflareData: !!cloudflareData,
     hasCompetitorData: !!competitorData,
-    constraintValuePropsCount: constraintValueProps.length
+    priorityValuePropsCount: priorityValueProps.length
   });
   
   const stream = new ReadableStream({
@@ -675,20 +681,20 @@ app.post('/api/generate-architecture', async (c) => {
           index++;
           setTimeout(sendNext, 400);
         }
-        // Phase 5: Send constraint-based value props (if any)
-        else if (constraintValueProps.length > 0 && index < cloudflareData.nodes.length + cloudflareData.edges.length + competitorData.nodes.length + competitorData.edges.length + constraintValueProps.length) {
+        // Phase 5: Send priority-based value props (if any)
+        else if (priorityValueProps.length > 0 && index < cloudflareData.nodes.length + cloudflareData.edges.length + competitorData.nodes.length + competitorData.edges.length + priorityValueProps.length) {
           const valuePropIndex = index - cloudflareData.nodes.length - cloudflareData.edges.length - competitorData.nodes.length - competitorData.edges.length;
           sendChunk({
-            type: 'constraint_value_prop',
+            type: 'priority_value_prop',
             platform: 'cloudflare',
-            data: constraintValueProps[valuePropIndex],
+            data: priorityValueProps[valuePropIndex],
             timestamp: Date.now()
           });
           index++;
           setTimeout(sendNext, 1200);
         }
-        // Phase 6: Send generic advantages (fallback if no constraints)
-        else if (constraintValueProps.length === 0 && cloudflareData.advantages && index < cloudflareData.nodes.length + cloudflareData.edges.length + competitorData.nodes.length + competitorData.edges.length + cloudflareData.advantages.length) {
+        // Phase 6: Send generic advantages (fallback if no priorities)
+        else if (priorityValueProps.length === 0 && cloudflareData.advantages && index < cloudflareData.nodes.length + cloudflareData.edges.length + competitorData.nodes.length + competitorData.edges.length + cloudflareData.advantages.length) {
           const advantageIndex = index - cloudflareData.nodes.length - cloudflareData.edges.length - competitorData.nodes.length - competitorData.edges.length;
           sendChunk({
             type: 'advantage',
@@ -699,8 +705,8 @@ app.post('/api/generate-architecture', async (c) => {
           index++;
           setTimeout(sendNext, 1000);
         } 
-        // Phase 7: Send value props (if no constraints)
-        else if (constraintValueProps.length === 0 && cloudflareData.valueProps && index < cloudflareData.nodes.length + cloudflareData.edges.length + competitorData.nodes.length + competitorData.edges.length + (cloudflareData.advantages?.length || 0) + cloudflareData.valueProps.length) {
+        // Phase 7: Send value props (if no priorities)
+        else if (priorityValueProps.length === 0 && cloudflareData.valueProps && index < cloudflareData.nodes.length + cloudflareData.edges.length + competitorData.nodes.length + competitorData.edges.length + (cloudflareData.advantages?.length || 0) + cloudflareData.valueProps.length) {
           const valuePropIndex = index - cloudflareData.nodes.length - cloudflareData.edges.length - competitorData.nodes.length - competitorData.edges.length - (cloudflareData.advantages?.length || 0);
           sendChunk({
             type: 'value_prop',
@@ -752,25 +758,35 @@ app.post('/api/generate-architecture-v2', async (c) => {
       return c.json({ error: 'OpenAI API key not configured' }, 400);
     }
 
-    // Auto-select constraints if none provided
+    console.log('🔍 Environment debug:');
+    console.log('🔑 OpenAI API key exists:', !!c.env.OPENAI_API_KEY);
+    console.log('🔑 OpenAI API key length:', c.env.OPENAI_API_KEY?.length);
+    console.log('🔑 OpenAI API key starts with sk-:', c.env.OPENAI_API_KEY?.startsWith('sk-'));
+    console.log('🏷️ Environment:', c.env.ENVIRONMENT);
+    console.log('🌎 Account ID:', c.env.CLOUDFLARE_ACCOUNT_ID);
+    console.log('🚪 AI Gateway ID:', c.env.AI_GATEWAY_ID);
+    console.log('📦 All env keys:', Object.keys(c.env));
+
+    // Auto-select priorities if none provided
     const openaiService = new OpenAIService(c.env.OPENAI_API_KEY);
-    const finalConstraints = userInput.constraints?.length > 0 
-      ? userInput.constraints 
-      : openaiService.selectConstraints(userInput.persona);
+    const finalPriorities = userInput.priorities?.length > 0 
+      ? userInput.priorities 
+      : openaiService.selectPriorities(userInput.persona);
       
     // Auto-select scale if none provided  
     const finalScale = userInput.scale || openaiService.selectScale(userInput.persona);
       
-    console.log('🎯 Final constraints for V2:', finalConstraints);
+    console.log('🎯 Final priorities for V2:', finalPriorities);
     console.log('🎯 Final scale for V2:', finalScale);
 
-    // Update userInput to include auto-selected constraints and scale
+    // Update userInput to include auto-selected priorities and scale
     const updatedUserInput = {
       ...userInput,
-      constraints: finalConstraints,
+      priorities: finalPriorities,
       scale: finalScale
     };
 
+    console.log('🚀 Creating ModernOpenAIService with API key...');
     const modernOpenAI = new ModernOpenAIService(c.env.OPENAI_API_KEY);
     const result = await modernOpenAI.streamArchitecture(updatedUserInput);
     
@@ -786,12 +802,17 @@ app.post('/api/generate-architecture-v2', async (c) => {
           // Check if partialObjectStream exists
           if ('partialObjectStream' in result) {
             console.log('✅ partialObjectStream found! Using it...');
+            let finalResponse = null;
             // Use partialObjectStream as documented
             for await (const partialObject of result.partialObjectStream) {
               chunkCount++;
+              finalResponse = partialObject; // Keep track of the latest/final response
               const chunk = `data: ${JSON.stringify(partialObject)}\n\n`;
               controller.enqueue(encoder.encode(chunk));
             }
+            
+            // Log the completed LLM response
+            console.log('🎯 Final LLM Response:', JSON.stringify(finalResponse, null, 2));
           } else {
             console.log('❌ partialObjectStream not found, using baseStream...');
             // Fallback to baseStream
@@ -870,9 +891,9 @@ app.get('*', (c) => {
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vibe to Prod: The APAC Edge Blueprint</title>
-    <script type="module" crossorigin src="/assets/index-CKm2B1Iw.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BmtrZPm_.css">
+    <title>Vibe to Prod: The Edge Advantage</title>
+    <script type="module" crossorigin src="/assets/index-CDjFXb1N.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-TAlNW-xx.css">
   </head>
   <body>
     <div id="root"></div>

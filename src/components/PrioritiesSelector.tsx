@@ -1,26 +1,26 @@
 import React from 'react';
 import { PRIORITY_MAPPINGS } from '../constants/priorities';
 
-interface ConstraintsSelectorProps {
+interface PrioritiesSelectorProps {
   selected: string[];
-  onToggle: (constraint: string) => void;
-  maxConstraints: number;
+  onToggle: (priority: string) => void;
+  maxPriorities: number;
   isDarkMode: boolean;
 }
 
-const availableConstraints = Object.entries(PRIORITY_MAPPINGS).map(([id, mapping]) => ({
+const availablePriorities = Object.entries(PRIORITY_MAPPINGS).map(([id, mapping]) => ({
   id,
   icon: mapping.emoji,
   description: mapping.description
 }));
 
-export const ConstraintsSelector: React.FC<ConstraintsSelectorProps> = ({ 
+export const PrioritiesSelector: React.FC<PrioritiesSelectorProps> = ({ 
   selected, 
   onToggle, 
-  maxConstraints,
+  maxPriorities,
   isDarkMode
 }) => {
-  const canSelectMore = selected.length < maxConstraints;
+  const canSelectMore = selected.length < maxPriorities;
 
   return (
     <div className="space-y-2">
@@ -33,18 +33,18 @@ export const ConstraintsSelector: React.FC<ConstraintsSelectorProps> = ({
         <span className={`text-xs font-medium ${
           isDarkMode ? 'text-gray-300' : 'text-gray-600'
         }`}>
-          {selected.length} of {maxConstraints} selected
+          {selected.length} of {maxPriorities} selected
         </span>
       </div>
       
       <div className="grid grid-cols-2 gap-3 mt-2">
-        {availableConstraints.map((constraint) => {
-          const isSelected = selected.includes(constraint.id);
+        {availablePriorities.map((priority) => {
+          const isSelected = selected.includes(priority.id);
           const canSelect = canSelectMore || isSelected;
           
           return (
             <label
-              key={constraint.id}
+              key={priority.id}
               className={`
                 flex items-start space-x-3 px-4 py-3 rounded-lg border cursor-pointer transition-all duration-200
                 ${isSelected 
@@ -64,21 +64,21 @@ export const ConstraintsSelector: React.FC<ConstraintsSelectorProps> = ({
               <input
                 type="checkbox"
                 checked={isSelected}
-                onChange={() => canSelect && onToggle(constraint.id)}
+                onChange={() => canSelect && onToggle(priority.id)}
                 disabled={!canSelect}
                 className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-2 focus:ring-orange-500 mt-0.5"
               />
-              <span className="text-base">{constraint.icon}</span>
+              <span className="text-base">{priority.icon}</span>
               <div className="flex-1 min-w-0">
                 <span className={`text-sm font-medium block ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
                 }`}>
-                  {constraint.id}
+                  {priority.id}
                 </span>
                 <span className={`text-xs ${
                   isDarkMode ? 'text-gray-400' : 'text-gray-500'
                 }`}>
-                  {constraint.description}
+                  {priority.description}
                 </span>
               </div>
             </label>

@@ -4,8 +4,8 @@ export interface UserInput {
   appDescription: string;
   competitors: ('AWS' | 'GCP' | 'Azure' | 'Alibaba')[];
   scale: 'Startup' | 'Growth' | 'Enterprise' | 'Global';
-  constraints: string[];
-  maxConstraints: number;
+  priorities: string[];
+  maxPriorities: number;
 }
 
 export interface ArchitectureResponse {

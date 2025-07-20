@@ -21,19 +21,19 @@ interface AdvantagesPanelProps {
   loading: boolean;
   persona: 'Vibe Coder' | 'FDE' | 'CIO/CTO';
   isDarkMode: boolean;
-  constraints: string[];
+  priorities: string[];
   appDescription: string;
   competitor: string;
   streamingMode?: boolean;
-  constraintValueProps?: Array<{
+  priorityValueProps?: Array<{
     emoji: string;
     title: string;
     description: string;
   }>;
 }
 
-// Constraint icon mapping (consistent with ConstraintsSelector)
-const constraintIcons = {
+// Priority icon mapping (consistent with PrioritiesSelector)
+const priorityIcons = {
   'Cost Optimization': { icon: DollarSign, emoji: '💰' },
   'Global Performance': { icon: Globe, emoji: '🌍' },
   'Enterprise Security': { icon: Shield, emoji: '🔒' },
@@ -57,22 +57,22 @@ const getIconByName = (iconName: string) => {
 export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({ 
   loading, 
   isDarkMode, 
-  constraints,
+  priorities,
   appDescription,
   competitor,
   streamingMode = false,
-  constraintValueProps = []
+  priorityValueProps = []
 }) => {
   
-  // Generate dynamic value propositions based on constraints
-  const generateConstraintValueProps = () => {
+  // Generate dynamic value propositions based on priorities
+  const generatePriorityValueProps = () => {
     const appType = detectAppType(appDescription);
     
-    return constraints.map((constraint) => {
-      const iconData = constraintIcons[constraint as keyof typeof constraintIcons];
+    return priorities.map((priority) => {
+      const iconData = priorityIcons[priority as keyof typeof priorityIcons];
       const Icon = iconData?.icon || CheckCircle;
       
-      switch (constraint) {
+      switch (priority) {
         case 'Cost Optimization':
           return {
             icon: Icon,
@@ -163,16 +163,16 @@ export const AdvantagesPanel: React.FC<AdvantagesPanelProps> = ({
   };
 
   // In streaming mode, use the props passed in; otherwise generate them
-  const generatedValueProps = streamingMode ? constraintValueProps : generateConstraintValueProps();
+  const generatedValueProps = streamingMode ? priorityValueProps : generatePriorityValueProps();
   
-  // In streaming mode, always show constraintValueProps (auto-selected or user-selected)
-  // In non-streaming mode, only show if user has selected constraints
+  // In streaming mode, always show priorityValueProps (auto-selected or user-selected)
+  // In non-streaming mode, only show if user has selected priorities
   const displayAdvantages = streamingMode 
-    ? constraintValueProps 
-    : (constraints.length > 0 ? generatedValueProps : []);
+    ? priorityValueProps 
+    : (priorities.length > 0 ? generatedValueProps : []);
 
-  // Show loading state during streaming when we should have constraint value props but don't yet
-  const shouldShowLoading = streamingMode && constraintValueProps.length === 0;
+  // Show loading state during streaming when we should have priority value props but don't yet
+  const shouldShowLoading = streamingMode && priorityValueProps.length === 0;
   const hasValidData = displayAdvantages.length > 0;
 
 

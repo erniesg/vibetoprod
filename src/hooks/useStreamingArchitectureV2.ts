@@ -26,7 +26,7 @@ export function useStreamingArchitectureV2() {
           input: {
             appDescription: userInput.appDescription,
             persona: userInput.persona,
-            constraints: userInput.constraints || [],
+            priorities: userInput.priorities || [],
             competitors: userInput.competitors || ['AWS'],
             scale: userInput.scale || 'Startup',
             region: userInput.region || 'Global'
@@ -141,9 +141,9 @@ export function useStreamingArchitectureV2() {
     edge.to && 
     edge.label
   );
-  const allConstraintValueProps = object?.constraintValueProps || [];
+  const allPriorityValueProps = object?.priorityValueProps || [];
   
-  const constraintValueProps = allConstraintValueProps.filter(prop => {
+  const priorityValueProps = allPriorityValueProps.filter(prop => {
     const isValid = prop && 
       typeof prop === 'object' && 
       prop.title && 
@@ -164,8 +164,8 @@ export function useStreamingArchitectureV2() {
     cloudflareEdges: cloudflareEdges.length,
     competitorNodes: competitorNodes.length,
     competitorEdges: competitorEdges.length,
-    constraintValueProps: constraintValueProps.length,
-    total: cloudflareNodes.length + cloudflareEdges.length + competitorNodes.length + competitorEdges.length + constraintValueProps.length
+    priorityValueProps: priorityValueProps.length,
+    total: cloudflareNodes.length + cloudflareEdges.length + competitorNodes.length + competitorEdges.length + priorityValueProps.length
   };
 
   return {
@@ -175,7 +175,7 @@ export function useStreamingArchitectureV2() {
     competitorNodes,
     competitorEdges,
     valueProps: [], // Legacy compatibility
-    constraintValueProps,
+    priorityValueProps,
     
     // State
     isStreaming: isLoading,

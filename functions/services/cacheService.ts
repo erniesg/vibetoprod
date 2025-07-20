@@ -12,7 +12,7 @@ export class CacheService {
       appDescription: input.appDescription?.toLowerCase().trim(),
       persona: input.persona,
       scale: input.scale,
-      constraints: input.constraints?.sort(),
+      priorities: input.priorities?.sort(),
       competitor: input.competitor || input.competitors?.[0],
     };
     

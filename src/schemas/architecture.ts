@@ -26,7 +26,7 @@ export const diagramEdgeSchema = z.object({
   style: z.enum(['solid', 'dashed']).describe('Line style')
 });
 
-export const constraintValuePropSchema = z.object({
+export const priorityValuePropSchema = z.object({
   emoji: z.string().describe('Display emoji'),
   title: z.string().describe('Short compelling title'),
   description: z.string().describe('1-2 sentence comparison with specific metrics')
@@ -42,8 +42,8 @@ export const architectureResponseSchema = z.object({
     nodes: z.array(diagramNodeSchema).describe('Competitor services and components'),
     edges: z.array(diagramEdgeSchema).describe('Connections between competitor services')
   }),
-  constraintValueProps: z.array(constraintValuePropSchema)
-    .describe('Constraint-specific value propositions with metrics')
+  priorityValueProps: z.array(priorityValuePropSchema)
+    .describe('Priority-specific value propositions with metrics')
 });
 
 // Streaming element schema for progressive generation
@@ -59,15 +59,15 @@ export const streamingElementSchema = z.union([
     data: diagramEdgeSchema
   }),
   z.object({
-    type: z.literal('constraint_value_prop'),
+    type: z.literal('priority_value_prop'),
     platform: z.literal('cloudflare'),
-    data: constraintValuePropSchema
+    data: priorityValuePropSchema
   })
 ]);
 
 // TypeScript types
 export type DiagramNode = z.infer<typeof diagramNodeSchema>;
 export type DiagramEdge = z.infer<typeof diagramEdgeSchema>;
-export type ConstraintValueProp = z.infer<typeof constraintValuePropSchema>;
+export type PriorityValueProp = z.infer<typeof priorityValuePropSchema>;
 export type ArchitectureResponse = z.infer<typeof architectureResponseSchema>;
 export type StreamingElement = z.infer<typeof streamingElementSchema>;

@@ -3,13 +3,13 @@ import { UserInput, DiagramShape, DiagramArrow } from '../types';
 // Removed mock API import - using real Hono backend
 
 interface StreamingChunk {
-  type: 'node' | 'edge' | 'advantage' | 'value_prop' | 'constraint_value_prop' | 'complete';
+  type: 'node' | 'edge' | 'advantage' | 'value_prop' | 'priority_value_prop' | 'complete';
   platform: 'cloudflare' | 'competitor';
   data: any;
   timestamp: number;
 }
 
-interface ConstraintValueProp {
+interface PriorityValueProp {
   emoji: string;
   title: string;
   description: string;
@@ -26,7 +26,7 @@ interface StreamingState {
   competitorEdges: EdgeData[];
   advantages: string[];
   valueProps: string[];
-  constraintValueProps: ConstraintValueProp[];
+  priorityValueProps: PriorityValueProp[];
   isStreaming: boolean;
   isComplete: boolean;
   error: string | null;
@@ -40,7 +40,7 @@ export function useStreamingArchitecture() {
     competitorEdges: [],
     advantages: [],
     valueProps: [],
-    constraintValueProps: [],
+    priorityValueProps: [],
     isStreaming: false,
     isComplete: false,
     error: null,
@@ -55,7 +55,7 @@ export function useStreamingArchitecture() {
       competitorEdges: [],
       advantages: [],
       valueProps: [],
-      constraintValueProps: [],
+      priorityValueProps: [],
       isStreaming: true,
       isComplete: false,
       error: null,
@@ -131,10 +131,10 @@ export function useStreamingArchitecture() {
                     newState.valueProps = [...prev.valueProps, chunk.data];
                     break;
 
-                  case 'constraint_value_prop':
-                    console.log('🎯 Received constraint_value_prop:', chunk.data);
-                    newState.constraintValueProps = [...prev.constraintValueProps, chunk.data];
-                    console.log('🎯 Updated constraintValueProps:', newState.constraintValueProps);
+                  case 'priority_value_prop':
+                    console.log('🎯 Received priority_value_prop:', chunk.data);
+                    newState.priorityValueProps = [...prev.priorityValueProps, chunk.data];
+                    console.log('🎯 Updated priorityValueProps:', newState.priorityValueProps);
                     break;
 
                   case 'complete':
@@ -171,7 +171,7 @@ export function useStreamingArchitecture() {
       competitorEdges: [],
       advantages: [],
       valueProps: [],
-      constraintValueProps: [],
+      priorityValueProps: [],
       isStreaming: false,
       isComplete: false,
       error: null,

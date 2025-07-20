@@ -7,7 +7,7 @@ interface StreamingAdvantagesProps {
   isStreaming: boolean;
   isDarkMode: boolean;
   persona: 'Vibe Coder' | 'FDE' | 'CIO/CTO';
-  constraints: string[];
+  priorities: string[];
   appDescription: string;
   competitor: string;
 }
@@ -18,7 +18,7 @@ export const StreamingAdvantages: React.FC<StreamingAdvantagesProps> = ({
   isStreaming,
   isDarkMode,
   persona,
-  constraints,
+  priorities,
   appDescription,
   competitor
 }) => {
@@ -35,8 +35,8 @@ export const StreamingAdvantages: React.FC<StreamingAdvantagesProps> = ({
     }
   };
 
-  const getConstraintIcon = (constraint: string) => {
-    switch (constraint.toLowerCase()) {
+  const getPriorityIcon = (priority: string) => {
+    switch (priority.toLowerCase()) {
       case 'performance-critical':
         return Zap;
       case 'cost-conscious':
@@ -129,26 +129,26 @@ export const StreamingAdvantages: React.FC<StreamingAdvantagesProps> = ({
         </div>
       )}
 
-      {/* Constraints Callout */}
-      {constraints.length > 0 && allItems.length > 0 && (
+      {/* Priorities Callout */}
+      {priorities.length > 0 && allItems.length > 0 && (
         <div className={`p-6 rounded-xl border ${
           isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
         }`}>
           <h3 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            Addressing Your Constraints
+            Addressing Your Priorities
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {constraints.slice(0, 3).map((constraint, index) => {
-              const ConstraintIcon = getConstraintIcon(constraint);
+            {priorities.slice(0, 3).map((priority, index) => {
+              const PriorityIcon = getPriorityIcon(priority);
               return (
                 <div key={index} className="flex items-center space-x-3">
                   <div className={`p-2 rounded-lg bg-gradient-to-r ${getPersonaColor(persona)}`}>
-                    <ConstraintIcon className="w-4 h-4 text-white" />
+                    <PriorityIcon className="w-4 h-4 text-white" />
                   </div>
                   <span className={`text-sm font-medium ${
                     isDarkMode ? 'text-gray-300' : 'text-gray-700'
                   }`}>
-                    {constraint.replace('-', ' ')}
+                    {priority.replace('-', ' ')}
                   </span>
                 </div>
               );

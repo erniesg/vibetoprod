@@ -25,7 +25,7 @@ export const StreamingArchitectureDemo: React.FC<StreamingArchitectureDemoProps>
     competitorNodes,
     cloudflareEdges,
     competitorEdges,
-    constraintValueProps,
+    priorityValueProps,
     isStreaming,
     isComplete,
     error,
@@ -134,14 +134,14 @@ export const StreamingArchitectureDemo: React.FC<StreamingArchitectureDemoProps>
         <section className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} py-12 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
           <div className="px-8 max-w-5xl mx-auto">
             <AdvantagesPanel
-              loading={isStreaming && constraintValueProps.length === 0}
+              loading={isStreaming && priorityValueProps.length === 0}
               persona={currentPersona}
               isDarkMode={isDarkMode}
-              constraints={currentInput?.constraints || []}
+              priorities={currentInput?.priorities || []}
               appDescription={currentInput?.appDescription || ""}
               competitor={currentInput?.competitors[0] || "AWS"}
               streamingMode={true}
-              constraintValueProps={constraintValueProps}
+              priorityValueProps={priorityValueProps}
             />
           </div>
         </section>

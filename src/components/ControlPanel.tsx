@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { PersonaSelector } from './PersonaSelector';
 import { CompetitorSelector } from './CompetitorSelector';
 import { ScaleSelector } from './ScaleSelector';
-import { ConstraintsSelector } from './ConstraintsSelector';
+import { PrioritiesSelector } from './PrioritiesSelector';
 import { Select } from './ui/Select';
 import { Button } from './ui/Button';
 import { UserInput } from '../types';
@@ -24,8 +24,8 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onGenerate, loading,
     appDescription: '',
     competitors: ['AWS'],
     scale: 'Startup',
-    constraints: [],
-    maxConstraints: 3
+    priorities: [],
+    maxPriorities: 3
   });
 
   // Sync internal persona state with auto-cycling
@@ -57,12 +57,12 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onGenerate, loading,
     }));
   };
 
-  const toggleConstraint = (constraint: string) => {
+  const togglePriority = (priority: string) => {
     setFormData(prev => ({
       ...prev,
-      constraints: prev.constraints.includes(constraint)
-        ? prev.constraints.filter(c => c !== constraint)
-        : [...prev.constraints, constraint]
+      priorities: prev.priorities.includes(priority)
+        ? prev.priorities.filter(c => c !== priority)
+        : [...prev.priorities, priority]
     }));
   };
 
@@ -155,10 +155,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ onGenerate, loading,
                 isDarkMode={isDarkMode}
               />
 
-              <ConstraintsSelector
-                selected={formData.constraints}
-                onToggle={toggleConstraint}
-                maxConstraints={formData.maxConstraints}
+              <PrioritiesSelector
+                selected={formData.priorities}
+                onToggle={togglePriority}
+                maxPriorities={formData.maxPriorities}
                 isDarkMode={isDarkMode}
               />
             </div>

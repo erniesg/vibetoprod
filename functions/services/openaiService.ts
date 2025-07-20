@@ -24,7 +24,7 @@ interface ArchitectureEdge {
   style: 'solid' | 'dashed';
 }
 
-interface ConstraintValueProp {
+interface PriorityValueProp {
   emoji: string;
   title: string;
   description: string;
@@ -96,13 +96,13 @@ export class OpenAIService {
     appDescription: string;
     persona: string;
     scale: string;
-    constraints: string[];
+    priorities: string[];
     region: string;
   }): Promise<{ nodes: ArchitectureNode[]; edges: ArchitectureEdge[]; advantages?: string[]; valueProps?: string[] }> {
-    // Auto-select constraints if none provided
-    const finalConstraints = input.constraints.length > 0 
-      ? input.constraints 
-      : this.selectConstraints(input.persona);
+    // Auto-select priorities if none provided
+    const finalPriorities = input.priorities.length > 0 
+      ? input.priorities 
+      : this.selectPriorities(input.persona);
     const systemPrompt = `You are an expert cloud architect specializing in Cloudflare's edge computing platform. 
 Generate architectures that showcase Cloudflare's unique advantages: zero egress fees, global edge network, integrated services, and serverless compute.
 
@@ -117,7 +117,7 @@ Available priorities for context:
 - User Type: ${input.persona === 'AIE/FDE' ? 'AI Engineer and Forward Deployed Engineer' : input.persona}
 - Scale: ${input.scale}
 - Region: ${input.region}
-- Key Constraints: ${finalConstraints.join(', ')}
+- Key Priorities: ${finalPriorities.join(', ')}
 
 Create a realistic architecture using Cloudflare services. Return JSON with:
 {
@@ -259,7 +259,7 @@ Position nodes logically with users on the left, progressing to backend services
   }
 
   // Auto-assign priorities based on persona
-  public selectConstraints(persona: string): string[] {
+  public selectPriorities(persona: string): string[] {
     const personaMapping = {
       'Vibe Coder': ['Speed to Market', 'Cost Optimization', 'Global Performance'],
       'AIE/FDE': ['Global Performance', 'Speed to Market', 'Cost Optimization'],
@@ -280,17 +280,17 @@ Position nodes logically with users on the left, progressing to backend services
     return scaleMapping[persona as keyof typeof scaleMapping] || 'Startup';
   }
 
-  async generateConstraintAdvantages(input: {
-    constraints: string[];
+  async generatePriorityAdvantages(input: {
+    priorities: string[];
     appDescription: string;
     competitor: string;
     cloudflareArch: { nodes: ArchitectureNode[]; edges: ArchitectureEdge[] };
     competitorArch: { nodes: ArchitectureNode[]; edges: ArchitectureEdge[] };
-  }): Promise<ConstraintValueProp[]> {
-    const systemPrompt = `You are a cloud architecture expert. Generate exactly ${input.constraints.length} concise value propositions comparing Cloudflare to ${input.competitor}.
+  }): Promise<PriorityValueProp[]> {
+    const systemPrompt = `You are a cloud architecture expert. Generate exactly ${input.priorities.length} concise value propositions comparing Cloudflare to ${input.competitor}.
 
 REQUIREMENTS:
-1. Return EXACTLY ${input.constraints.length} objects in a JSON array
+1. Return EXACTLY ${input.priorities.length} objects in a JSON array
 2. Each description must be 1-2 sentences maximum
 3. Include specific metrics or concrete benefits
 4. Focus on architectural differences between the two platforms`;
@@ -300,8 +300,8 @@ REQUIREMENTS:
 Cloudflare: ${input.cloudflareArch.nodes.map(n => n.name).join(', ')}
 ${input.competitor}: ${input.competitorArch.nodes.map(n => n.name).join(', ')}
 
-Generate ${input.constraints.length} value propositions, one for each priority:
-${input.constraints.map((c, i) => {
+Generate ${input.priorities.length} value propositions, one for each priority:
+${input.priorities.map((c, i) => {
   const priorityMap = {
     'Global Performance': { emoji: '🌍', title: 'Global Performance' },
     'Cost Optimization': { emoji: '💰', title: 'Cost Optimization' },
@@ -312,7 +312,7 @@ ${input.constraints.map((c, i) => {
   return `${i+1}. ${c} (emoji: "${priority.emoji}", title: "${priority.title}")`;
 }).join('\n')}
 
-Return JSON array with exactly ${input.constraints.length} objects:
+Return JSON array with exactly ${input.priorities.length} objects:
 [{
   "emoji": "🌍",
   "title": "Global Performance",
@@ -331,16 +331,16 @@ Each description must:
     ];
 
     const response = await this.callOpenAI(messages, 0.7);
-    console.log('🔧 Raw OpenAI response for constraint advantages:', response);
+    console.log('🔧 Raw OpenAI response for priority advantages:', response);
     console.log('🔧 Response type:', typeof response);
     console.log('🔧 Response trimmed:', response.trim());
     
     try {
       const parsed = JSON.parse(response.trim());
-      console.log('✅ Successfully parsed constraint advantages:', parsed);
+      console.log('✅ Successfully parsed priority advantages:', parsed);
       return parsed;
     } catch (error) {
-      console.error('❌ Failed to parse constraint advantages JSON:', error);
+      console.error('❌ Failed to parse priority advantages JSON:', error);
       console.error('❌ Raw response was:', response);
       throw error;
     }

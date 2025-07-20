@@ -6,7 +6,7 @@ export const StreamingV2Test: React.FC = () => {
   const [testInput] = useState<UserInput>({
     appDescription: 'Real-time gaming chat platform with voice channels',
     persona: 'Gaming Startup',
-    constraints: ['Global Performance', 'Cost Optimization'],
+    priorities: ['Global Performance', 'Cost Optimization'],
     competitors: ['AWS'],
     scale: 'Startup',
     region: 'Global'
@@ -18,7 +18,7 @@ export const StreamingV2Test: React.FC = () => {
     competitorNodes,
     competitorEdges,
     advantages,
-    constraintValueProps,
+    priorityValueProps,
     isStreaming,
     isComplete,
     hasData,
@@ -145,12 +145,12 @@ export const StreamingV2Test: React.FC = () => {
         </div>
 
         {/* Value Props */}
-        {constraintValueProps.length > 0 && (
+        {priorityValueProps.length > 0 && (
           <div className="mt-6">
             <h3 className="text-lg font-semibold text-green-600 mb-3">
-              💎 Value Propositions ({constraintValueProps.length})
+              💎 Value Propositions ({priorityValueProps.length})
             </h3>
-            {constraintValueProps.map((prop, i) => (
+            {priorityValueProps.map((prop, i) => (
               <div key={i} className="bg-green-50 p-3 rounded mb-2">
                 <h4 className="font-medium text-green-800">{prop.emoji} {prop.title}</h4>
                 <p className="text-sm text-green-700">{prop.description}</p>
