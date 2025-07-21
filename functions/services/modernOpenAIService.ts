@@ -95,11 +95,11 @@ CRITICAL REQUIREMENTS:
      * Enterprise Security: emoji "🔒", title "Enterprise Security"
      * Global Performance: emoji "🌍", title "Global Performance"
    - Format variations (choose different ones for variety, [] brackets mean replace with actual values):
-     * "Cloudflare vs. [competitor]: [specific technical difference] → [quantified benefit with %/multiplier]"
-     * "[Cloudflare service] outperforms [competitor service] by [specific metric] → [business impact]"  
-     * "Unlike [competitor]'s [approach], Cloudflare's [approach] delivers [quantified advantage]"
-     * "Cloudflare eliminates [competitor problem] through [solution] → [measurable outcome]"
-     * "[Cloudflare vs. ${competitor} specific feature difference]: [why Cloudflare is better] → [quantifiable outcome with %, multipliers] [business impact]"
+     * "**Cloudflare's [specific feature]** vs. [competitor]'s [specific feature] → **[quantified benefit with %/multiplier]**. [Brief business impact]."
+     * "**[Cloudflare service]** outperforms [competitor service] by [specific metric] → **[business impact]**."  
+     * "Unlike [competitor]'s [approach], **Cloudflare's [approach]** delivers [quantified advantage] → **[measurable outcome]**."
+     * "**Cloudflare's [solution]** eliminates [competitor problem] → **[measurable outcome]**. [Brief user benefit]."
+     * "**Cloudflare's [feature]** vs. ${competitor}'s [feature] → **[quantifiable outcome with %, multipliers]**."
    - MUST reference actual generated services from both architectures with specific numbers when possible
    - Include quantified multipliers and engaging benefit statements that make mathematical sense
    - Focus on: ${this.getPriorityFocus(selectedPriorities)}
