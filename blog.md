@@ -50,9 +50,9 @@ const diagramNodeSchema = z.object({
   name: z.string(),
   subtitle: z.string().optional(),
   position: z.object({
-    x: z.number(),
-    y: z.number(),
-  }),
+    x: z.number().default(0),
+    y: z.number().default(0)
+  }).optional().default({ x: 0, y: 0 }),
   color: z.string().optional(),
 });
 
@@ -66,7 +66,8 @@ export const architectureResponseSchema = z.object({
     nodes: z.array(diagramNodeSchema),
     edges: z.array(diagramEdgeSchema)
   }),
-  constraintValueProps: z.array(constraintValuePropSchema).optional()
+  priorityValueProps: z.array(priorityValuePropSchema)
+    .describe('Priority-specific value propositions with metrics')
 });
 ```
 
@@ -84,19 +85,17 @@ export class ModernOpenAIService {
     const openai = createOpenAI({
       apiKey: this.apiKey
     });
-    this.model = openai('gpt-4-turbo');
+    this.model = openai('gpt-4o-2024-08-06');
   }
 
   async streamArchitecture(input: UserInput) {
-    const prompt = `Generate a cloud architecture diagram for: ${input.appDescription}
-    
-    Return a JSON object with nodes, edges, and advantages...`;
+    const prompt = this.buildPrompt(input);
 
     return await streamObject({
       model: this.model,
       schema: architectureResponseSchema,
       prompt,
-      temperature: 0.7,
+      mode: 'json'
     });
   }
 }
@@ -181,7 +180,90 @@ Here's where it gets interesting. The AI doesn't send complete objects—it send
 }
 ```
 
-### 4. Frontend: Graceful Partial Object Handling
+### 4. Auto-Layout: Real-Time Dagre Positioning
+
+One key insight: **don't ask the AI to handle layout**. LLMs are terrible at spatial positioning, but great at generating logical relationships. Instead, we:
+
+1. Generate nodes with `position: { x: 0, y: 0 }` (ignored)
+2. Re-run Dagre layout on every streaming update
+3. Auto-fit the viewport as the diagram grows
+
+```typescript
+// src/utils/autoLayout.ts
+import dagre from '@dagrejs/dagre';
+import type { Node, Edge } from '@xyflow/react';
+
+const nodeWidth = 172;
+const nodeHeight = 50;
+
+export const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => {
+  if (nodes.length === 0) return { nodes: [], edges };
+  
+  // Create fresh graph for each layout (no shared state)
+  const dagreGraph = new dagre.graphlib.Graph();
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
+  dagreGraph.setGraph({ 
+    rankdir: direction,
+    nodesep: 150,  // Space between nodes on same rank
+    ranksep: 200,  // Space between ranks (layers) 
+    marginx: 80,   // Graph margin
+    marginy: 80
+  });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  const newNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    return {
+      ...node,
+      position: {
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2,
+      },
+    };
+  });
+
+  return { nodes: newNodes, edges };
+};
+```
+
+The magic happens in the streaming component—layout recalculates **on every node addition**:
+
+```typescript
+// src/components/streaming/StreamingReactFlow.tsx
+useEffect(() => {
+  if (reactFlowNodes.length > 0) {
+    // Re-layout on every streaming update
+    const { nodes: layoutedNodesResult, edges: layoutedEdgesResult } = getLayoutedElements(
+      reactFlowNodes, 
+      reactFlowEdges,
+      'LR'  // Left-to-right layout
+    );
+    
+    setLayoutedNodes(layoutedNodesResult);
+    setLayoutedEdges(layoutedEdgesResult);
+    
+    // Auto-fit viewport to new layout
+    setTimeout(() => {
+      if (reactFlowInstanceRef.current) {
+        reactFlowInstanceRef.current.fitView({ padding: 0.2 });
+      }
+    }, 50);
+  }
+}, [reactFlowNodes.length, reactFlowEdges.length]); // Re-run on every count change
+```
+
+This approach gives you **responsive, real-time layout**: as each node streams in, Dagre recalculates the entire layout and the viewport adjusts smoothly. **AI generates logical architecture, Dagre handles visual perfection**.
+
+### 5. Frontend: Graceful Partial Object Handling
 
 ```typescript
 // src/hooks/useStreamingArchitectureV2.ts
@@ -258,15 +340,18 @@ export function useStreamingArchitectureV2() {
 The AI model doesn't complete one node before starting another. It might send Node A with just an ID, then Node B with partial data, then complete Node A. Your frontend must handle this gracefully.
 
 ### 2. **Validation is Critical**
-Always validate partial objects before rendering. A missing `position.x` property will crash React Flow. Better to skip incomplete objects than crash the UI.
+Always validate partial objects before rendering. Missing required fields will crash React Flow. Better to skip incomplete objects than crash the UI.
 
-### 3. **Server-Sent Events > WebSockets**
+### 3. **Separate AI Logic from Visual Layout**
+Don't ask LLMs to calculate positions—they're bad at spatial reasoning. Let AI generate the logical architecture, then use Dagre.js for automatic layout. This gives you clean, properly spaced diagrams.
+
+### 4. **Server-Sent Events > WebSockets**
 For one-way streaming, SSE is simpler than WebSockets. No connection management, automatic reconnection, and better browser support.
 
-### 4. **Cloudflare Workers Are Streaming-Friendly**
+### 5. **Cloudflare Workers Are Streaming-Friendly**
 Workers handle streaming surprisingly well. The `ReadableStream` API works perfectly with Vercel AI SDK's `partialObjectStream`.
 
-### 5. **Progressive Rendering Creates Better UX**
+### 6. **Progressive Rendering Creates Better UX**
 Users love seeing diagrams build up in real-time. It feels more interactive than a loading spinner, even if the total time is the same.
 
 ## The Result: Real-Time Architecture Visualization
